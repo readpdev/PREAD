@@ -1,0 +1,4 @@
+SELECT odcrtu, ODLBNM, ODOBNM, odobow, ODUDAT, ODOBSZ FROM
+pread/dspobjd where odcrtu not in ('*IBM', ' ') and odobsz >
+1000000 ORDER BY odcrtu, odobsz desc
+SELECT statement run complete.

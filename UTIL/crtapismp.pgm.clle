@@ -1,0 +1,194 @@
+/********************************************************************/
+/* Name:                                                            */
+/*        CRTAPISMP                                                 */
+/*                                                                  */
+/* Usage:                                                           */
+/*        CALL CRTAPISMP PARM(LIBRARY)                              */
+/*                                                                  */
+/*        where LIBRARY is the name of the QSYS library where the   */
+/*        modules and program will be created.                      */
+/*                                                                  */
+/* Function:                                                        */
+/*        Tivoli Storage Manager API                                */
+/*        Sample Tivoli Storage manager application CL program for  */
+/*        OS/400                                                    */
+/*                                                                  */
+/* For your convenience, this CL program has been created in the    */
+/*   QANSAPI library. You can call the program using                */
+/*        CALL QANSAPI/CRTAPISMP PARM(LIBRARY)                      */
+/*                                                                  */
+/* To set up this program in a different library, follow these      */
+/*   steps from the OS/400 command line prompt. These steps show    */
+/*   use of a library named WORKLIB.                                */
+/*                                                                  */
+/* CRTLIB WORKLIB                                                   */
+/* CRTSRCPF WORKLIB/QCLSRC                                          */
+/* CPYFRMSTMF +                                                     */
+/*  FROMSTMF('/usr/tivoli/tsm/client/api/bin/sample/crtapismp.clp')+*/
+/*  TOMBR('/QSYS.LIB/WORKLIB.LIB/QCLSRC.FILE/crtapismp.MBR') +      */
+/*  MBROPT(*REPLACE)                                                */
+/* CRTCLPGM PGM(WORKLIB)/crtapismp) SRCFILE(WORKLIB/QCLSRC)         */
+/*                                                                  */
+/*  The Tivoli Storage Manager shared library is in QANSAPI/QANSAPI */
+/*                                                                  */
+/********************************************************************/
+
+    PGM        PARM(&LIB)
+    DCL        VAR(&LIB) TYPE(*CHAR) LEN(10)
+
+/********************************************************************/
+/* If a debug version of this code is desired, change the initial   */
+/* VALUE of the &DEBUG variable to *SOURCE.                         */
+/********************************************************************/
+    DCL        VAR(&DEBUG) TYPE(*CHAR) LEN(8) VALUE(*SOURCE)
+/*    DCL        VAR(&DEBUG) TYPE(*CHAR) LEN(8) VALUE(*NONE) */
+
+/*----------------------------------------------------------------*/
+/*                                                                */
+/* Sample API application CALLBUFF                                */
+/*                                                                */
+/*----------------------------------------------------------------*/
+    CRTCMOD MODULE(&LIB/callbuff) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/callbuff.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+
+    CRTCMOD MODULE(&LIB/dpsthread) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dpsthread.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+
+    CRTPGM  PGM(&LIB/callbuff) MODULE(&LIB/callbuff   +
+                                      &LIB/dpsthread) +
+        BNDSRVPGM(QANSAPI/QANSAPI)                    +
+        TEXT('TSM API SAMPLE CALLBUFF PROGRAM')       +
+        USRPRF(*OWNER)
+
+/*----------------------------------------------------------------*/
+/*                                                                */
+/* Sample API application CALLEVNT                                */
+/*                                                                */
+/*----------------------------------------------------------------*/
+    CRTCMOD MODULE(&LIB/callevnt) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/callevnt.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+
+    CRTPGM  PGM(&LIB/callevnt) MODULE(&LIB/callevnt) +
+        BNDSRVPGM(QANSAPI/QANSAPI)                   +
+        TEXT('TSM API SAMPLE CALLEVNT PROGRAM')      +
+        USRPRF(*OWNER)
+
+/*----------------------------------------------------------------*/
+/*                                                                */
+/* Sample API application CALLHOLD                                */
+/*                                                                */
+/*----------------------------------------------------------------*/
+    CRTCMOD MODULE(&LIB/callhold) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/callhold.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+
+    CRTPGM  PGM(&LIB/callhold) MODULE(&LIB/callhold) +
+        BNDSRVPGM(QANSAPI/QANSAPI)                   +
+        TEXT('TSM API SAMPLE CALLHOLD PROGRAM')      +
+        USRPRF(*OWNER)
+
+/*----------------------------------------------------------------*/
+/*                                                                */
+/* Sample API applications CALLMT1 and CALLMT2                    */
+/*                                                                */
+/*----------------------------------------------------------------*/
+    CRTCMOD MODULE(&LIB/callmt1) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/callmt1.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+
+    CRTPGM  PGM(&LIB/CALLMT1) MODULE(&LIB/callmt1) +
+        BNDSRVPGM(QANSAPI/QANSAPI)                 +
+        TEXT('TSM API SAMPLE CALLMT1 PROGRAM')     +
+        USRPRF(*OWNER)
+
+    CRTCMOD MODULE(&LIB/callmt2) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/callmt2.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+
+    CRTPGM  PGM(&LIB/callmt2) MODULE(&LIB/callmt2) +
+        BNDSRVPGM(QANSAPI/QANSAPI)                 +
+        TEXT('TSM API SAMPLE CALLMT2 PROGRAM')     +
+        USRPRF(*OWNER)
+
+/*----------------------------------------------------------------*/
+/*                                                                */
+/* Sample API application CALLRET                                 */
+/*                                                                */
+/*----------------------------------------------------------------*/
+    CRTCMOD MODULE(&LIB/callret) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/callret.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+
+    CRTPGM  PGM(&LIB/callret) MODULE(&LIB/callret)   +
+        BNDSRVPGM(QANSAPI/QANSAPI)                   +
+        TEXT('TSM API SAMPLE CALLRET PROGRAM')       +
+        USRPRF(*OWNER)
+
+/*----------------------------------------------------------------*/
+/*                                                                */
+/* Sample API application DAPISMP                                 */
+/*                                                                */
+/*----------------------------------------------------------------*/
+    CRTCMOD MODULE(&LIB/dapibkup) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapibkup.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+    CRTCMOD MODULE(&LIB/dapiinit) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapiinit.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+    CRTCMOD MODULE(&LIB/dapipref) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapipref.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+    CRTCMOD MODULE(&LIB/dapiproc) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapiproc.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+    CRTCMOD MODULE(&LIB/dapipw)   +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapipw.c')   +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+    CRTCMOD MODULE(&LIB/dapiqry)  +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapiqry.c')  +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+    CRTCMOD MODULE(&LIB/dapirc)   +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapirc.c')   +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+    CRTCMOD MODULE(&LIB/dapismp)  +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapismp.c')  +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+    CRTCMOD MODULE(&LIB/dapiutil) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapiutil.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+    CRTCMOD MODULE(&LIB/dapint64) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dapint64.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+
+    CRTPGM  PGM(&LIB/dapismp) MODULE(&LIB/dapibkup      +
+                                         &LIB/dapiinit  +
+                                         &LIB/dapint64  +
+                                         &LIB/dapipref  +
+                                         &LIB/dapiproc  +
+                                         &LIB/dapipw    +
+                                         &LIB/dapiqry   +
+                                         &LIB/dapirc    +
+                                         &LIB/dapismp   +
+                                         &LIB/dapiutil) +
+        BNDSRVPGM(QANSAPI/QANSAPI)                      +
+        TEXT('TSM API SAMPLE PROGRAM')                  +
+        USRPRF(*OWNER)
+
+/*----------------------------------------------------------------*/
+/*                                                                */
+/* Sample API application DSMGRP                                  */
+/*                                                                */
+/*----------------------------------------------------------------*/
+    CRTCMOD MODULE(&LIB/dsmgrp) +
+        SRCSTMF('/usr/tivoli/tsm/client/api/bin/sample/dsmgrp.c') +
+        SYSIFCOPT(*IFS64IO) DBGVIEW(&DEBUG)
+
+    CRTPGM  PGM(&LIB/dsmgrp) MODULE(&LIB/dsmgrp)   +
+        BNDSRVPGM(QANSAPI/QANSAPI)                 +
+        TEXT('TSM API SAMPLE DSMGRP PROGRAM')      +
+        USRPRF(*OWNER)
+
+    ENDPGM

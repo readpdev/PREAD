@@ -1,0 +1,213 @@
+/***********----------------------------------------------------------+
+   RstImgCL  Restore an Image Batch from Optical/Tape to Dasd         +
+             and Update MFldDir & MImgDir files.                      +
+                                                                      +
+    Update Record                                                     +
+PLR 03-09-10 Overloaded to process restore folder operation with      +
+             images. Old folder backup never backed up images. J2370. +
+JMO 07-07-04 Added code to specify MBR(...) on OVRDBF cmds /9134      +
+                                                                      +
+   Author: Gary Kemmer    12/27/95                                    +
+ ***********---------------------------------------------------------*/
+
+             PGM        PARM(&FOLDER &FLDLIB &BTCHNO &IFILE &FDESCN +
+                          &IMGLOC &CHGACT &RETN &NOPROMPT)
+
+             DCLF       RSTIMGFM   /* To confirm parms, display errs */
+
+             DCL        VAR(&FOLDER) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&BTCHNO) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&IFILE)  TYPE(*CHAR) LEN(10)
+             DCL        VAR(&IMGCOD) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&IMGLOC) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&FLDLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RPTNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&USRNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBNUM) TYPE(*CHAR) LEN(6)
+             DCL        VAR(&FILNUM) TYPE(*CHAR) LEN(9)
+             DCL        VAR(&FDESCN) TYPE(*CHAR) LEN(30)
+             DCL        VAR(&FDESC)  TYPE(*CHAR) LEN(40)
+             DCL        VAR(&CHGACT) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&RETN)   TYPE(*CHAR) LEN(8)
+             DCL        VAR(&NOPROMPT) TYPE(*CHAR) LEN(1) /* J2370 */
+
+             DCL        VAR(&VOL)    TYPE(*CHAR) LEN(6)
+             DCL       VAR(&FROMDEV) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&OFSNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OFSSEQ) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&OFSTYP) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&OFSSYS) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&BRMSYN) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&SAVLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&DEV)    TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OWN)    TYPE(*CHAR) LEN(14)
+             DCL        VAR(&DEN)    TYPE(*CHAR) LEN(11)
+
+             DCL        VAR(&DSPMSG) TYPE(*CHAR) LEN(50)
+             DCL        VAR(&FMTNM)  TYPE(*CHAR) LEN(8)
+
+             DCL        VAR(&VOLCK)  TYPE(*CHAR) LEN(1)
+             DCL        VAR(&MSGID)  TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSG)    TYPE(*CHAR) LEN(70)
+
+             DCL        VAR(&ACCESS) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&RETRN)  TYPE(*CHAR) LEN(6)
+             DCL        VAR(&OPTRTN) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&RTNCDE) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&RTNDTA) TYPE(*CHAR) LEN(100)
+             DCL        VAR(&JOBTYP) TYPE(*CHAR) LEN(1)
+
+             CHGVAR     VAR(&FDESC) VALUE(FDESCN)
+
+             CALL       PGM(MAG1034) PARM(&JOBTYP)
+
+/* Tape defaults */
+             RTVDTAARA  DTAARA(SYSDFT (156 10)) RTNVAR(&DEV)
+             RTVDTAARA  DTAARA(SYSDFT (166 14)) RTNVAR(&OWN)
+             RTVDTAARA  DTAARA(SYSDFT (180 11)) RTNVAR(&DEN)
+             RTVDTAARA  DTAARA(SYSDFT (372 01)) RTNVAR(&BRMSYN)
+
+/* Get FromDev, Vol, SavName, Seq, Type, Sys*/
+             CALL       PGM(GETIMGSAV) PARM(&BTCHNO &OFSNAM +
+                          &VOL &FROMDEV &OFSSEQ &OFSTYP &OFSSYS)
+             IF         COND(&FROMDEV *EQ ' ') THEN(DO)
+                IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                   CHGVAR     VAR(&RETN) VALUE('ERR1560') /* J2370 */
+                   RETURN     /* J2370 */
+                ENDDO      /* J2370 */
+             RTVMSG     MSGID(ERR1560) MSGF(PSCON) MSGDTA(&BTCHNO) +
+                          MSG(&DSPMSG)   /* "Img already online" */
+             GOTO       CMDLBL(SHOWMSG)  /*--------------->> SHOWMSG */
+             ENDDO
+
+             IF         COND(&FROMDEV *EQ 'O') THEN(GOTO +
+                          CMDLBL(OPTICAL)) /*------------->> OPTICAL */
+
+/*"Enter to cont"*/
+             IF         COND(&FROMDEV *EQ 'T') THEN(DO)
+             RTVMSG     MSGID(DSP1212) MSGF(PSCON) MSG(&DSPMSG)
+             ENDDO
+
+ SHOWMSG:
+             IF         COND(&NOPROMPT *NE '1') THEN(DO) /* J2370 */
+             IF         (&FROMDEV *EQ 'T')  DO
+             SNDRCVF    RCDFMT(DSPLY)
+             CHGVAR     &FMTNM DSPLY
+             ENDDO
+             IF         (&FROMDEV *NE 'T')  DO
+             SNDRCVF    RCDFMT(DSPLY2)
+             CHGVAR     &FMTNM DSPLY2
+             ENDDO
+
+             IF         (&IN01 *EQ '1')     DO               /* Help */
+             CALL       SPYHLP (RSTIMGFM &FMTNM)
+             GOTO       SHOWMSG
+             ENDDO
+/* Exit */
+             IF         COND(&FROMDEV *EQ ' ') THEN(RETURN)
+             IF         COND(&IN93    *EQ '1') THEN(RETURN)
+
+             ENDDO      /* J2370 */
+
+             CHGVAR     VAR(&RETRN) VALUE(' ')
+             CHGVAR     VAR(&ACCESS) VALUE('*EXCLRD')
+
+             CHGVAR     VAR(&MSGID) VALUE(' ')
+             CHGVAR     VAR(&MSG) VALUE(' ')
+
+/* Send msg - Restoring Image Batch.                                 */
+
+             IF         COND(&JOBTYP *EQ '1') THEN(SNDF RCDFMT(RSTMSG))
+
+/* Check Vol */
+             IF         COND(&BRMSYN *NE 'Y') THEN(CALL +
+                          PGM(CHKTAPSPY) PARM(&DEV &VOL &MSGID &MSG))
+             IF         COND(&MSGID *NE ' ' *AND &VOLCK *NE '1') +
+                          THEN(DO)
+                IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                   CHGVAR     VAR(&RETN) VALUE(&MSGID) /* J2370 */
+                   RETURN     /* J2370 */
+                ENDDO      /* J2370 */
+             CHGVAR     VAR(&DSPMSG) VALUE(%SST(&MSG 1 50))
+             CHGVAR     VAR(&VOLCK) VALUE('1')
+             GOTO       CMDLBL(SHOWMSG)  /*--------------->> SHOWMSG */
+             ENDDO
+
+             IF         COND(&OFSSYS *EQ 'B') THEN(CHGVAR +
+                          VAR(&SAVLIB) VALUE('SPYBRMBKUP'))
+             IF         COND(&OFSSYS *EQ ' ') THEN(CHGVAR +
+                          VAR(&SAVLIB) VALUE('QTEMP'))
+             CHGVAR     VAR(&MSGID) VALUE(' ')
+             CHGVAR     VAR(&MSG) VALUE(' ')
+
+/* RstObj CL - Tape to Dasd work file - */
+
+             IF         COND(&OFSTYP *NE 'R') THEN(CALL +
+                          PGM(RSTOBJSPY) PARM(&OFSNAM &SAVLIB &DEV +
+                          &VOL &OFSSYS &MSGID &MSG))
+             IF         COND(&MSGID *NE ' ') THEN(DO)
+                IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                   CHGVAR     VAR(&RETN) VALUE(&msgid)    /* J2370 */
+                   RETURN     /* J2370 */
+                ENDDO      /* J2370 */
+             CHGVAR     VAR(&DSPMSG) VALUE(%SST(&MSG 1 50))
+             DLCOBJ     OBJ((&FLDLIB/&FOLDER *FILE &ACCESS))
+             GOTO       CMDLBL(SHOWMSG)  /*--------------->> SHOWMSG */
+             ENDDO
+
+ /*  /9134 - changed to specify MBR name on override  */
+             OVRDBF     FILE(FOLDER) TOFILE(&FLDLIB/&FOLDER) +
+                          MBR(&FOLDER) FRCRATIO(2000) +
+                          OVRSCOPE(*CALLLVL) SEQONLY(*YES 2000)
+ /*  /9134 - changed to specify MBR name on override  */
+             OVRDBF     FILE(FOLDER2) TOFILE(&FLDLIB/&FOLDER) +
+                          MBR(&FOLDER) OVRSCOPE(*CALLLVL)
+
+/* Add Imgs from Tape to Ifile */
+/* Update MFldDir & MImgDir. */
+             CALL       PGM(MAG1504) PARM(&FOLDER &FLDLIB &BTCHNO +
+                         &IFILE &OFSTYP &OFSSYS &SAVLIB &OFSNAM +
+                         &OFSSEQ &DEV &RTNCDE &RTNDTA)
+
+/* Check Return code to see if Ifile is locked                       */
+             IF         COND(&RTNCDE *NE ' ') THEN(DO)
+                IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                   CHGVAR     VAR(&RETN) VALUE(&RTNCDE) /* J2370 */
+                   RETURN     /* J2370 */
+                ENDDO      /* J2370 */
+             RTVMSG     MSGID(&RTNCDE) MSGF(PSCON) MSGDTA(&RTNDTA) +
+                          MSG(&DSPMSG)
+             GOTO       CMDLBL(SHOWMSG)  /*--------------->> SHOWMSG */
+             ENDDO
+/**********/
+
+             IF         COND(&OFSTYP *NE 'R') THEN(DLTF +
+                          FILE(&SAVLIB/&OFSNAM))
+             GOTO       CMDLBL(END)      /*------------------>> END  */
+
+  OPTICAL:
+
+             IF         COND(&FROMDEV *EQ 'O') THEN(DO)
+
+/* Send msg - Restoring Image Batch.                                 */
+
+             IF         COND(&JOBTYP *EQ '1') THEN(SNDF RCDFMT(RSTMSG))
+
+/* Add Imgs from Optical to Ifile */
+/* Update MFldDir & MImgDir.*/
+
+             CALL       PGM(MAG1503) PARM(&BTCHNO &RTNCDE &RTNDTA)
+
+             DLTOVR     FILE(*ALL)
+             IF         COND(&RTNCDE *NE ' ') THEN(DO)
+             RTVMSG     MSGID(&RTNCDE) MSGF(PSCON) MSGDTA(&RTNDTA) +
+                          MSG(&DSPMSG)
+             CHGVAR     VAR(&FROMDEV) VALUE(' ')
+             GOTO       CMDLBL(SHOWMSG)  /*--------------->> SHOWMSG */
+             ENDDO
+             ENDDO
+
+  END:
+
+             ENDPGM

@@ -1,0 +1,74 @@
+      /*%METADATA                                                     */
+      /* %TEXT Work with storage devices                              */
+      /*%EMETADATA                                                    */
+/* SPYSTGVOL - WORK WITH STORAGE VOLUMES                             */
+/* 2872HQ 11/03/00 JAM Added security                                */
+             PGM        PARM(&POSTO)
+             DCL        VAR(&POSTO) TYPE(*CHAR) LEN(12)
+             DCL        VAR(&SPYLIB) TYPE(*CHAR) LEN(10)     /* 2872 */
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(7)      /* 2872 */
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)       /* 2872 */
+             DCL        VAR(&ITXT) TYPE(*CHAR) LEN(50)       /* 2872 */
+             DCL        VAR(&CHANGE) TYPE(*CHAR) LEN(1)      /* 2872 */
+             DCL        VAR(&RETN) TYPE(*CHAR) LEN(1)        /* 2872 */
+                                                             /* 2872 */
+/* Global error monitor */                                   /* 2872 */
+             MONMSG     MSGID(CPF0000)                               +
+                        EXEC(GOTO CMDLBL(ERROR))             /* 2872 */
+/* Set library list */                                       /* 2872 */
+             RTVOBJD    OBJ(STRDOCMGR)                               +
+                        OBJTYPE(*CMD)                                +
+                        TEXT(&ITXT)                          /* 2872 */
+                        MONMSG     MSGID(CPF0000 MCH0000)    /* 2872 */
+                                                             /* 2872 */
+             RCVMSG     MSGTYPE(*LAST)                       /* 2872 */
+                                                             /* 2872 */
+             CHGVAR     VAR(&SPYLIB)                                 +
+                        VALUE(%SST(&ITXT 41 10))             /* 2872 */
+                                                             /* 2872 */
+             IF         COND(&SPYLIB *NE ' ') THEN(DO)       /* 2872 */
+                        ADDLIBLE   LIB(&SPYLIB)              /* 2872 */
+                                   MONMSG     MSGID(CPF2118)         +
+                                   EXEC(GOTO CMDLBL(ERROR))  /* 2872 */
+                                   MONMSG     MSGID(CPF0000 MCH0000) +
+                                   EXEC(GOTO CMDLBL(NOCHANGE)) /* 2872 */
+                                   CHGVAR     VAR(&CHANGE)           +
+                                              VALUE('Y')     /* 2872 */
+ NOCHANGE:              RCVMSG     MSGTYPE(*LAST)            /* 2872 */
+                        ENDDO                                /* 2872 */
+                                                             /* 2872 */
+             CALL       PGM(MAG1031) PARM(SPYSTGVOL ' ')     /* 2872 */
+                                                             /* 2872 */
+             CALL       PGM(MAG103A)                         /* 2872 */
+                        MONMSG     MSGID(CPF0000 MCH0000)            +
+                        EXEC(DO)                             /* 2872 */
+                        CALL       PGM(MAG1031)                      +
+                                   PARM(SPYSTGVOL Q)         /* 2872 */
+                        ENDDO                                /* 2872 */
+                                                             /* 2872 */
+/* Check if user has security to run command */              /* 2872 */
+             CALL       PGM(SPYAUT) PARM('SPYSTGVOL ' &RETN) /* 2872 */
+                                                             /* 2872 */
+             IF         COND(&RETN *NE 'Y') THEN(DO)         /* 2872 */
+                        SNDPGMMSG MSGID(SPY0013) MSGF(PSCON) /* 2872 */
+                        GOTO       CMDLBL(END)               /* 2872 */
+                        ENDDO                                /* 2872 */
+                                                             /* 2872 */
+             CALL       PGM(MAG8621) PARM(&POSTO ' ')
+                                                             /* 2872 */
+             GOTO       CMDLBL(END)                          /* 2872 */
+                                                             /* 2872 */
+ ERROR:                                                      /* 2872 */
+             RCVMSG     RMV(*NO)                                     +
+                        MSGDTA(&MSGDTA)                              +
+                        MSGID(&MSGID)                        /* 2872 */
+             SNDPGMMSG  MSGID(&MSGID)                                +
+                        MSGF(QCPFMSG)                                +
+                        MSGDTA(&MSGDTA)                      /* 2872 */
+ END:                                                        /* 2872 */
+             CALL       PGM(MAG1031) PARM(SPYSTGVOL Q)       /* 2872 */
+                                                             /* 2872 */
+             IF         COND(&CHANGE *EQ 'Y')                        +
+                        THEN(RMVLIBLE LIB(&SPYLIB))          /* 2872 */
+                                                             /* 2872 */
+             ENDPGM

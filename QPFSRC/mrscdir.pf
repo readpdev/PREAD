@@ -1,0 +1,27 @@
+      *%METADATA                                                       *
+      * %TEXT Resource Directory File                                  *
+      *%EMETADATA                                                      *
+      **********
+      * MRSCDIR  Resource Directory file
+      **********
+/3465 * 08-30-04 JMO added field to hold the name of the resource
+      *                that contains this resource. If the resource
+      *                is not embedded then this field will be blank.
+     A
+     A
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R RSCDIR                    TEXT('Resource Directory')
+     A            RDRID         10A         COLHDG('Resource' 'ID')
+     A            RDOBJT        10A         COLHDG('Resource' 'Object' 'Type')
+     A            RDOBJN        10A         COLHDG('Resource' 'Object' 'Name')
+     A            RDOBJL        10A         COLHDG('Resource' 'Object' 'Lib')
+     A            RDCDAT         9B 0       COLHDG('Resource' 'Create' 'Date')
+     A            RDCTIM         9B 0       COLHDG('Resource' 'Create' 'Time')
+/3465A            RDVRID         9B 0       COLHDG('Resource' 'Version' 'ID')
+     A            RDRLEN         9B 0       COLHDG('Resource' 'Length')
+     A            RDMLEN         9B 0       COLHDG('Max' 'Command' 'Length')
+/3465A            RDCNRS        10A         COLHDG('Contained' 'in' 'Rsc')
+     A          K RDRID
+/3465A          K RDVRID
+/3465A          K RDCNRS

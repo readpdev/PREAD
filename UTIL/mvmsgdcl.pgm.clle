@@ -1,0 +1,22 @@
+      /*%METADATA                                                     */
+      /* %TEXT Move Message Description                               */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&FRMSGID &TOMSGID &MSGF &MSGFLIB)
+
+             DCL        VAR(&FRMSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&TOMSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSGF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGFLIB) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&FIRSTTEXT) TYPE(*CHAR) LEN(132)
+
+             RTVMSG     MSGID(&FRMSGID) MSGF(&MSGFLIB/&MSGF) +
+                          MSG(&FIRSTTEXT)
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ENDTAG))
+             ADDMSGD    MSGID(&TOMSGID) MSGF(&MSGFLIB/&MSGF) +
+                          MSG(&FIRSTTEXT)
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ENDTAG))
+             RMVMSGD    MSGID(&FRMSGID) MSGF(&MSGFLIB/&MSGF)
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ENDTAG))
+
+ ENDTAG:     ENDPGM

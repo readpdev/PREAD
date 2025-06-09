@@ -1,0 +1,46 @@
+      *%METADATA                                                       *
+      * %TEXT Report Distribution Log                                  *
+      *%EMETADATA                                                      *
+      *                    Magellan Software
+      *
+      * Physical file..... RDSTLOG - Report Distribution Log file
+      * Date created...... 04/11/94
+      *
+      *  6-13-95 JJF Add DLSYS field.
+      *
+     A          R DSTLOG
+     A            DLSUBS        10          TEXT(  'Subscriber')
+     A                                      COLHDG('Subscriber')
+     A            DLREPT        10          TEXT(  'Report   Type')
+     A                                      COLHDG('Report' 'Type')
+     A            DLSEG         10          TEXT(  'Report   Segment')
+     A                                      COLHDG('Report' 'Segment')
+     A            DLREP         10          TEXT(  'Report   Version')
+     A                                      COLHDG('Report' 'Version')
+     A            DLBNDL        10          TEXT('Report Bundle')
+     A                                      COLHDG('Report' 'Bundle')
+     A            DLTYPE         1          TEXT('Log Type')
+     A                                      COLHDG('Action')
+     A            DLDATE         9B 0       TEXT('Log Date')
+     A                                      COLHDG('Date')
+     A            DLTIME         9B 0       TEXT('Time')
+     A                                      COLHDG('Time')
+     A            DLUSER        10          TEXT('User Name')
+     A                                      COLHDG('User' 'Name')
+     A            DLJOBN        10          TEXT('JobName')
+     A                                      COLHDG('Job' 'Name')
+     A            DLJOB#         6A         TEXT('Job Number')
+     A                                      COLHDG('Job' 'Number')
+     A            DLTPGS         9B 0       TEXT('Number of Pages')
+     A                                      COLHDG('Pages')
+     A            DLSYS         10          COLHDG('System')
+     A            DLPROG        10          TEXT('SpyView Program')
+     A                                      COLHDG('SpyView' 'Program')
+     A            DLWEBA        10          COLHDG('SpyWeb' 'Appl.')
+     A            DLWEBU        20          COLHDG('SpyWeb' 'User')
+      *
+     A          K DLDATE                    DESCEND
+     A          K DLTIME                    DESCEND
+     A          K DLUSER
+     A          K DLJOBN
+     A          K DLJOB#

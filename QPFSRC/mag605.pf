@@ -1,0 +1,18 @@
+      *%METADATA                                                       *
+      * %TEXT Distribution BldLnk Workfile template                    *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... MAG605  - Temporary BldLink Wrk file      *
+     A* Date created...... 06/02/94                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A          R W605
+     A            WSEGNM        10          TEXT('Segment File Name')
+     A                                      COLHDG('Segment' 'File')
+     A            WLNKRR         9  0       TEXT('Link RR#')
+     A                                      COLHDG('Link' 'Workfile' 'RR#')

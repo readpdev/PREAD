@@ -1,0 +1,10 @@
+      /*%METADATA                                                     */
+      /* %TEXT Retrieve the System Name via RTVNETA                   */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&SYSNAME)
+
+             DCL        VAR(&SYSNAME) TYPE(*CHAR) LEN(10)
+
+             RTVNETA    SYSNAME(&SYSNAME)
+
+             ENDPGM

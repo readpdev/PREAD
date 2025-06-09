@@ -1,0 +1,37 @@
+      *%METADATA                                                       *
+      * %TEXT Web Security - Application Logon Passwords               *
+      *%EMETADATA                                                      *
+      *********--------
+      * WCPWDP  WEB Security - Application Logon Passwords
+      *********--------
+
+     A                                      UNIQUE
+     A          R WCPWDF                    TEXT('WEB Application Logons')
+      *           ******
+      *
+     A            WCAPP         10          COLHDG('Signon' 'Panel ID')
+     A            WCUSR         20          COLHDG('User')
+     A            WCDSC         40          COLHDG('Description')
+     A            WCGRP         20          COLHDG('Group')
+     A            WCACT          1          COLHDG('Active' 'Y/N')
+     A            WCTYP          1          COLHDG('User Type' 'U/G')
+     A            WCPRF         10          COLHDG('System' 'Profile')
+      *
+     A            WCDFVW        10          COLHDG('Default' 'View')
+/2815A            WCRPFM        10          COLHDG('Report' 'Format')
+/     *                                   VALUES: *HTML, *PDF
+/2815A            WCSLLS         1          COLHDG('SpyLink' 'Limit' 'Scroll')
+/     *                                   VALUES: Y, N, " "=System Default
+     A
+     A            WCVL1         30          COLHDG('Logon' 'Value 1')
+     A            WCVL2         30          COLHDG('Logon' 'Value 2')
+     A            WCVL3         30          COLHDG('Logon' 'Value 3')
+     A            WCVL4         30          COLHDG('Logon' 'Value 4')
+     A            WCVL5         30          COLHDG('Logon' 'Value 5')
+     A            WCVL6         30          COLHDG('Logon' 'Value 6')
+     A            WCVL7         30          COLHDG('Logon' 'Value 7')
+     A            WCVL8         30          COLHDG('Logon' 'Value 8')
+     A
+     A          K WCAPP
+     A          K WCUSR
+

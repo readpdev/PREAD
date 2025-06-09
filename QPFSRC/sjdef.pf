@@ -1,0 +1,96 @@
+      *%METADATA                                                       *
+      * %TEXT SpoolJoiner Definition                                   *
+      *%EMETADATA                                                      *
+      *----------------------------------------------------------------
+      *     SJDEF   SpoolJoiner definition
+      *
+      *     Key : JDNAM (unique)
+      *----------------------------------------------------------------
+     A                                      UNIQUE
+     A          R SJDEFR                    TEXT('Spl Join Definition')
+      *
+     A            JDNAM         10          COLHDG('Definition' 'name')
+     A            JDDESC        30          COLHDG('Description')
+     A            JDACT          1          COLHDG('Active' 'Y/N')
+      *
+      * Spool file filter
+     A            JDFILE        10          COLHDG('File')
+     A            JDUSRN        10          COLHDG('User')
+     A            JDUDTA        10          COLHDG('User data')
+     A            JDJOB         10          COLHDG('Job')
+     A            JDPGM         10          COLHDG('Program')
+     A            JDFTYP        10          COLHDG('Form type')
+     A            JDOUTQ        10          COLHDG('OutQ')
+      * Target Attributes
+     A            JDTFIL        10          COLHDG('Target' 'File')
+     A            JDTUDT        10          COLHDG('Target' 'User data')
+     A            JDTPGM        10          COLHDG('Target' 'Program')
+      *
+      * OutQ
+     A            JDTOUT        10          COLHDG('Joiner OutQ')
+     A            JDTOLI        10          COLHDG('Joiner OutQ lib')
+     A            JDTHLD         1          COLHDG('Hld joiner spl' 'Y/N')
+      *
+      * Joining
+     A            JDAZK          1  0       COLHDG('Key count')
+     A                                      EDTCDE(Z)
+     A            JDTIM          4  0       COLHDG('Time for' 'joining')
+     A                                      EDTWRD('  :  ')
+     A            JDDAY          7          COLHDG('Days for' 'joining')
+     A            JDMAX          5  0       COLHDG('Max spool' 'files')
+     A                                      EDTCDE(Z)
+     A            JDMIN          5  0       COLHDG('Minutes')
+     A                                      EDTCDE(Z)
+     A            JDPGMA        10          COLHDG('Program' 'after join')
+     A            JDLIBA        10          COLHDG('Prog lib' 'after join')
+      *
+      * Archiver
+     A            JDFLDR        10          COLHDG('Folder')
+     A            JDFLIB        10          COLHDG('Folder lib')
+     A            JDCMP          1          COLHDG('Compress' 'Y/N')
+     A            JDOPT          1          COLHDG('Optical' 'Y/N')
+     A            JDPTH         12          COLHDG('Path')
+     A            JDDLTF         1          COLHDG('Delete' 'after')
+     A            JDIND          1          COLHDG('Indices' 'Y/N')
+     A            JDSBM          1          COLHDG('Submit' 'Y/N')
+     A            JDJOBD        10          COLHDG('JobD')
+     A            JDJLIB        10          COLHDG('JobD lib')
+      *
+     A            JDACTF         7  0       COLHDG('Active' 'files')
+     A                                      EDTCDE(Z)
+     A            JDSAVP         7  0       COLHDG('Save' 'pending')
+     A                                      EDTCDE(Z)
+     A            JDMSIZ         5  0       COLHDG('Max' 'RCDLEN')
+     A                                      EDTCDE(Z)
+     A            JDSTS          3  0       COLHDG('Status')
+     A                                      EDTCDE(Z)
+     A            JDTNXT         4  0       COLHDG('Time next')
+     A                                      EDTWRD('  :  ')
+     A            JDDNXT         6  0       COLHDG('Date next')
+     A                                      EDTWRD('  .  .  ')
+     A          K JDNAM
+      *
+      *----------------------------------------------------------------
+LF1   * SJDEF1  R SJDEFR                    PFILE(SJDEF)
+      *         K JDFILE
+      *         K JDUSRN
+      *         K JDUDTA
+      *         K JDJOB
+      *         K JDPGM
+      *         K JDFTYP
+      *         K JDOUTQ
+      *         S JDFILE                    COMP(NE '         ')
+      *           JDUSRN                    COMP(NE '         ')
+      *           JDUDTA                    COMP(NE '         ')
+      *           JDJOB                     COMP(NE '         ')
+      *           JDPGM                     COMP(NE '         ')
+      *           JDFTYP                    COMP(NE '         ')
+      *           JDOUTQ                    COMP(NE '         ')
+LF2   * SJDEF2  R SJDEFR                    PFILE(SJDEF)
+      *         K JDNAM                     UNIQUE
+      *         S JDMAX                     COMP(LE JDACTF)
+      *           JDMAX                     COMP(NE 0)
+LF3   * SJDEF3  R SJDEFR                    PFILE(SJDEF)
+      *         K JDDNXT                    DESCEND
+      *         K JDTNXT                    DESCEND
+      *         S JDMAX                     COMP(EQ 0)

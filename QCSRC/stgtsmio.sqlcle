@@ -1,0 +1,216 @@
+/*                                                                            */
+/* 05-15-09 PLR Add support for Tivoli Storage Manager. J65                   */
+/*                                                                            */
+/* Tivoli Storage Manager Module. Part of STGTSMIO service program.           */
+
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <ctype.h>
+
+#include "dsmapitd.h"
+#include "dsmapifp.h"
+#include "dsmapips.h"
+#include "dsmrc.h"
+#include "release.h"
+#include "mgcrypto.h"
+
+#define TSM_LAST_ERR_SET 1
+#define TSM_LAST_ERR_GET 2
+static char lastMessage[DSM_MAX_RC_MSG_LENGTH];
+
+static void tsmSetLastError(dsUint32_t handle, short int errorCode);
+static void trimr(char *aString);
+static void lcase(char *aString);
+
+typedef _Packed struct
+{
+  char volume[12];
+  unsigned char percent[4];
+  unsigned char threshold[4];
+  decimal(15,0) capacity;
+  decimal(15,0) used;
+  decimal(15,0) free;
+  decimal(15,0) alloc;
+  char write;
+} freeSpace_t;
+
+short int tsmConnect(dsUint32_t *handleP, char *deviceName)
+{
+  dsmInitExIn_t  initIn;
+  dsmInitExOut_t initOut;
+  dsmApiVersionEx apiApplVer;
+  dsmApiVersionEx apiLibVer;
+  char *owner, *userName, *userNamePswd, *confFile;
+  char decryptedPassword[40], options[256];
+  short int rc;
+  Qus_EC_t apiError;
+
+  char dirDelimiter = '\0';
+  char *encryptKey = NULL;
+  dsBool_t encrypt = bFalse;
+  dsBool_t useUnicode = bFalse;
+
+  exec sql set option closqlcsr=*endmod,commit=*none;
+  exec sql include sqlca;
+  exec sql begin declare section;
+    char hostName[40];
+    long port;
+    char node[40];
+    char password[40];
+    char sqlDeviceName[10];
+  exec sql end declare section;
+
+  strcpy(sqlDeviceName, deviceName);
+
+  /* Get storage authorization configuration for specified device */
+  exec sql select trim(T ' ' from sasvr), int(saport), trim(T ' ' from sauid),
+    sapwd into :hostName, :port, :node, :password from mstgaut
+    where sadev = :sqlDeviceName;
+
+  /* Decrypt password from storage authorization file */
+  memset(&decryptedPassword, ' ', sizeof(decryptedPassword));
+  decryptedPassword[sizeof(decryptedPassword)] = '\0';
+  memset(&apiError, 0, sizeof(apiError));
+  apiError.Bytes_Provided = sizeof(apiError);
+  DOCCRYPTO(DOC_OP_DECRYPT, decryptedPassword, password);
+  decryptedPassword[strcspn(decryptedPassword, " ")] = '\0';
+
+  memset(&initIn, 0, sizeof(dsmInitExIn_t));
+  memset(&initOut, 0, sizeof(dsmInitExOut_t));
+
+  memset(&apiApplVer,0x00,sizeof(dsmApiVersionEx));
+  apiApplVer.stVersion  = apiVersionExVer;
+  apiApplVer.version  = DSM_API_VERSION;
+  apiApplVer.release  = DSM_API_RELEASE;
+  apiApplVer.level    = DSM_API_LEVEL;
+  apiApplVer.subLevel = DSM_API_SUBLEVEL;
+
+  initIn.stVersion           = dsmInitExInVersion;
+  initIn.apiVersionExP       = &apiApplVer;
+  initIn.clientNodeNameP     = node;
+  initIn.clientOwnerNameP    = owner;
+  initIn.clientPasswordP     = decryptedPassword;
+  initIn.applicationTypeP    = "i5/OS";
+  initIn.configfile          = confFile;
+  sprintf(options, "-tcpserveraddress=%s -tcpport=%i", hostName, port);
+  initIn.options             = options;
+  initIn.userNameP           = userName;
+  initIn.userPasswordP       = userNamePswd;
+  initIn.dirDelimiter        = dirDelimiter;
+  initIn.useUnicode          = useUnicode;
+  initIn.bEncryptKeyEnabled  = encrypt;
+  initIn.encryptionPasswordP = encryptKey;
+
+  initOut.stVersion = dsmInitExOutVersion;
+
+  rc = dsmInitEx(handleP, &initIn, &initOut);
+
+  if (rc)
+  {
+    dsmTerminate(*handleP);
+    tsmSetLastError(*handleP, rc);
+  }
+
+  return rc;
+}
+
+void tsmTerminate(dsUint32_t handleP)
+{
+  short int rc;
+  rc = dsmTerminate(handleP);
+  return;
+}
+
+static void tsmSetLastError(dsUint32_t handle, short int errorCode)
+{
+  short int rc;
+  int i = 0;
+  memset(lastMessage, 0, sizeof(lastMessage));
+  if (!(rc = dsmRCMsg(handle, errorCode, lastMessage)))
+  {
+    while(lastMessage[i] != 0)
+    {
+      if (lastMessage[i] < 0x40)
+        lastMessage[i] = ' ';
+      i++;
+    }
+  }
+  return;
+}
+
+char *tsmGetLastError(void)
+{
+  return lastMessage;
+}
+
+short int tsmFree(char *deviceName, char *volume, freeSpace_t *freeSpace)
+{
+  dsUint32_t *handleP;
+  char *fs;
+  qryFSData qFSData;
+  dsInt16_t rc;
+  DataBlk qData;
+  qryRespFSData qRespFSData, *fsResp;
+  int i;
+
+  if (rc = tsmConnect(handleP, deviceName))
+    tsmSetLastError(*handleP, rc);
+
+  if (!rc)
+  {
+    fs = (char*)malloc(DSM_MAX_FSNAME_LENGTH + 1);
+    trimr(volume);
+    lcase(volume);
+    qFSData.stVersion = qryFSDataVersion;
+    qFSData.fsName = volume;
+    qRespFSData.stVersion = qryRespFSDataVersion;
+    if ((rc = dsmBeginQuery(*handleP, qtFilespace, (dsmQueryBuff *)&qFSData)))
+      tsmSetLastError(*handleP, rc);
+  }
+
+  if (!rc)
+  {
+    qData.stVersion = DataBlkVersion;
+    qData.bufferLen = sizeof(qryRespFSData);
+    qData.bufferPtr = (char *)&qRespFSData;
+    rc = dsmGetNextQObj(*handleP, &qData);
+    if (rc == DSM_RC_MORE_DATA) /* Don't need everything...skip more data */
+      rc = DSM_RC_OK;
+    else
+      tsmSetLastError(*handleP, rc);
+  }
+
+  if (!rc)
+    fsResp = (qryRespFSData *)qData.bufferPtr;
+
+  if (fs)
+    free(fs);
+
+  dsmEndQuery(*handleP);
+
+  tsmTerminate(*handleP);
+
+  return rc;
+}
+
+static void trimr(char *aString)
+{
+  int i;
+  i = strlen(aString) - 1;
+  while (i > 0 && aString[i] == ' ')
+    aString[i--] = 0;
+  return;
+}
+
+static void lcase(char *aString)
+{
+  int i = 0;
+  while (aString[i] != 0)
+    aString[i] = tolower(aString[i++]);
+  return;
+}
+

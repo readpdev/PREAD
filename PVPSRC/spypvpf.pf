@@ -1,0 +1,20 @@
+      *%METADATA                                                       *
+      * %TEXT SPYPVP Output file                                       *
+      *%EMETADATA                                                      *
+      **********
+      * SPYPVPF
+      **********
+      * One record per batch of images.  Indicates the date it
+      * 01-02-01 DLS NEW FILE
+      *
+     A                                      CCSID(65535)
+     A          R SPYPVPR
+
+     A            SPFLDR        10A         COLHDG('Folder')
+     A            SPFLIB        10A         COLHDG('Library')
+     A            SPCLASS       10          COLHDG('DocClass')
+     A            SPDOCID       10          COLHDG('Batch or Report ID')
+     A            SPPFIL        10A         COLHDG('Phys.File')
+     A            SPVOLN        12          COLHDG('Volume' 'Name')
+     A            SPERRN         7A         COLHDG('Error' 'Number')
+

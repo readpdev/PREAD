@@ -1,0 +1,21 @@
+      *%METADATA                                                       *
+      * %TEXT Notes Data File                                          *
+      *%EMETADATA                                                      *
+      **********
+      * MNOTDTA  Notes Data file
+      **********
+     A                                      CCSID(65535)
+     A          R NOTDTA
+     A            NABNUM        10A         COLHDG('Spy#' 'Batch#')
+     A            NABSEQ         9B 0       COLHDG('Batch' 'Seq.')
+     A            NAPAGN         9B 0       COLHDG('Page' 'Num.')
+     A            NANOTN         9B 0       COLHDG('Note' 'Num.')
+     A            NAREVI         9B 0       COLHDG('Revision' 'ID')
+     A            NANSEQ         9B 0       COLHDG('Note' 'Seq.')
+     A            NADATA      1024A         COLHDG('Note' 'Data')
+     A          K NABNUM
+     A          K NABSEQ
+     A          K NAPAGN
+     A          K NANOTN
+     A          K NAREVI
+     A          K NANSEQ

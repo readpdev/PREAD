@@ -1,0 +1,9 @@
+             PGM
+
+             RNM        OBJ('/home/pread/MIGRATE/R0000000101975010120230526/@000001100.MBR') NEWOBJ(@000005100.MBR)
+
+             CLRPFM     @000001100
+
+             RUNSQL     SQL('DELETE FROM MRPTDIR WHERE FILNAM = ''FEDTAX''') COMMIT(*NONE)
+
+             ENDPGM

@@ -1,0 +1,56 @@
+      *%METADATA                                                       *
+      * %TEXT Report Bundle Definitions                                *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * Physical file..... RBNDDEF - Report bundle Definition File
+      * Date created...... 04/11/94
+      *
+     A                                      UNIQUE
+     A          R BNDDEF
+     A            BNDLID        10          COLHDG('Bundle' 'I.D.')
+     A            BNDDES        40          COLHDG('Bundle Description')
+     A            BFORM         10          COLHDG('Bundle' 'Form')
+     A            BUDATA        10          COLHDG('Bundle' 'User Data')
+     A            BPRTFL        10          COLHDG('Bundle' 'Print' 'File')
+     A            BPRTLB        10          COLHDG('Bundle' 'PrtFil' 'Lib')
+     A            BPRTY          2          COLHDG('Bundle' 'Priority')
+     A            BBANID        10          COLHDG('Banner' 'Heading' 'ID')
+     A            BBAN#          3  0       COLHDG('Number' 'Banner' 'Pages')
+     A            BINSID        10          COLHDG('Bundle' 'Instruction' 'ID')
+     A            BSLSUM         1          COLHDG('Prt' 'Subscriber' 'Summry')
+     A            BPKSUM         1          COLHDG('Print' 'Packet' 'Summary')
+     A            BPAK#          3  0       COLHDG('Number' 'Packet' 'Pages')
+     A            BCMPLT        10          COLHDG('Bundle' 'Complete' 'Id')
+     A            BLSTDT         9B 0       COLHDG('Last' 'Bundled' 'Date')
+     A            BLSTTM         9B 0       COLHDG('Last' 'Bundled' 'Time')
+     A            BSNDMS         1          COLHDG('Send' 'Completed' 'Msg')
+     A            BMSGQ         10          COLHDG('Message' 'Queue')
+     A            BMSGQL        10          COLHDG('MsgQ' 'Library')
+     A            BEPGM         10          COLHDG('External' 'Pgm')
+     A            BEPGML        10          COLHDG('Ext. Pgm' 'Library')
+     A            BPRTOP        10          COLHDG('Bundle' 'Print' 'Option')
+     A            BBNDSC         6B 0       COLHDG('Print' 'Sched' 'Option')
+     A            BACCT         15          COLHDG('Accounting Code')
+     A            BSTMSX         2          COLHDG('Schedule' 'Time' 'Suffix')
+     A            BJNAM         10          COLHDG('Job' 'Name')
+     A            BJUSR         10          COLHDG('Job' 'User')
+     A            BJNUM          6          COLHDG('Job Number')
+     A            BOUTQ         10          COLHDG('Out Queue')
+     A            BOUTQL        10          COLHDG('OutQue' 'Library')
+     A            BSTAT          1          COLHDG('Bundle' 'Status')
+     A            BHOLD          1          COLHDG('Hold' 'After' 'Print')
+     A            BSAVE          1          COLHDG('Save' 'After' 'Print')
+     A            BLSTEX         1          COLHDG('Explode' 'Subsciberst')
+     A            BDJEB         10A         COLHDG('DJE Before')
+     A            BDJEA         10A         COLHDG('DJE After')
+     A            BCMBND         1A         COLHDG('Combined')
+     A            BNODE         17A         COLHDG('Node ID')
+     A            BSECPW        10A         COLHDG('Bundle' 'Password')
+     A            BTFRTY         1A         COLHDG('Transfer' 'Type')
+     A            BEADDR       128A         COLHDG('Email Addr/HFS Path')
+     A            BOPTYP        10A         COLHDG('Type of' 'Output')
+     A            BCMBML         1A         COLHDG('Combined' 'Email')
+
+     A          K BNDLID

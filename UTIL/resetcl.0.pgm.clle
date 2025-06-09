@@ -1,0 +1,26 @@
+             PGM
+
+             MONMSG     MSGID(CPF0000)
+
+             RMVLIBLE   LIB(SPYRLSPGM)
+             RMVLIBLE   LIB(SPYRLSDTA)
+
+             RNMOBJ     OBJ(SPYRLSDTA) OBJTYPE(*LIB) NEWOBJ(SPYRLSDTA0)
+             RNMOBJ     OBJ(SPYRLSPGM) OBJTYPE(*LIB) NEWOBJ(SPYRLSPGM0)
+             RNMOBJ     OBJ(SPYRSTDTA) OBJTYPE(*LIB) NEWOBJ(SPYRSTDTA0)
+
+             SBMJOB     CMD(DLTLIB LIB(SPYRLSDTA0)) JOB(DLTRLSDTA) +
+                          JOBQ(#UTL/PREAD)
+             SBMJOB     CMD(DLTLIB LIB(SPYRLSPGM0)) JOB(DLTRLSPGM) +
+                          JOBQ(#UTL/PREAD)
+             SBMJOB     CMD(DLTLIB LIB(SPYRSTDTA0)) JOB(DLTRSTDTA) +
+                          JOBQ(#UTL/PREAD)
+
+             SBMJOB     CMD(RSTLIB SAVLIB(PR704DTA) DEV(*SAVF) +
+                          SAVF(PREAD/PR704DTA)) JOB(RST704DTA) +
+                          JOBQ(#UTL/PREAD)
+             SBMJOB     CMD(RSTLIB SAVLIB(PR704OBJ) DEV(*SAVF) +
+                          SAVF(PREAD/PR704OBJ)) JOB(RST704OBJ) +
+                          JOBQ(#UTL/PREAD)
+
+             ENDPGM

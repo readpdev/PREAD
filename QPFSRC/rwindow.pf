@@ -1,0 +1,112 @@
+      *%METADATA                                                       *
+      * %TEXT Report Windowing Detail File                             *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RWINDOW  - Report Windowing Detail File   *
+     A* Date created......  2/13/93                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*         2/13/93    Ed Malley                                 *
+     A*         8/27/93    Dlm            Format change              *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R WINRC
+     A            WRNAM         10          TEXT('Report Name')
+     A                                      COLHDG('Report' 'Name')
+     A            WJNAM         10          TEXT('Job Name')
+     A                                      COLHDG('Job' 'Name')
+     A            WPNAM         10          TEXT('Program Name')
+     A                                      COLHDG('Prog' 'Name')
+     A            WUNAM         10          TEXT('User Name')
+     A                                      COLHDG('User' 'Name')
+     A            WUDAT         10          TEXT('User Data')
+     A                                      COLHDG('User' 'Data')
+     A            WUSER         10          TEXT('User')
+     A                                      COLHDG('User')
+     A            WENVNM        10          TEXT('Enviroment Name')
+     A                                      COLHDG('Enviroment' 'Name')
+     A            WESP1        256          TEXT('Enviro Save Part 1')
+     A                                      COLHDG('Enviro' 'Save' 'Part 1')
+     A            WESP2        256          TEXT('Enviro Save Part 2')
+     A                                      COLHDG('Enviro' 'Save' 'Part 2')
+     A            WESP3        256          TEXT('Enviro Save Part 3')
+     A                                      COLHDG('Enviro' 'Save' 'Part 3')
+     A            WESP4        256          TEXT('Enviro Save Part 4')
+     A                                      COLHDG('Enviro' 'Save' 'Part 4')
+     A            WESP5        256          TEXT('Enviro Save Part 5')
+     A                                      COLHDG('Enviro' 'Save' 'Part 5')
+     A            WESP6        256          TEXT('Enviro Save Part 6')
+     A                                      COLHDG('Enviro' 'Save' 'Part 6')
+     A            WESP7        256          TEXT('Enviro Save Part 7')
+     A                                      COLHDG('Enviro' 'Save' 'Part 7')
+     A            WESP8        256          TEXT('Enviro Save Part 8')
+     A                                      COLHDG('Enviro' 'Save' 'Part 8')
+     A          K WRNAM
+     A          K WJNAM
+     A          K WPNAM
+     A          K WUNAM
+     A          K WUDAT
+     A          K WUSER
+     A          K WENVNM
+      *
+      * Below is the make-up of the above 8 Environment fields.
+      *
+      *            1  99  Indicators 1-99                                 *IN(99
+      *        P 100 1010 Mode # 1. Normal viewing                        #AM
+      *                          2. Searching
+      *                          3. Windowing
+      *                          4. Searching with Index
+      *                          5. Form overlay
+      *          102 1020 Display columns                                 #DC
+      *          103 1030 Displat rows                                    #DR
+      *          104 1040 First full screen                               #FF
+      *        P 105 1060 Hold lines                                      #HL
+      *        P 107 1080 Horizontal scroll                               #HS
+      *        P 109 110  Code that dictates avail Fkeys                  #TS
+      *        P 111 1120 Vertical scroll                                 #VS
+      *        P 113 1140 Active  indow                                   AW
+      *        P 115 1180 Backwards scroll length                         BSL
+      *        P 119 1200 Copies                                          COPIES
+      *        B 121 1220 Display columns avail                           DISCOL
+      *        P 123 1240 Search end position                             ENDPOS
+      *          145 184  Find ?                                          FNDORI
+      *          185 224  Find ?                                          FNDORS
+      *        P 225 2260 From Column                                     FRMCOL
+      *        P 227 2300 From Page                                       FRMPAG
+      *        P 231 2340FSL                                              FSL
+      *          235 339  Hold page numbers                               HRP(15
+      *          340 384  Hold line numbers                               HRL(15
+      *          385 394  Index DB file                                   IDBFIL
+      *          395 404        member                                    INDMBR
+      *          405 413        file name                                 INFILE
+      *        P 414 4150       key length                                KEYLEN
+      *          416 555  Record numbers per line                         LNF(20
+      *        P 556 5570 Number of windows                               NUMWND
+      *          558 567 Op file path                                     OPTFIL
+      *          568 577  Output file                                     OUTFIL
+      *          578 587  Output Library                                  OUTFLB
+      *          588 597  Output Form                                     OUTFRM
+      *          598 607  Output Queue                                    OUTQ
+      *          608 617  Output Queue Library                            OUTQLB
+      *        P 618 6190 Search argument                                 PATLEN
+      *        B 620 6230 Attr pointer                                    PLCSFA
+      *          624 633  Spy Printer                                     PRINTR
+      *          634 634  Print capable                                   PRTCAP
+      *          635 644  Spl File Name                                   RPTNAM
+      *          645 654  User Data                                       RPTUD
+      *          655 6640 Folder RRN                                      RR
+      *          665 665  Search direction                                SCHDIR
+      *        P 666 6670 Screen size                                     SCNSIZ
+      *        P 668 6690 String length                                   STRLEN
+      *        P 670 6710 String start position                           STRPOS
+      *        P 672 6730 To column                                       TOCOL
+      *        P 674 6770 To page                                         TOPAGE
+      *          678 687  Index library                                   WQLIBN
+      *          688 697  Writer                                          WRITER
+      *          698 895  Window start column                             WSC(66
+      *          8961093  Window width                                    WW(66)
+      *         10941094  Search ignors case                              XLATE
+      *         10951349  Hide lines

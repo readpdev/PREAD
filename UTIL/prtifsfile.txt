@@ -1,0 +1,10 @@
+Create an outq.
+CRTOUTQ OUTQ(MYLIB/MYOUTQ) RMTSYS(*INTNETADR) RMTPRTQ('raw') AUTOSTRWTR(1)
+CNNTYPE(*IP) TRANSFORM(*NO) INTNETADR(X.X.X.X) DESTOPT(XAIX) SEPPAGE(*NO)
+
+Create a print file.
+CRTPRTF FILE(MYLIB/PRINTFILE) DEVTYPE(*USERASCII) OUTQ(MYLIBRARY/MYOUTPUTQUEUE)
+
+Use QShell to send the file to the outq.
+QSH CMD('cat -c [IFS_FILE_PATH] | Rfile -wbQ -c "ovrprtf qprint outq(mylibrary/myoutputqueue) devtype(*userascii)" q
+print')

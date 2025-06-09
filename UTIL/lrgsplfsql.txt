@@ -1,0 +1,10 @@
+H QM4 05 Q 01 E V W E R 01 03 10/01/04 13:40
+V 1001 050 Source for quering file LRGSLPF
+select substr(srcdta,1,10) as SpoolFile, substr(srcdta,12,10) as
+JobName, substr(srcdta,23,10) as UserName, substr(srcdta,34,6) as
+JobNbr, substr(srcdta,41,6) as SpoolNbr, substr(srcdta,48,10) as
+Type,                                   substr(srcdta,73,10) as
+Total_Pages, substr(srcdta,84,10) as OutQ, substr(srcdta,95,10) as
+OutQ_Lib, substr(srcdta,106,10) as Size, substr(srcdta,117,10) as
+Last_Accessed
+from lrgsplf order by Size desc

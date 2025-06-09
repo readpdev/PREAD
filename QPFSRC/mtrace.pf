@@ -1,0 +1,24 @@
+      *%METADATA                                                       *
+      * %TEXT Error Log File                                           *
+      *%EMETADATA                                                      *
+      * CRTOPT SIZE(*NOMAX)
+
+      * MTRACE  - Magellan Trace file
+      *
+      *  1-11-05 GT  Change TCDATE and TCTIME to timestamp field.
+      *              Change key fields for efficiency
+      *  3-19-99 JJF Remove UNIQUEness of key
+      *  3-25-96 JJF New file
+      *
+     A                                      CCSID(65535)
+     A          R TRACE
+     A            TCDTTM          Z         COLHDG('Date/Time')
+     A            TCSEQ          3P 0       COLHDG('Seq')
+     A            TCNODE        17          COLHDG('Node')
+     A            TCPROG        10          COLHDG('Program')
+     A            TCMSGI         7          COLHDG('Msg ID')
+     A            TCTEXT        80          COLHDG('Msg text')
+
+     A          K TCNODE
+     A          K TCDTTM
+     A          K TCSEQ

@@ -1,0 +1,30 @@
+      /*%METADATA                                                     */
+      /* %TEXT Send Saved Object to another system                    */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&SERVER &PASSWORD &USER &OBJECT +
+                          &LIBRARY &OBJTYPE)
+
+             DCL        VAR(&OBJECT) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OBJTYPE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SERVER) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&USER) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PASSWORD) TYPE(*CHAR) LEN(10)
+
+             CLRSAVF    FILE(PREAD/PRSAVF)
+             SAVOBJ     OBJ(&OBJECT) LIB(&LIBRARY) DEV(*SAVF) +
+                          OBJTYPE(&OBJTYPE) SAVF(PRSAVF) +
+                          TGTRLS(V5R3M0) UPDHST(*NO)
+
+             IF         COND(&USER *EQ '*CURRENT') THEN(DO)
+             RTVJOBA    USER(&USER)
+             ENDDO
+
+             DLTF       FILE(PREAD/FTPOUT)
+             FTPJOB/FTPJOB SERVER(&SERVER) USERID(&USER) +
+                          PASSWORD(&PASSWORD) +
+                          OUTPUTMBR(PREAD/FTPOUT/FTPOUT) +
+                          FTPCMDS(bin 'put pread/prsavf +
+                          pread/prsavf' quit)
+
+             ENDPGM

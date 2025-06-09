@@ -1,0 +1,7 @@
+             PGM
+
+             QSH        CMD('mv /creditfile/archive/*.* /creditfile/.')
+
+             DLTF       FILE(CREDAPPLOG)
+
+             ENDPGM

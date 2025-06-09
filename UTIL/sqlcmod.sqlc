@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <string.h>
+#include<stdlib.h>
+#include<qusec.h>
+#include<qmhrtvm.h>
+exec sql include sqlca;
+#define MAXMSG 256
+
+exec sql begin declare section;
+  char stmt[5000];
+exec sql end declare section;
+
+typedef _Packed struct Qmh_Rtvm_RTVM0100_my
+{
+   int  Bytes_Return;
+   int  Bytes_Available;
+   int  Length_Message_Returned;
+   int  Length_Message_Available;
+   int  Length_Help_Returned;
+   int  Length_Help_Available;
+   char Message[MAXMSG];
+ /*char Message_Help[];*/    /* Varying length                 */
+} Qmh_Rtvm_RTVM0100_my_t;
+
+int runSQL(char *sqlStmt)
+{
+
+  Qmh_Rtvm_RTVM0100_my_t rtvm0100;
+  Qus_EC_t qusec;
+  char msgid[7];
+  char sqlmsgf[20] = "QSQLMSG   *LIBL     ";
+  char formattedMsg[MAXMSG];
+  int rc = 0;
+
+  strcpy(stmt, sqlStmt);
+  exec sql execute immediate :stmt;
+  if (sqlca.sqlcode != 0)
+  {
+    sprintf(msgid, "%s%.4d", "SQL", abs(sqlca.sqlcode));
+    memset(&qusec, 0, sizeof(qusec));
+    qusec.Bytes_Provided = sizeof(qusec);
+    QMHRTVM(&rtvm0100, sizeof(rtvm0100), "RTVM0100", msgid, sqlmsgf,
+      sqlca.sqlerrmc, sqlca.sqlerrml, "*YES      ", "*NO       ", &qusec);
+    if (qusec.Bytes_Available == 0)
+    {
+      memset(&formattedMsg, 0, sizeof(formattedMsg));
+      memcpy(&formattedMsg,&rtvm0100.Message, rtvm0100.Length_Message_Returned);
+      printf("Error processing SQL: %s", formattedMsg);
+      rc = 1;
+    }
+    else
+    {
+      printf("Error on QMHRTVM: %.7s", qusec.Exception_Id);
+      rc = 1;
+    }
+  }
+  return rc;
+}

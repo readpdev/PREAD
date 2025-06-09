@@ -1,0 +1,16 @@
+      /*%METADATA                                                     */
+      /* %TEXT Test Cruise Control Build Command                      */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&ARGS)
+
+             DCL        VAR(&ARGS) TYPE(*CHAR) LEN(50)
+
+             CHKOBJ     OBJ(PREAD/TESTCC) OBJTYPE(*DTAARA)
+             MONMSG     MSGID(CPF9801) EXEC(CRTDTAARA DTAARA(PREAD/testcc) +
+                          TYPE(*CHAR) LEN(50))
+
+             CHGVAR     VAR(&ARGS) VALUE('build failure')
+
+             CHGDTAARA  DTAARA(PREAD/TESTCC) VALUE(&ARGS)
+
+             ENDPGM

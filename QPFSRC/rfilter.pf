@@ -1,0 +1,34 @@
+      *%METADATA                                                       *
+      * %TEXT Report Filter Table                                      *
+      *%EMETADATA                                                      *
+      *
+      * Physical file..... RFILTER  - Report Filter
+      * Date created......  2/15/93
+
+      *  2-15-93 EdM
+      *  8-04-94 Dlm Format change
+
+     A                                      UNIQUE
+     A          R FILTRC
+K1   A            FLRNAM        10A         COLHDG('Report' 'Name')
+K2   A            FLJNAM        10A         COLHDG('Job' 'Name')
+K3   A            FLPNAM        10A         COLHDG('Prog' 'Name')
+K4   A            FLUNAM        10A         COLHDG('User' 'Name')
+K5   A            FLUDAT        10A         COLHDG('User' 'Data')
+K6   A            FLINE#         3B 0       COLHDG('Line' 'of' 'Data')
+K7   A            FLOVST         3B 0       COLHDG('Overstrike' 'Line')
+K8   A            FLCOL#         3B 0       COLHDG('Column' 'of' 'Data')
+     A            FL#BYT         3B 0       COLHDG('Number' 'of' 'Bytes')
+     A            FLRPLT         5A         COLHDG('Print' 'Replace' 'Type')
+
+     A            FLCRIT        75A         COLHDG('Line' 'Contains')
+     A            FLRPDT        75A         COLHDG('Replace' 'Data')
+
+     A          K FLRNAM
+     A          K FLJNAM
+     A          K FLPNAM
+     A          K FLUNAM
+     A          K FLUDAT
+     A          K FLINE#
+     A          K FLOVST
+     A          K FLCOL#

@@ -1,0 +1,14 @@
+      /*%METADATA                                                     */
+      /* %TEXT Repository Manager Service Program                     */
+      /*%EMETADATA                                                    */
+/*                                                                            */
+/* 11/01/07 PLR ADDED MRVLDHSH MODULE FOR VALIDATION OF HASH VALUES. T6612    */
+/*                                                                            */
+             STRPGMEXP  PGMLVL(*CURRENT)
+             EXPORT     SYMBOL(DLTOBJ)
+             EXPORT     SYMBOL(GETLASTHASHMSG)
+             EXPORT     SYMBOL(VALIDATEHASH)
+             ENDPGMEXP
+             STRPGMEXP  PGMLVL(*PRV)
+             EXPORT     SYMBOL(DLTOBJ)
+             ENDPGMEXP

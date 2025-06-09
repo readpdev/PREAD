@@ -1,0 +1,24 @@
+      *%METADATA                                                       *
+      * %TEXT Report Bundle Banners                                    *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RBNDBAN - Report Banner Definition File   *
+     A* Date created...... 04/12/94                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R BNDBAN
+     A            RBANID        10          TEXT('Banner ID')
+     A                                      COLHDG('Banner' 'I.D.')
+     A            RBANL1        10          TEXT('Banner Line 1')
+     A                                      COLHDG('Banner' 'Line 1')
+     A            RBANL2        10          TEXT('Banner Line 2')
+     A                                      COLHDG('Banner' 'Line 2')
+     A            RBANL3        10          TEXT('Banner Line 3')
+     A                                      COLHDG('Banner' 'Line 3')
+     A          K RBANID

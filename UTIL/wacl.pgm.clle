@@ -1,0 +1,6 @@
+      /*%METADATA                                                     */
+      /* %TEXT Work active job                                        */
+      /*%EMETADATA                                                    */
+pgm
+wrkactjob seq(*cpupct)
+endpgm

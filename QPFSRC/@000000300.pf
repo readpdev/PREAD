@@ -1,0 +1,39 @@
+      *%METADATA                                                       *
+      * %TEXT Work file for building report SpyLink                    *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... @000000300                                *
+     A* Date created......  01/19/00                                 *
+     A*                                                              *
+     A****************************************************************
+     A          R LNKNDEX
+     A            LDXNAM        10A         TEXT('REPORT ID')
+     A                                      COLHDG('Report Id')
+     A            LXSEQ          9  0       TEXT('Sequence No')
+     A                                      COLHDG('Sequence #')
+     A            LXIV1        030A         TEXT('Link value 1')
+     A                                      COLHDG('Link value1')
+     A            LXIV2        013A         TEXT('Link value 2')
+     A                                      COLHDG('Link value2')
+     A            LXIV3        008A         TEXT('Link value 3')
+     A                                      COLHDG('Link value3')
+     A            LXIV4        012A         TEXT('Link value 4')
+     A                                      COLHDG('Link value4')
+     A            LXIV5        001A         TEXT('Link value 5')
+     A                                      COLHDG('Link value5')
+     A            LXIV6        001A         TEXT('Link value 6')
+     A                                      COLHDG('Link value6')
+     A            LXIV7        001A         TEXT('Link value 7')
+     A                                      COLHDG('Link value7')
+     A            LXIV8          8A         TEXT('Link value 8')
+     A                                      COLHDG('Rpt Creation date')
+     A            LXTYP          1A         TEXT('Record Type')
+     A                                      COLHDG('Record Type')
+     A            LXSPG          9  0       TEXT('Starting Page')
+     A                                      COLHDG('Starting pg')
+     A            LXEPG          9  0       TEXT('Ending Page')
+     A                                      COLHDG('Ending pg ')
+     A          K LDXNAM
+     A          K LXSEQ

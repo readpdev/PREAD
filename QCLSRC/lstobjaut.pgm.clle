@@ -1,0 +1,30 @@
+             PGM        PARM(&LIBRARY &OBJECT &TYPE)
+
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OBJECT) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TYPE) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&RECORDS) TYPE(*CHAR) LEN(10) +
+                          VALUE('*REPLACE')
+
+             DCLF       FILE(QADSPOBJ)
+
+             DSPOBJD    OBJ(&LIBRARY/&OBJECT) OBJTYPE(&TYPE) +
+                          OUTPUT(*OUTFILE) OUTFILE(QTEMP/QADSPOBJ)
+
+             OVRDBF     FILE(QADSPOBJ) TOFILE(QTEMP/QADSPOBJ)
+
+ LOOP:       RCVF
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ENDLOOP))
+
+             DSPOBJAUT  OBJ(&ODLBNM/&ODOBNM) OBJTYPE(&ODOBTP) +
+                          OUTPUT(*OUTFILE) OUTFILE(QTEMP/LSTOBJAUT) +
+                          OUTMBR(*FIRST &RECORDS)
+
+             CHGVAR     VAR(&RECORDS) VALUE('*ADD')
+
+             GOTO       CMDLBL(LOOP)
+
+ ENDLOOP:    DSPPFM     FILE(QTEMP/LSTOBJAUT)
+
+             ENDPGM

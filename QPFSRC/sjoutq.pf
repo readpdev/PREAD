@@ -1,0 +1,21 @@
+      *%METADATA                                                       *
+      * %TEXT SpoolJoiner OutQ/DtaQ                                    *
+      *%EMETADATA                                                      *
+      *----------------------------------------------------------------
+      *  SJOUTQ      SpoolJoiner  OutQ/DtaQ
+      *----------------------------------------------------------------
+      *  Records the name of a "customer" Data Que assigned to an OutQ
+      *  before we changed it to SPLJNR.  We retransmit every message
+      *  sent to SPLJNR to the DataQ identified in this file.
+      *----------------------------------------------------------------
+      *
+     A                                      UNIQUE
+     A          R SJOUTQR                   TEXT('OutQ/DataQ')
+
+     A            JOOUTQ        10          COLHDG('OutQ')
+     A            JOOUTL        10          COLHDG('OutQ lib')
+     A            JODTAQ        10          COLHDG('DataQ')
+     A            JODTAL        10          COLHDG('DataQ lib')
+
+     A          K JOOUTQ
+     A          K JOOUTL

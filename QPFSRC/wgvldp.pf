@@ -1,0 +1,44 @@
+      *%METADATA                                                       *
+      * %TEXT Web Security - Index Validity Check                      *
+      *%EMETADATA                                                      *
+      *********--------
+      * WGVLDP  WEB Security - Index Validity Check
+      *********--------
+
+     A                                      UNIQUE
+     A          R WGVLDF                    TEXT('WEB Index Validity Check')
+      *           ******
+      *
+     A            WGAPP         10          COLHDG('WEB' 'Application')
+     A            WGUSR         20          COLHDG('User')
+     A            WGTYP         10          COLHDG('Access' 'Type')
+     A            WGOBJ         10          COLHDG('Object' 'Name')
+     A            WGLIB         10          COLHDG('Object' 'Library')
+      *
+     A            WGIDX         10          COLHDG('Index' 'Name')
+      *
+     A            WGSEQ          3  0       COLHDG('Seq#') EDTCDE(Z)
+      *
+     A            WGOR           1          COLHDG('O=OR' 'A=AND')
+     A            WGCHK          1          COLHDG('Check' 'Type')
+      *
+     A            WGVOBJ        10          COLHDG('Validity' 'Object')
+     A            WGVLIB        10          COLHDG('Validity' 'Library')
+     A            WGVMBR        10          COLHDG('Validity' 'DB Member')
+      *
+     A            WGKY1         30          COLHDG('Keyvalue 1')
+     A            WGKY2         30          COLHDG('Keyvalue 2')
+     A            WGKY3         30          COLHDG('Keyvalue 3')
+     A            WGKY4         30          COLHDG('Keyvalue 4')
+     A            WGKY5         30          COLHDG('Keyvalue 5')
+     A            WGKY6         30          COLHDG('Keyvalue 6')
+     A            WGKY7         30          COLHDG('Keyvalue 7')
+      *
+     A          K WGAPP
+     A          K WGUSR
+     A          K WGOBJ
+     A          K WGLIB
+     A          K WGTYP
+     A          K WGIDX
+     A          K WGSEQ
+      *

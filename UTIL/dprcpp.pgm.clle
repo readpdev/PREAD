@@ -1,0 +1,19 @@
+      /*%METADATA                                                     */
+      /* %TEXT Display program references                             */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&OBJECT &PROGRAMLIB)
+
+             DCL        VAR(&OBJECT) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PROGRAMLIB) TYPE(*CHAR) LEN(10)
+
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ENDCPP))
+
+             DSPPGMREF  PGM(&PROGRAMLIB/*ALL) OUTPUT(*OUTFILE) +
+                          OBJTYPE(*ALL) OUTFILE(QTEMP/PGMREF) +
+                          OUTMBR(*FIRST *REPLACE)
+
+             CALL       PGM(DPRC) PARM(&OBJECT)
+
+             DLTF       FILE(QTEMP/PGMREF)
+
+ ENDCPP:     ENDPGM

@@ -1,0 +1,18 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Note Text                                     *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A                                      UNIQUE
+     A          R WVNOTF                    TEXT('Note Text')
+      *
+      **************************************************************
+      *
+/4283 * 07-20-01 PLR BASE36 COUNTER CONVERSION.
+      *
+/4283A            FINNR         10          COLHDG('Note' 'Number')
+     A            FIZNR          5  0       COLHDG('Text' 'Number')
+     A                                      EDTCDE(Z)
+     A            FITXT         40          COLHDG('Text')
+      *
+     A          K FINNR
+     A          K FIZNR

@@ -1,0 +1,93 @@
+      /*%METADATA                                                     */
+      /* %TEXT Restore a spooled file saved with GETSPLF              */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&DBNAME &DBMBR &OUTQ &USER)
+
+/* Parameters                                                                 */
+             DCL        VAR(&DBNAME) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&DBMBR) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OUTQ) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&USER) TYPE(*CHAR) LEN(10)
+/* variables for Messages                                                     */
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(200)
+             DCL        VAR(&MSGF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGFLIB) TYPE(*CHAR) LEN(10)
+/* variables for APIs                                                         */
+             DCL        VAR(&RCV_VAR) TYPE(*CHAR) LEN(3301)
+             DCL        VAR(&RCV_LEN) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&QUSEC) TYPE(*CHAR) LEN(200)
+/* Misc. variables                                                            */
+             DCL        VAR(&FIL_EXIST) TYPE(*CHAR) LEN(1) VALUE('Y')
+             DCL        VAR(&MBR_EXIST) TYPE(*CHAR) LEN(1) VALUE('N')
+
+/* Set up global message handling                                             */
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(GOTO +
+                          CMDLBL(RCVERRMSG))
+
+/* set length for API return value                                            */
+             CHGVAR     VAR(%BINARY(&RCV_LEN)) VALUE(300)
+
+/* check for existence of file and member                                     */
+             CALL       PGM(QUSRMBRD) PARM(&RCV_VAR &RCV_LEN +
+                          'MBRD0100' &DBNAME &DBMBR '0')
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(RCVERRMSG))
+
+/* get actual member name if using *FIRST                                     */
+             IF         COND(&DBMBR *EQ '*FIRST') THEN(CHGVAR +
+                          VAR(&DBMBR) VALUE(%SST(&RCV_VAR 29 10)))
+
+/* Retreive actual outq if user speicified *JOB                               */
+             IF         COND(%SST(&OUTQ 1 4) *EQ '*JOB') THEN(DO)
+             CALL       PGM(QUSRJOBI) PARM(&RCV_VAR &RCV_LEN +
+                          'JOBI0300' '*' ' ')
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(RCVERRMSG))
+             CHGVAR     VAR(&OUTQ) VALUE(%SST(&RCV_VAR 85 20))
+             ENDDO
+
+/* check for existence of outq                                                */
+             CALL       PGM(QSPROUTQ) PARM(&RCV_VAR &RCV_LEN +
+                          'OUTQ0100' &OUTQ &QUSEC)
+             IF         COND(%SST(&QUSEC 9 7) *NE '       ') THEN(DO)
+             CHGVAR     VAR(&MSGID) VALUE(%SST(&QUSEC 9 7))
+             CHGVAR     VAR(&MSGDTA) VALUE(%SST(&QUSEC 17 183))
+             SNDPGMMSG  MSGID(&MSGID) MSGF(QCPFMSG) MSGDTA(&MSGDTA)
+             GOTO       CMDLBL(RCVERRMSG)
+             ENDDO
+
+/* get actual library if using *LIBL for Outq library                         */
+             IF         COND(%SST(&OUTQ 11 10) *EQ '*LIBL') +
+                          THEN(CHGVAR VAR(%SST(&OUTQ 11 10)) +
+                          VALUE(%SST(&RCV_VAR 19 10)))
+
+/* override input file                                                        */
+             OVRDBF     FILE(INPUT) TOFILE(%SST(&DBNAME 11 +
+                          10)/%SST(&DBNAME 1 10)) MBR(&DBMBR)
+
+/* call program to write to Outq                                              */
+             CALL       PGM(CHGSPLFR) PARM(&DBNAME &OUTQ &DBMBR +
+                          &USER &MSGID &MSGDTA)
+             IF         COND(&MSGID *NE '       ') THEN(DO)
+             SNDPGMMSG  MSGID(&MSGID) MSGF(PSCON) MSGDTA(&MSGDTA)
+             GOTO       CMDLBL(RCVERRMSG)
+             ENDDO
+
+/* send message for successful completion                                     */
+             SNDPGMMSG  MSGID(CMD0325) MSGF(PSCON) MSGDTA(&DBMBR || +
+                          %SST(&DBNAME 1 10) || %SST(&DBNAME 11 10) +
+                          || %SST(&OUTQ 1 10))
+
+/* pass messages up stack                                                     */
+ RCVERRMSG:  RCVMSG     MSGTYPE(*DIAG) MSGDTA(&MSGDTA) MSGID(&MSGID) +
+                          MSGF(&MSGF) SNDMSGFLIB(&MSGFLIB)
+             IF         COND(&MSGID *NE ' ') THEN(DO)
+               SNDPGMMSG  MSGID(&MSGID) MSGF(&MSGFLIB/&MSGF) +
+                            MSGDTA(&MSGDTA) MSGTYPE(*DIAG)
+               GOTO       CMDLBL(RCVERRMSG)
+             ENDDO
+             RCVMSG     MSGTYPE(*EXCP) MSGDTA(&MSGDTA) MSGID(&MSGID) +
+                          MSGF(&MSGF) SNDMSGFLIB(&MSGFLIB)
+             IF         COND(&MSGID *NE ' ') THEN(SNDPGMMSG +
+                          MSGID(&MSGID) MSGF(&MSGFLIB/&MSGF) +
+                          MSGDTA(&MSGDTA) MSGTYPE(*ESCAPE))
+             ENDPGM

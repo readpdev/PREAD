@@ -1,0 +1,18 @@
+      *%METADATA                                                       *
+      * %TEXT Folder Library Control File                              *
+      *%EMETADATA                                                      *
+      * MLIBCTL  Library Control file
+      *          For systems with multiple SpyView program libraries,
+      *          this file assures that each folder library
+      *          is used by one and only one program library.
+      *          Also contains *CTL and *DEP library name records
+      *
+      *  2-11-98 JJF New file
+      *
+     A                                      UNIQUE
+     A          R LIBCTL
+K1   A            FCFLDL        10A         COLHDG('Folder' 'Library')
+K2   A            FCPGML        10A         COLHDG('Program' 'Library')
+
+     A          K FCFLDL
+     A          K FCPGML

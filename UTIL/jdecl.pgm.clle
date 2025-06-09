@@ -1,0 +1,9 @@
+             PGM
+
+             DCLF       FILE(JDE)
+             MONMSG     MSGID(CPF0000)
+
+LOOP:        SNDRCVF    RCDFMT(RECORD)
+             IF (&IN03 *NE '1') THEN(GOTO LOOP)
+
+             ENDPGM

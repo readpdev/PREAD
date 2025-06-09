@@ -1,0 +1,15 @@
+      *%METADATA                                                       *
+      * %TEXT Conversion Document Path Table                           *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... MCNVPTH   - Conversion Doc Path Table     *
+      * Date created......  1/28/99                                  *
+      *                                                              *
+      ****************************************************************
+     A                                      CCSID(65535)
+     A          R CNVPTH
+     A            CDPCDE         9P 0       COLHDG('Doc' 'Path' 'Code')
+     A            CDPNAM       128A         COLHDG('Doc' 'Path' 'Name')
+     A          K CDPCDE

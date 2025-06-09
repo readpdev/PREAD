@@ -1,0 +1,24 @@
+             PGM
+
+             DCL        VAR(&JOBTYPE) TYPE(*CHAR) LEN(1)
+
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(DONE))
+
+             RTVJOBA    TYPE(&JOBTYPE)
+             IF         COND(&JOBTYPE *EQ '1') THEN(DO)
+             SBMJOB     CMD(CALL PGM(PREAD/DSKINFCL)) JOB(DSKINF) +
+                          JOBQ(#UTL/PREAD)
+             GOTO       CMDLBL(DONE)
+             ENDDO
+
+             CPYF       FROMFILE(QUSRSYS/QAEZDISK) +
+                          TOFILE(QSYS/QAEZDISK) MBROPT(*REPLACE)
+
+             CLRPFM     FILE(QUSRSYS/QAEZDISK)
+
+             RTVDSKINF
+
+/*           OVRPRTF    FILE(QPQXPRTF) PAGESIZE(*N 132) */
+/*           STRQMQRY   QMQRY(PREAD/DSKINFQRY) OUTPUT(*PRINT) */
+
+ DONE:       ENDPGM

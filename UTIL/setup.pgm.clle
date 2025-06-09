@@ -1,0 +1,7 @@
+             PGM
+             CRTIMGCLG  IMGCLG(PRIMGCLG) DIR('/ifsoptical')
+             ADDIMGCLGE IMGCLG(PRIMGCLG) FROMFILE(*new) +
+                          TOFILE(PROPT01) REPLACE(*YES)
+             LODIMGCLG  IMGCLG(PRIMGCLG) DEV(OPTVRT01)
+             INZOPT     NEWVOL(PROPT01) DEV(OPTVRT01) CHECK(*NO)
+             ENDPGM

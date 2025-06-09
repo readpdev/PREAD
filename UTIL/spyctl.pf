@@ -1,0 +1,19 @@
+      *%METADATA                                                       *
+      * %TEXT SpyView Parameter Control File                           *
+      *%EMETADATA                                                      *
+      *                    Magellan Software
+      *
+      * Physical file..... SPYCTL
+      * Date created...... 12/09/96
+      *
+     A                                      UNIQUE
+     A          R SPYCTLF
+     A            CNAME         10          COLHDG('Parameter' 'Name')
+     A            CTYPE          2          COLHDG('Record' 'Type')
+     A            CKEY          10          COLHDG('Record' 'Key')
+     A            CMSGID         7          COLHDG('MSG ID')
+     A            CTEXT        250          COLHDG('Control' 'Text')
+     A
+     A          K CNAME
+     A          K CTYPE
+     A          K CKEY

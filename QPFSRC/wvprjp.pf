@@ -1,0 +1,13 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Project-Header                                *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A                                      UNIQUE
+     A          R WVPRJF                    TEXT('Project Header')
+      *
+      **************************************************************
+      *
+     A            FBPRJ         10          COLHDG('Project')
+     A            FBDESC        40          COLHDG('Description')
+      *
+     A          K FBPRJ

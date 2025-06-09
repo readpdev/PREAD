@@ -1,0 +1,62 @@
+      /*%METADATA                                                     */
+      /* %TEXT Install v7r3 license keys                              */
+      /*%EMETADATA                                                    */
+             pgm
+
+             ADDLICKEY  PRDID(5770ST1) LICTRM(V7R3M0) FEATURE(5050) +
+                          SERIAL(*LOCAL) PRCGRP(P10) LICKEY(2FC737 AE27F7 +
+                          437A01) USGLMT(*NOMAX) EXPDATE(06052019) +
+                          VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770SS1) LICTRM(V7) FEATURE(5052) +
+                          SERIAL(*LOCAL) PRCGRP(*ANY) LICKEY(86A4D1 A6932B +
+                          4C6702) USGLMT(30) EXPDATE(06052019) +
+                          VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770AF1) LICTRM(V7R2M0) FEATURE(5050) +
+                          SERIAL(*LOCAL) PRCGRP(P10) LICKEY(683970 C226EB +
+                          084401) USGLMT(*NOMAX) EXPDATE(07222017) +
+                          VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770WDS) LICTRM(V7R3M0) FEATURE(5103) +
+                          SERIAL(*LOCAL) PRCGRP(P10) LICKEY(6DF3F2 3E882B +
+                          7DBD01) USGLMT(3) EXPDATE(06052019) VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770WDS) LICTRM(V7R3M0) FEATURE(5101) +
+                          SERIAL(*LOCAL) PRCGRP(P10) LICKEY(1C519C 095E1E +
+                          48E801) USGLMT(3) EXPDATE(06052019) VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5761CM1) LICTRM(V6R1M0) FEATURE(5050) +
+                          SERIAL(*LOCAL) PRCGRP(P10) LICKEY(FB2CC3 DAEECA +
+                          C88101) USGLMT(*NOMAX) EXPDATE(07222017) +
+                          VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770SS1) LICTRM(V7R3M0) FEATURE(5050) +
+                          SERIAL(*LOCAL) PRCGRP(*ANY) LICKEY(2B5803 2A7B72 +
+                          758B01) USGLMT(*NOMAX) EXPDATE(06052019) +
+                          VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770WDS) LICTRM(V7R3M0) FEATURE(5102) +
+                          SERIAL(*LOCAL) PRCGRP(P10) LICKEY(32787E 07A8E4 +
+                          13A801) USGLMT(3) EXPDATE(06052019) VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770QU1) LICTRM(V7R3M0) FEATURE(5050) +
+                          SERIAL(*LOCAL) PRCGRP(*ANY) LICKEY(E850D4 C719B5 +
+                          ECF901) USGLMT(*NOMAX) EXPDATE(06052019) +
+                          VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770XW1) LICTRM(V7R3M0) FEATURE(5101) +
+                          SERIAL(*LOCAL) PRCGRP(P10) LICKEY(145BB2 82782C +
+                          AA2A01) USGLMT(*NOMAX) EXPDATE(06052019) +
+                          VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770SS1) LICTRM(V7) FEATURE(5051) +
+                          SERIAL(*LOCAL) PRCGRP(*ANY) LICKEY(E3FD3E D6527F +
+                          B89C02) USGLMT(8) EXPDATE(06052019) VNDDTA(*NONE)
+
+             ADDLICKEY  PRDID(5770SS1) LICTRM(V7R3M0) FEATURE(5103) +
+                          SERIAL(*LOCAL) PRCGRP(*ANY) LICKEY(6D2ED4 D0ABF3 +
+                          14FF01) USGLMT(*NOMAX) EXPDATE(06052019) +
+                          VNDDTA(*NONE)
+
+             endpgm

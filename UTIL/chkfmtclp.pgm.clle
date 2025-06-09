@@ -1,0 +1,28 @@
+      /*%METADATA                                                     */
+      /* %TEXT Check format level test program                        */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&RLSLIB &RSTLIB &OLDRLS &NEWRLS)
+
+             DCL        VAR(&FILE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RLSLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RSTLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OLDRLS) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&NEWRLS) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RTN) TYPE(*CHAR) LEN(1)
+
+             DSPFD      FILE(&RSTLIB/*ALL) TYPE(*BASATR) +
+                          OUTPUT(*OUTFILE) FILEATR(*PF *LF) +
+                          OUTFILE(QTEMP/QAFDBASI)
+
+             OVRDBF     FILE(QAFDBASI) TOFILE(QTEMP/QAFDBASI)
+             OVRPRTF    FILE(QSYSPRT) CTLCHAR(*FCFC)
+
+             CALL       PGM(CHKFMTLVLR) PARM(&RLSLIB &RSTLIB &OLDRLS +
+                          &NEWRLS)
+
+             DLTOVR     FILE(QAFDBASI)
+             DLTOVR     FILE(QSYSPRT)
+
+             DLTF       FILE(QTEMP/QAFDBASI)
+
+ENDPGM

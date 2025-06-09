@@ -1,0 +1,15 @@
+CPYTSTDTA.PGM: cpytstdta.pgm.clle
+BKFLDRCL0.PGM: bkfldrcl0.pgm.clle
+COMPILE.PGM: compile.pgm.clle
+CRTBLDSRC.PGM: crtbldsrc.pgm.clle
+CRTBLDSRC0.PGM: crtbldsrc0.pgm.clle
+DOCDLTPVP.PGM: docdltpvp.pgm.clle
+GENDDLSRC.PGM: genddlsrc.pgm.clle
+EXPOBJSPY.PGM: expobjspy.pgm.clle
+FFXIMG1A.PGM: ffximg1a.pgm.clle
+LSTOBJAUT.PGM: lstobjaut.pgm.clle
+GENDDLSRCV.PGM: genddlsrcv.pgm.clle
+MAG402.0.PGM: mag402.0.pgm.clle
+RSTIMGCL.0.PGM: rstimgcl.0.pgm.clle
+RSTRPTCL0.PGM: rstrptcl0.pgm.clle
+MAG8702CL.PGM: mag8702cl.pgm.clle

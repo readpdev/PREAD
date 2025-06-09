@@ -1,0 +1,11 @@
+      /*%METADATA                                                     */
+      /* %TEXT Find files > 5MB on ifs                                */
+      /*%EMETADATA                                                    */
+pgm
+
+             RMVLNK     OBJLNK('/HOME/PREAD/FIND')
+             MONMSG     MSGID(CPFA0A9)
+             SBMJOB     CMD(QSH CMD('find / -ls -size +5000000 >> +
+                          /home/pread/find')) JOB(FIND)
+
+endpgm

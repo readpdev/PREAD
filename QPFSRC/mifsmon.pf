@@ -1,0 +1,38 @@
+      *%METADATA                                                       *
+      * %TEXT IFS Monitor Extensions                                   *
+      *%EMETADATA                                                      *
+     A**************************************************************
+     A**    MIFSEXT                                               **
+     A**                                                          **
+     A**    SPY IFS - MONITOR EXTENSIONS                          **
+     A**                                                          **
+     A**    KEY : IFEXT                                           **
+     A**                                                          **
+     A**************************************************************
+     A                                      UNIQUE
+     A                                      CCSID(65535)
+     A          R IFSMONF                   TEXT('SpyView IFS Monitor Def.')
+     A            IFDEF         10          COLHDG('Definition' 'Name')
+     A            IFDESC        40          COLHDG('Description')
+     A            IFACT          1          COLHDG('Active' 'Y/N')
+     A            IFPATH       256          COLHDG('IFS Path')
+     A            IFSUB          1          COLHDG('Subdirectories' 'Y/N')
+     A            IFMIN          5  0       COLHDG('Poll' 'Interval' 'Minute')
+     A                                      EDTCDE(Z)
+     A            IFTIM          4  0       COLHDG('Fix Poll' 'Time' 'HH:MM')
+     A                                      EDTWRD('  :  ')
+     A            IFDAY          7          COLHDG('Poll' 'Days of' 'Week')
+     A            IFMSGQ        10          COLHDG('Error' 'MSGQ')
+     A            IFMSGL        10          COLHDG('Error' 'MSGQ' 'LIB')
+     A*
+     A            IFNDAT         8  0       COLHDG('Date' 'Next' 'Transfer')
+     A                                      EDTWRD('    .  .  ')
+     A            IFNTIM         4  0       COLHDG('Time' 'Next' 'Transfer')
+     A                                      EDTWRD('  :  ')
+     A            IFLDAT         8  0       COLHDG('Date' 'Last' 'Transfer')
+     A                                      EDTWRD('    .  .  ')
+     A            IFLTIM         6  0       COLHDG('Time' 'Last' 'Transfer')
+     A                                      EDTWRD('  :  :  ')
+4979 A            IFPATMTH     256          COLHDG('IFS' 'Pattern')
+     A*
+     A          K IFDEF

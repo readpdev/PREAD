@@ -1,0 +1,23 @@
+      *%METADATA                                                       *
+      * %TEXT Document Revision Lock Table                             *
+      *%EMETADATA                                                      *
+      **********
+      * MCREVLCK  Content Revision Locks
+      **********
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R CREVLCK
+     A            CLREVID        9B 0       COLHDG('Revision' 'ID')
+     A            CLTYPE         9B 0       COLHDG('Lock' 'Type')
+      *           values: 201 = No lock present, document is NOT revisable.
+      *                   202 = No lock present, document IS revisable.
+      *                   203 = Revisions not allowed.
+      *                   204 = Read-only lock present.
+      *                   205 = Exclusive lock present.
+     A            CLUSER        10A         COLHDG('Lock' 'User' 'ID')
+     A            CLDATE         9B 0       COLHDG('Lock' 'Date')
+     A            CLTIME         9B 0       COLHDG('Lock' 'Time')
+     A            CLNODEID      32A         COLHDG('Lock' 'Node' 'ID')
+     A            CLWIPREV       9B 0       COLHDG('Work-In-Progress' 'RevID')
+     A            CLCOPATH     255A         COLHDG('Check-Out' 'Path')
+     A          K CLREVID

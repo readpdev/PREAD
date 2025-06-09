@@ -1,0 +1,3 @@
+select rtypid, lnkfil from rmaint left join rlnkdef on RRNAM =
+lRNAM and RJNAM = lJNAM and RPNAM = lPNAM and RUNAM = lUNAM and
+RUDAT = lUDAT where lnkfil <> ' '

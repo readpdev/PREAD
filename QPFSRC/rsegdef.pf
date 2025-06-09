@@ -1,0 +1,32 @@
+      *%METADATA                                                       *
+      * %TEXT Report Distribution Segment Definitions                  *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RSEGDEF - Report Distribution Segment Def *
+     A* Date created...... 04/11/94                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R SEGDEF
+     A            DSREPT        10          TEXT('Report Type ID')
+     A                                      COLHDG('Report' 'Type' 'ID')
+     A            DSSEG         10          TEXT('Segment ID')
+     A                                      COLHDG('Segment' 'ID')
+     A            DSSEQ#         3  0       TEXT('Segment Sequence Number')
+     A                                      COLHDG('Segment' 'Seq' 'Number')
+     A            DSGRP          1          TEXT('Distribution Segment Group')
+     A                                      COLHDG('Segment' 'Group')
+     A            DSRFLD        10          TEXT('Segment Report field')
+     A                                      COLHDG('Segment' 'Report' 'field')
+     A            DSOPER         2          TEXT('Field Comparison Operator')
+     A                                      COLHDG('Field' 'Compare' 'Operator')
+     A            DSVAL         40          TEXT('Field Comparison Value')
+     A                                      COLHDG('Field' 'Compare' 'Value')
+     A          K DSREPT
+     A          K DSSEG
+     A          K DSSEQ#

@@ -1,0 +1,26 @@
+      *%METADATA                                                       *
+      * %TEXT SpoolJoiner Source Queue                                 *
+      *%EMETADATA                                                      *
+      *----------------------------------------------------------------
+      *  SJSRCQ   SpoolJoiner Source Queues
+      *----------------------------------------------------------------
+     A                                      UNIQUE
+     A          R SJSRCQR                   TEXT('SOURCE OUTQ')
+      *
+     A            JQNAM         10          COLHDG('Def name')
+     A            JQSOUT        10          COLHDG('Source OutQ')
+     A            JQSOLI        10          COLHDG('Source OutQ lib')
+     A            JQSSAV         1          COLHDG('Join saved only' 'Y/N')
+     A            JQSDLT         1          COLHDG('Dlt src spl' 'Y/N')
+     A            JQSOU1        10          COLHDG('Move SplF to OutQ')
+     A            JQSOL1        10          COLHDG('Move SplF to lib')
+     A            JQSRLS         1          COLHDG('Release src SplF' 'Y/N')
+      *
+     A          K JQNAM
+     A          K JQSOUT
+     A          K JQSOLI
+      *
+LF1   * SJSRCQ1 R SJSRCQR                   PFILE(SJSRCQ)
+      *         K JQSOUT
+      *         K JQSOLI
+      *         K JQNAM

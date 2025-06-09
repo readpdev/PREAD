@@ -1,0 +1,15 @@
+      *%METADATA                                                       *
+      * %TEXT Bundle Printing Determination Temp File                  *
+      *%EMETADATA                                                      *
+      *
+      * File.......... MAG601  - Bundle Printing Determination
+      * Date created   5/11/94                       Temp File
+      *
+     A          R RC601
+     A            #PRIOR         2A         TEXT('Bundle Priority')
+     A                                      COLHDG('Bundle' 'Priority')
+     A            #BUNDL        10A         TEXT('Bundle I.D.')
+     A                                      COLHDG('Bundle' 'I.D')
+     A            #HSTCN         9B 0       TEXT('Count of History Records')
+     A                                      COLHDG('History' 'Records' 'Count')
+     A          K #PRIOR

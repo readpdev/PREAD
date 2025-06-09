@@ -1,0 +1,23 @@
+      *%METADATA                                                       *
+      * %TEXT Node Definitions                                         *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RNODDEF - Node Definition                 *
+     A* Date created...... 11/08/95                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R NODDEF
+     A            NODEID        17A         TEXT('Node ID')
+     A                                      COLHDG('Node' 'ID')
+     A            NTFRTY         1A         TEXT('Transfer Type: D=Direct, +
+     A                                            F=HFS, E=Email')
+     A                                      COLHDG('Transfer' 'Type')
+     A            NINUSE         1A         TEXT('Node In Use Indicator')
+     A                                      COLHDG('Node' 'In Use')
+     A          K NODEID

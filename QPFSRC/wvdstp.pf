@@ -1,0 +1,26 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Link Distribution TEMP Workfile               *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A          R WVDSTF                    TEXT('SpyLink Distribution')
+      *
+      **************************************************************
+      *
+     A            FNSTYP        10          COLHDG('SpyView' 'Type')
+     A            FNBNDL        10          COLHDG('Bundle')
+     A            FNSEGM        10          COLHDG('Segment')
+     A            FNRTYP        10          COLHDG('Report' 'Type')
+     A            FNSID         10          COLHDG('Subscriber ID')
+     A            FNPRO         10          COLHDG('Process')
+     A            FNOBJ         20          COLHDG('Object' 'Name')
+     A            FNPATH       100          COLHDG('Object' 'Path')
+     A            FNDESC        30          COLHDG('Description')
+     A            FNTXT         25          COLHDG('Mail' 'Description')
+     A            FNREF         25          COLHDG('Mail' 'Reference')
+      *
+     A          K FNPRO
+     A          K FNSTYP
+     A          K FNBNDL
+     A          K FNSEGM
+     A          K FNRTYP
+     A          K FNSID

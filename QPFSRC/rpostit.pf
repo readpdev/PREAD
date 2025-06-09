@@ -1,0 +1,34 @@
+      *%METADATA                                                       *
+      * %TEXT Report Notes Index database file                         *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * Physical file..... RPOSTIT  - Report Post It Page Notes
+      *
+      * 11-01-93 Dlm Added User field
+      * 10-05-93 Dlm Format change
+      *  2-13-93 Ed  Created
+      ****************************************************************
+     A                                      UNIQUE
+     A          R POSTRC
+     A            PFLDR         10A         COLHDG('Folder')
+     A            PFLDLB        10A         COLHDG('Folder' 'Library')
+     A            PFILNM        10A         COLHDG('File')
+     A            PJOBNM        10A         COLHDG('Job')
+     A            PUSRNM        10A         COLHDG('User' 'Name')
+     A            PJOB#          6A         COLHDG('Job' 'Number')
+     A            PFIL#          9B 0       COLHDG('File' 'Number')
+     A            PPG#           9B 0       COLHDG('Note' 'Page #')
+     A            PWDPRO        10A         COLHDG('Word' 'Processor')
+     A            PUSER         10A         COLHDG('Last' 'User to' 'update')
+     A            PTYPE          1A         COLHDG('Note' 'Type')
+     A          K PFLDR
+     A          K PFLDLB
+     A          K PFILNM
+     A          K PJOBNM
+     A          K PUSRNM
+     A          K PJOB#
+     A          K PFIL#
+     A          K PTYPE
+     A          K PPG#

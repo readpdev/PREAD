@@ -1,0 +1,31 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Object Types                                  *
+      *%EMETADATA                                                      *
+     A**************************************************************
+     A                                      UNIQUE
+     A          R WVTYPF                    TEXT('Object Types')
+     A*
+     A**************************************************************
+     A*
+     A            FKTYP         10          COLHDG('Object' 'Type')
+     A            FKDESC        30          COLHDG('Description')
+     A            FKCHG         10          COLHDG('Change' 'Program')
+     A            FKCHGL        10          COLHDG('Change' 'Library')
+     A            FKDSP         10          COLHDG('Display' 'Program')
+     A            FKDSPL        10          COLHDG('Display' 'Library')
+     A            FKATT         10          COLHDG('Attach' 'Program')
+     A            FKATTL        10          COLHDG('Attach' 'Library')
+     A            FKDLT         10          COLHDG('Delete' 'Program')
+     A            FKDLTL        10          COLHDG('Delete' 'Library')
+     A            FKPRT         10          COLHDG('Print' 'Program')
+     A            FKPRTL        10          COLHDG('Print' 'Library')
+     A            FKFAX         10          COLHDG('Fax' 'Program')
+     A            FKFAXL        10          COLHDG('Fax' 'Library')
+     A            FKEXC         10          COLHDG('Execute' 'Program')
+     A            FKEXCL        10          COLHDG('Execute' 'Library')
+     A            FKCPY         10          COLHDG('Copy' 'Program')
+     A            FKCPYL        10          COLHDG('Copy' 'Library')
+     A            FKMOV         10          COLHDG('Move' 'Program')
+     A            FKMOVL        10          COLHDG('Move' 'Library')
+     A*
+     A          K FKTYP

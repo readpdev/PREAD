@@ -1,0 +1,32 @@
+      *%METADATA                                                       *
+      * %TEXT DocLink Optical Finder File                              *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... RLNKOFF - SpyLink Optical Finder File     *
+      *                    Keyed on Big5 + Sequence number (5.0)     *
+      *                                                              *
+      * Date created...... 8/14/95                                   *
+      ****************************************************************
+/3321 * 12-29-00 KAC REMOVE OPT ID (OBSOLETE AS OF 6.0.6)
+      *
+     A                                      UNIQUE
+     A          R LNKOFF
+     A            LORPTN        10          COLHDG('Report' 'Name')
+     A            LOJOBN        10          COLHDG('Job' 'Name')
+     A            LOPGMN        10          COLHDG('Program' 'Name')
+     A            LOUSRN        10          COLHDG('User' 'Name')
+     A            LOUSRD        10          COLHDG('User' 'Data')
+     A            LOSEQ          5  0       COLHDG('Seq' 'No.')
+     A            LOODES        40          COLHDG('Optical' 'Desc')
+     A            LOVOL         12          COLHDG('Optical' 'Volume')
+     A            LODIR         80          COLHDG('Directory')
+     A            LOFILI        10          COLHDG('Internal' 'FileNm')
+     A            LODSPF        10A         COLHDG('Display' 'File')
+     A          K LORPTN
+     A          K LOJOBN
+     A          K LOPGMN
+     A          K LOUSRN
+     A          K LOUSRD
+     A          K LOSEQ

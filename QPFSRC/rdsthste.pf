@@ -1,0 +1,20 @@
+      *%METADATA                                                       *
+      * %TEXT Report Distribution History - Extended                   *
+      *%EMETADATA                                                      *
+      *
+/5943 * 06-14-02 PLR HISTORY OF EXTENDED DISTRIBUTION SETTINGS AT BUNDLE TIME.
+      *
+                R DSTHSTE
+                  DHEREP        10          COLHDG('Report' 'Version' 'ID')
+                  DHESEG        10          COLHDG('Report' 'Segment' 'ID')
+                  DHEBNDL       10          COLHDG('Bundle' 'I.D.')
+                  DHEDOW         1          COLHDG('Day of' 'Week')
+                  DHEUDO1        1          COLHDG('User' 'Option 1')
+                  DHEUDO2        1          COLHDG('User' 'Option 2')
+                  DHEUDO3        1          COLHDG('User' 'Option 3')
+                  DHEUDO4        1          COLHDG('User' 'Option 4')
+                  DHEUDO5        1          COLHDG('User' 'Option 5')
+                K DHEREP
+                K DHESEG
+                K DHEBNDL
+

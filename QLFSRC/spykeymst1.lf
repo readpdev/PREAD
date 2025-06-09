@@ -1,0 +1,11 @@
+      *%METADATA                                                       *
+      * %TEXT Spy Key Code Master File by Name                         *
+      *%EMETADATA                                                      *
+      *
+/1497 * 08-21-00 PLR KEY CODE GENERATION ENHANCEMENT FOR VERSION 7.00.00.
+      *
+      * VIEW BY CUSTOMER NAME.
+      *
+                R SKMREC                    PFILE(SPYKEYMST)
+                K SKMNAM
+                K SKMSID

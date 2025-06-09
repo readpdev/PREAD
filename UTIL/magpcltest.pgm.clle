@@ -1,0 +1,12 @@
+             PGM
+
+             DCL        VAR(&COUNT) TYPE(*DEC) LEN(3 0) VALUE(0)
+
+
+ ARCHIVE:    ARCSPLFSPY FILE(LPD60BF) JOB(770416/*N/QPRTJOB) +
+                          SPLNBR(2) FLDR(PR850DTA/PCL)
+             CHGVAR     VAR(&COUNT) VALUE(&COUNT + 1)
+             IF         COND(&COUNT *EQ 55) THEN(GOTO CMDLBL(EOP))
+             GOTO       CMDLBL(ARCHIVE)
+
+ EOP:        ENDPGM

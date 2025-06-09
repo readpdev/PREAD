@@ -1,0 +1,23 @@
+      *%METADATA                                                       *
+      * %TEXT Composite Report Temp File                               *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... MAG402  - Composite Report Temp File      *
+     A* Date created...... 4/25/95                                   *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A          R RC402
+     A            CFILNA        10A         COLHDG('Spool' 'File' 'Name')
+     A            CJOBNA        10A         COLHDG('Job' 'Name')
+     A            CUSRNA        10A         COLHDG('User')
+     A            CJOBNU         6A         COLHDG('Job' 'Number')
+     A            CFILNU         9B 0       COLHDG('Spool' 'File' 'Number')
+     A* devtype           *scs *ipds *apfds *line *afpdsline *userascii
+     A            CPRTTY        10A         COLHDG('Device' 'Type')
+     A          K CJOBNU
+     A          K CFILNU

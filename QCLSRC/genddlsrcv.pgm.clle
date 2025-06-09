@@ -1,0 +1,75 @@
+      /*%METADATA                                                     */
+      /* %TEXT Generate DDL Source                                    */
+      /*%EMETADATA                                                    */
+/*******************************************************************/
+/* Program Name: GENDDLSRCV                                       */
+/* Description : Generate DDL source for tables/indexes/views     */
+/*               command parameter validation program             */
+/* Written by  : David J. Andruchuk                               */
+/*                                                                */
+/* Create Instructions:                                           */
+/*   CRTBNDCL PGM(GENDDLSRCV) SRCFILE(QCLSRC)                     */
+/*********************************************************************/
+
+             PGM        PARM(&GENSRCFILE &SCHEMA)
+
+/*   Define Variables                                                   */
+             DCL        VAR(&GENSRCFILE) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&SCHEMA) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SRCFILE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SRCLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(512)
+
+/*   Change job messaging status to normal                              */
+             CHGJOB     STSMSG(*NORMAL)
+
+/*   Set soure file name & schema parameters                            */
+             CHGVAR     VAR(&srcfile) VALUE(%SST(&gensrcfile 1 10))
+             CHGVAR     VAR(&srclib) VALUE(%SST(&gensrcfile 11 10))
+
+/*   Check if passed schema exists before processing                    */
+/*   ·If errors, send message to user                                   */
+             CHKOBJ     OBJ(&SCHEMA) OBJTYPE(*LIB)
+
+ B_CPF98011: MONMSG     MSGID(CPF9801) EXEC(DO)
+
+                CHGVAR     VAR(&MSGDTA) VALUE('Library ' *CAT &schema +
+                             *BCAT 'not found')
+
+                SNDPGMMSG  MSGID(CPD0006) MSGF(QCPFMSG) MSGDTA('0000' *CAT +
+                             &MSGDTA) MSGTYPE(*DIAG)
+                SNDPGMMSG  MSGID(CPF0002) MSGF(QCPFMSG) MSGTYPE(*ESCAPE)
+
+                GOTO       CMDLBL(ENDPGM)
+ E_CPF98011: ENDDO
+
+/*   Check if passed source file exists in specified schema             */
+/*   ·If errors, send message to user                                   */
+             CHKOBJ     OBJ(&SRCLIB/&SRCFILE) OBJTYPE(*FILE)
+
+ B_CPF98012: MONMSG     MSGID(CPF9801) EXEC(DO)
+
+                CHGVAR     VAR(&MSGDTA) VALUE('Source file ' *CAT &SRCFILE +
+                             *BCAT 'in schema ' *CAT &SRCLIB *BCAT 'not +
+                             found')
+
+                SNDPGMMSG  MSGID(CPD0006) MSGF(QCPFMSG) MSGDTA('0000' *CAT +
+                             &MSGDTA) MSGTYPE(*DIAG)
+                SNDPGMMSG  MSGID(CPF0002) MSGF(QCPFMSG) MSGTYPE(*ESCAPE)
+
+                GOTO       CMDLBL(ENDPGM)
+ E_CPF98012: ENDDO
+
+ B_CPF98102: MONMSG     MSGID(CPF9810) EXEC(DO)
+
+                CHGVAR     VAR(&MSGDTA) VALUE('Schema ' *CAT &SRClib *BCAT +
+                             'not found')
+
+                SNDPGMMSG  MSGID(CPD0006) MSGF(QCPFMSG) MSGDTA('0000' *CAT +
+                             &MSGDTA) MSGTYPE(*DIAG)
+                SNDPGMMSG  MSGID(CPF0002) MSGF(QCPFMSG) MSGTYPE(*ESCAPE)
+
+                GOTO       CMDLBL(ENDPGM)
+ E_CPF98102: ENDDO
+
+ ENDPGM:     ENDPGM

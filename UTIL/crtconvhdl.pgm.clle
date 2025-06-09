@@ -1,0 +1,6 @@
+             PGM
+             CRTSRVPGM  SRVPGM(PREAD/MCCONVHDL) MODULE(MCLOGDTA +
+                          MCDLTOBJ MCUSRDTA) BNDSRVPGM(MRREPMGR +
+                          MLAUDLOG MCCOMDRV MGTCPCOMM DMPCHRSOCK) +
+                          DETAIL(*FULL)
+             ENDPGM

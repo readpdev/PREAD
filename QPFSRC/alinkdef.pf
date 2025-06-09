@@ -1,0 +1,38 @@
+      *%METADATA                                                       *
+      * %TEXT Definition for Link-Extensions                           *
+      *%EMETADATA                                                      *
+     A                                      UNIQUE
+     A          R LNKDEFF                   TEXT('LINK DEFINITION')
+     A*
+     A            ARNAM         10          COLHDG('REPORT NAME')
+     A            AJNAM         10          COLHDG('JOB NAME')
+     A            APNAM         10          COLHDG('PROGRAM NAME')
+     A            AUNAM         10          COLHDG('USER NAME')
+     A            AUDAT         10          COLHDG('USER DATA')
+     A            AINAM         10          COLHDG('INDEX NAME')
+     A*
+     A            AFIN           1          COLHDG('Required Input   ')
+     A            AART           1          COLHDG('A=ALPHA N=NUM')
+     A            ALAN           2  0       COLHDG('Length')
+     A            ADEZ           1  0       COLHDG('Decimal Posit.')
+     A            ADZZ           1          COLHDG('DEZIMALZEICHEN')
+     A            ATAU           1          COLHDG('TAUSENDER TRENN')
+     A            AVOR           1          COLHDG('Edit Code  L/R/O')
+     A            ANUL           1          COLHDG('NULLWERTE DRUCKEN')
+     A            AFNU           1          COLHDG('F!HRENDE NULLEN')
+     A            AEZN           1          COLHDG('EINZELNE NULL Y/N')
+     A            AWRD          40          COLHDG('EDIT-WORD')
+     A            AWRL           2  0       COLHDG('EDIT-WORD LENGTH')
+     A            ALOC           1          COLHDG('Lower Case Y/N')
+     A            APGM          10          COLHDG('PROGRAM')
+     A            ADSP          10          COLHDG('DISPLAY')
+     A*
+     A**************************************************************
+     A* SCHL!SSEL
+     A*
+     C          K ARNAM
+     C          K AJNAM
+     C          K APNAM
+     C          K AUNAM
+     C          K AUDAT
+     C          K AINAM

@@ -1,0 +1,19 @@
+      *%METADATA                                                       *
+      * %TEXT Report Distribution Subscribers List Header              *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... RSUBLHD - Subscriber List Header          *
+      * Date created...... 04/12/94                                  *
+      *                                                              *
+      ****************************************************************
+     A                                      UNIQUE
+     A          R SUBLHD
+     A            SUBLID        10          TEXT('Subscriber List')
+     A                                      COLHDG('Subscriber' 'List')
+     A            SLNAME        40          TEXT('Subscr. List Desc')
+     A                                      COLHDG('Subs.' 'List' 'Desc')
+     A            SLSTAT         1          TEXT('Subscr. List Status')
+     A                                      COLHDG('Subs.' 'List' 'Status ')
+     A          K SUBLID

@@ -1,0 +1,12 @@
+             PGM
+
+             ADDLIBLE   LIB(QMGTOOLS)
+             CLITRC     FUNCTION(*STRTRACE)
+             ADDLIBLE   LIB(TSTSQLCLI)
+             STRDBG     PGM(PGMA) UPDPROD(*YES)
+             CALL       PGM(PGMA)
+             ENDDBG
+             CLITRC     FUNCTION(*ENDTRACE)
+             SIGNOFF    LOG(*LIST) ENDCNN(*YES)
+
+             ENDPGM

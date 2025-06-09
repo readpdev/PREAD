@@ -1,0 +1,72 @@
+      /*%METADATA                                                     */
+      /* %TEXT Utility - Delete docs based on SPYPVPF                 */
+      /*%EMETADATA                                                    */
+/*                                                                    */
+/* 02-20-13 PLR Utility to delete content from the repository based   */
+/*              on the SPYPVPF file. T4696J                           */
+/*                                                                    */
+
+             PGM        PARM(&FOLDER &DOCTYPE &FRDATE &TODATE &JOBD)
+
+             DCL        VAR(&FOLDER) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&DOCTYPE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&FRDATE) TYPE(*CHAR) LEN(8)
+             DCL        VAR(&TODATE) TYPE(*CHAR) LEN(8)
+             DCL        VAR(&JOBD) TYPE(*CHAR) LEN(20)
+
+             DCL        VAR(&JOBDNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBDLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBTYPE) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&USER) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(80)
+             DCL        VAR(&OPERATION) TYPE(*CHAR) LEN(10)
+
+             /* Check for job description. */
+             CHGVAR     VAR(&JOBDNAM) VALUE(%SST(&JOBD 1 10))
+             CHGVAR     VAR(&JOBDLIB) VALUE(%SST(&JOBD 11 10))
+             IF         COND(&JOBDNAM *EQ '*USRPRF') THEN(RTVUSRPRF +
+                          JOBD(&JOBDNAM) JOBDLIB(&JOBDLIB))
+             IF         COND(&JOBDLIB *EQ ' ') THEN(CHGVAR +
+                          VAR(&JOBDLIB) VALUE('*LIBL'))
+             CHKOBJ     OBJ(&JOBDLIB/&JOBDNAM) OBJTYPE(*JOBD)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+             CHGVAR     VAR(&MSGID) VALUE('ERR1426')
+             CHGVAR     VAR(&MSGDTA) VALUE(&JOBDLIB |> &JOBDNAM)
+             GOTO       CMDLBL(MESSAGE)
+             ENDDO
+
+             RTVJOBA    USER(&USER) TYPE(&JOBTYPE)
+
+             /* Interactive */
+             IF         COND(&JOBTYPE *EQ '1') THEN(CHGVAR +
+                          VAR(&OPERATION) VALUE(*VALIDATE))
+
+             /* Batch */
+             IF         COND(&JOBTYPE *EQ '0') THEN(CHGVAR +
+                          VAR(&OPERATION) VALUE(*RUN))
+
+             CALL       PGM(MRDLTPVP) PARM(&OPERATION &FOLDER +
+                          &DOCTYPE &FRDATE &TODATE &MSGID &MSGDTA)
+
+             IF         COND(&MSGID *NE ' ') THEN(GOTO CMDLBL(MESSAGE))
+
+             /* Submit if interactive and no errors on validation. */
+             IF         COND(&JOBTYPE *EQ '1' *AND &MSGID *EQ ' ') +
+                          THEN(DO)
+             SBMJOB     CMD(DOCDLTPVP FOLDER(&FOLDER) +
+                          DOCTYPE(&DOCTYPE) FRDATE(&FRDATE) +
+                          TODATE(&TODATE) JOBD(&JOBDLIB/&JOBDNAM)) +
+                          JOB(DOCDLTPVP) JOBD(&JOBDLIB/&JOBDNAM)
+             ENDDO
+
+             GOTO       CMDLBL(ENDPGM)
+
+ MESSAGE:    SNDPGMMSG  MSGID(&MSGID) MSGF(PSCON) MSGDTA(&MSGDTA) +
+                          TOPGMQ(*EXT)
+             IF         COND(&JOBTYPE *EQ '0' *AND &MSGID *NE ' ') +
+                          THEN(SNDUSRMSG MSGID(&MSGID) MSGF(PSCON) +
+                          MSGDTA(&MSGDTA) MSGTYPE(*INFO) +
+                          TOUSR(&USER))
+
+ ENDPGM:     ENDPGM

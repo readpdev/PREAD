@@ -1,0 +1,9 @@
+      *
+J3068 * 10-18-20 PLR Created. Holds the TSM management class name to be used
+      *              when writing data to TSM devices.
+      *
+                R TCREC
+     A            TCTYPID       10          COLHDG('Document Type')
+     A            TCCLSNAM      30          COLHDG('Management' 'Class Name')
+     A          K TCTYPID
+

@@ -1,0 +1,289 @@
+      /*%METADATA                                                     */
+      /* %TEXT Restore report                                         */
+      /*%EMETADATA                                                    */
+/***********----------------------------------------------------------+
+ * RstRptCL  Restore one report from tape or optical.                 +
+ ***********----------------------------------------------------------+
+                                                                      +
+    Update Record                                                     +
+                                                                      +
+                                                                      +
+PLR 03-09-10 Overloaded to process restore folder operation with      +
+             images. Old folder backup never backed up images. J2370. +
+EPG 6-12-07 Add a new paramter to restoring from tape to trap an      +
+            error associated with the resulting folder exceeding      +
+            the threshold limit. 5178                                 +
+                                                                      +
+P9134    J. OLEN  7/7/04  Changed to specify MBR on OVRDBF commands   +
+P6708    J. OLEN 10/7/03  Changed logic to support spool file numbers +
+             greater than 9999.  Also, standardized to use 4 byte     +
+             binary field for spool file number in all pgms.          +
+                                                                      +
+              DAVID MICKLE    5/19/93                                 +
+JJF 4-28-98 Chg ERRDTA for ERR1472 fo &FOLDER from &RPTNAM            +
+DM  9-06-95 Change error messages to message IDs                      +
+DM  4-20-95 Support BRMS                                              +
+DM 12-01-94 Call CHKTAPSPY and RSTOBJSPY CUSTOMERized CL programs     +
+DM 12-07-93 CHANGE RSTRPT CALL WITH NEW FILE (FOLDER2)                +
+DM          DELETE TEMP FILE IN QTEMP                                 +
+DM  9-29-93 Use blocking on OvrDbf.  Use mounted vol for tape restore +
+                                                                     */
+
+             PGM        PARM(&FOLDER &FLDLIB &RPTNAM &JOBNAM &USRNAM +
+                          &JOBNUM &DATFO &FILNUM &FDESC &CHGACT &RETN +
+                          &NOPROMPT)
+
+             DCLF       RSTRPTFM   /* To confirm parms, display errs */
+
+             DCL        &FOLDER  *CHAR 10
+             DCL        &FLDLIB  *CHAR 10
+             DCL        &RPTNAM  *CHAR 10
+             DCL        &JOBNAM  *CHAR 10
+             DCL        &USRNAM  *CHAR 10
+             DCL        &JOBNUM  *CHAR 6
+             DCL        &DATFO   *CHAR 7
+             DCL        &FILNUM  *CHAR 4   /* Binary 9,0 */
+             DCL        &FDESC   *CHAR 40
+             DCL        &CHGACT  *CHAR 1
+             DCL        &RETN    *CHAR 8
+             DCL        VAR(&NOPROMPT) TYPE(*CHAR) LEN(1) /* J2370 */
+
+             DCL        &VOL     *CHAR 6
+             DCL        &FROMDEV *CHAR 1
+             DCL        &OFRNAM  *CHAR 10
+             DCL        &OFRSEQ  *CHAR 4
+             DCL        &OFRTYP  *CHAR 1    /* R=Rec level bkup */
+             DCL        &OFRSYS  *CHAR 1    /* B=BRMS report    */
+             DCL        &BRMSYN  *CHAR 1    /* Y=BRMS sys dft   */
+             DCL        &SAVLIB  *CHAR 10
+             DCL        &DEV     *CHAR 10
+             DCL        &OWN     *CHAR 14
+             DCL        &DEN     *CHAR 11
+
+             DCL        &FMTNM   *CHAR 8
+             DCL        &MSGID   *CHAR 7
+             DCL        &MSG     *CHAR 70
+             DCL        &DSPMSG  *CHAR 50
+
+             DCL        &VOLCK   *CHAR 1
+             DCL        &ACCESS  *CHAR 7
+             DCL        &RETRN   *CHAR 6
+             DCL        &OPTRTN  *CHAR 1
+             DCL        &TAPRTN  *CHAR 1 /* 5178 Tape Return */
+
+
+/* Tape defaults */
+             RTVDTAARA  DTAARA(SYSDFT (156 10)) RTNVAR(&DEV)
+             RTVDTAARA  DTAARA(SYSDFT (166 14)) RTNVAR(&OWN)
+             RTVDTAARA  DTAARA(SYSDFT (180 11)) RTNVAR(&DEN)
+             RTVDTAARA  DTAARA(SYSDFT (372  1)) RTNVAR(&BRMSYN)
+
+/* Get backup info from RptDir */
+             CALL       PGM(GETRPTSAV) PARM(&FOLDER &FLDLIB &RPTNAM +
+                          &JOBNAM &USRNAM &JOBNUM &DATFO &FILNUM +
+                          &OFRNAM &VOL &FROMDEV &OFRSEQ &OFRTYP +
+                          &OFRSYS)
+
+/* "Report &1 is already online" */
+             IF         (&FROMDEV *EQ ' ')  DO
+             RTVMSG     MSGID(ERR1469) MSGF(PSCON) MSGDTA(&RPTNAM) +
+                          MSG(&DSPMSG)
+             IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                CHGVAR     VAR(&RETN) VALUE('ERR1469') /* J2370 */
+                RETURN     /* J2370 */
+             ENDDO      /* J2370 */
+             GOTO       SHOWMSG
+             ENDDO
+
+/* ChkExs Fldr */
+             CHGVAR     &RETRN ' '
+             CALL       CHKEXSFLD  (&FOLDER &FLDLIB &RETRN)
+/* 'Folder &1 is not online' */
+             IF         (&RETRN *NE ' ')  DO
+             RTVMSG     MSGID(ERR1470) MSGF(PSCON) MSGDTA(&FOLDER) +
+                          MSG(&DSPMSG)
+             IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                CHGVAR     VAR(&RETN) VALUE('ERR1470') /* J2370 */
+                RETURN     /* J2370 */
+             ENDDO      /* J2370 */
+             GOTO       SHOWMSG
+             ENDDO
+
+             IF         (&FROMDEV *EQ 'O') GOTO OPTICAL
+           /*------------------------------------------+
+ --------+
+  Report +
+ --------*/
+
+/*'Enter to cont'*/
+             RTVMSG     MSGID(DSP1212) MSGF(PSCON) MSG(&DSPMSG)
+
+             IF         COND(&NOPROMPT *NE '1') THEN(DO) /* J2370 */
+             ENDDO      /* J2370 */
+ SHOWMSG:    IF         (&FROMDEV *EQ 'T')  DO
+             SNDRCVF    RCDFMT(DSPLY)
+             CHGVAR     &FMTNM DSPLY
+             ENDDO
+
+             IF         (&FROMDEV *NE 'T')  DO
+             SNDRCVF    RCDFMT(DSPLY2)
+             CHGVAR     &FMTNM DSPLY2
+             ENDDO
+
+             IF         (&IN01 *EQ '1')     DO             /* Help */
+             CALL       SPYHLP (RSTRPTFM &FMTNM)
+             GOTO       SHOWMSG
+             ENDDO
+
+             IF         (&FROMDEV *EQ ' ')  RETURN         /* Exit */
+             IF         (&IN93    *EQ '1')  RETURN
+
+
+             CHGVAR     &RETRN  ' '
+             CALL       CHKEXSFLD  (&FOLDER &FLDLIB &RETRN)
+/* 'Folder &1 is offline' */
+             IF         (&RETRN *NE ' ')  DO
+             RTVMSG     MSGID(ERR1471) MSGF(PSCON) MSGDTA(&RPTNAM) +
+                          MSG(&DSPMSG)
+             IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                CHGVAR     VAR(&RETN) VALUE('ERR1471') /* J2370 */
+                RETURN     /* J2370 */
+             ENDDO      /* J2370 */
+             GOTO       SHOWMSG
+             ENDDO
+
+             CHGVAR     &RETRN  ' '
+             CHGVAR     &ACCESS '*EXCLRD'
+             CALL       CHKACTFLD  (&FOLDER &FLDLIB &ACCESS +
+                          &MSGID &MSG &RETRN)
+/* 'Folder &1 is in use' */
+             IF         (&RETRN *NE ' ')  DO
+             RTVMSG     MSGID(ERR1472) MSGF(PSCON) MSGDTA(&FOLDER) +
+                          MSG(&DSPMSG)
+             IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                CHGVAR     VAR(&RETN) VALUE('ERR1472') /* J2370 */
+                RETURN     /* J2370 */
+             ENDDO      /* J2370 */
+             GOTO       SHOWMSG
+             ENDDO
+
+/* Check Vol */
+             CHGVAR     &MSGID ' '
+             CHGVAR     &MSG   ' '
+             IF         (&BRMSYN *NE 'Y') CALL CHKTAPSPY +
+                          (&DEV &VOL &MSGID &MSG)
+             IF         (&MSGID *NE ' ' *AND &VOLCK *NE '1')  DO
+                IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                   CHGVAR     VAR(&RETN) VALUE(&MSGID) /* J2370 */
+                   RETURN     /* J2370 */
+                ENDDO      /* J2370 */
+             CHGVAR     &DSPMSG %SST(&MSG 1 50)
+             CHGVAR     &VOLCK  '1'
+             GOTO       SHOWMSG
+             ENDDO
+
+/* Lock Fldr */
+             ALCOBJ     OBJ((&FLDLIB/&FOLDER *FILE &ACCESS)) WAIT(0)
+
+             IF         (&OFRSYS *EQ 'B') CHGVAR &SAVLIB 'SPYBRMBKUP'
+             IF         (&OFRSYS *EQ ' ') CHGVAR &SAVLIB 'QTEMP'
+
+/* If rpt was saved as an object, restore tape obj to disk */
+             CHGVAR     &MSGID ' '
+             CHGVAR     &MSG   ' '
+             IF         (&OFRTYP *NE 'R')  CALL RSTOBJSPY +
+                          (&OFRNAM &SAVLIB &DEV &VOL &OFRSYS +
+                           &MSGID &MSG)
+/* Restore error */
+             IF         (&MSGID *NE ' ')  DO
+             CHGVAR     &DSPMSG  %SST(&MSG 1 50)
+             DLCOBJ     OBJ((&FLDLIB/&FOLDER *FILE &ACCESS))
+             IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                CHGVAR     VAR(&RETN) VALUE(&MSGID) /* J2370 */
+                RETURN     /* J2370 */
+             ENDDO      /* J2370 */
+             GOTO       SHOWMSG
+             ENDDO
+
+  /*  P9134 - changed to specify MBR on OVRDBF command    */
+             OVRDBF     FILE(FOLDER) TOFILE(&FLDLIB/&FOLDER) +
+                          MBR(&FOLDER) FRCRATIO(2000) +
+                          OVRSCOPE(*CALLLVL) SEQONLY(*YES 2000)
+  /*  P9134 - changed to specify MBR on OVRDBF command    */
+             OVRDBF     FILE(FOLDER2) TOFILE(&FLDLIB/&FOLDER) +
+                          MBR(&FOLDER) OVRSCOPE(*CALLLVL)
+
+
+             CHGVAR     &TAPRTN VALUE('0') /* 5178 */
+
+/* Add the report to the end of its folder */
+             CALL       PGM(RSTRPT) PARM(&FOLDER &FLDLIB &RPTNAM +
+                          &JOBNAM &USRNAM &JOBNUM &DATFO &FILNUM +
+                          &OFRTYP &OFRSYS &SAVLIB &OFRNAM &OFRSEQ &DEV +
+                          &TAPRTN)  /* 5178 */
+             DLTOVR     *ALL
+
+             IF         (&TAPRTN *EQ '2') THEN(DO)                 /* 5178 */
+               RTVMSG     MSGID(EMR0008) MSGF(PSCON) MSG(&DSPMSG)  /* 5178 */
+               CHGVAR     &FROMDEV ' '  /* SHOWMSG will exit          5178 */
+               IF         COND(&NOPROMPT *EQ '1') THEN(DO) /* J2370 */
+                  CHGVAR     VAR(&RETN) VALUE('ERR1470') /* J2370 */
+                  RETURN     /* J2370 */
+               ENDDO      /* J2370 */
+               GOTO       SHOWMSG                                  /* 5178 */
+            ENDDO                                                  /* 5178 */
+
+             IF         (&OFRTYP *NE 'R')  DLTF &SAVLIB/&OFRNAM
+             GOTO       END
+          /*----------------*/
+/*--------                                                           */
+  OPTICAL:
+/*--------                                                           */
+             IF         (&FROMDEV *EQ 'O')   DO
+             CHGVAR     &RETRN  ' '
+             CHGVAR     &ACCESS '*EXCLRD'
+
+             CALL       CHKACTFLD  (&FOLDER &FLDLIB &ACCESS +
+                          &MSGID &MSG &RETRN)
+/* 'Folder &1 is in use' */
+             IF         (&RETRN *NE ' ')  DO
+             RTVMSG     MSGID(ERR1472) MSGF(PSCON) MSGDTA(&FOLDER) +
+                          MSG(&DSPMSG)
+             CHGVAR     &FROMDEV ' '   /* SHOWMSG will exit */
+             GOTO       SHOWMSG
+             ENDDO
+
+/* Lock Fldr*/
+             ALCOBJ     OBJ((&FLDLIB/&FOLDER *FILE &ACCESS)) WAIT(0)
+             OVRDBF     FOLDER  &FLDLIB/&FOLDER +
+                                FRCRATIO(2000) SEQONLY(*YES 2000)
+             OVRDBF     FOLDER2 &FLDLIB/&FOLDER
+             CHGVAR     &OPTRTN '1'
+
+/* Add the optical report to the end of its dasd folder */
+             CALL       PGM(RSTORPT) PARM(&FOLDER &FLDLIB &RPTNAM +
+                          &JOBNAM &USRNAM &JOBNUM &DATFO &FILNUM +
+                          &OPTRTN)
+             DLTOVR     *ALL
+
+/* Resulting Folder threshold exceeded 5178 */
+
+             IF         (&OPTRTN *EQ '2') THEN(DO)               /* 5178 */
+             RTVMSG     MSGID(EMR0008) MSGF(PSCON) MSG(&DSPMSG)  /* 5178 */
+             DLCOBJ     OBJ((&FLDLIB/&FOLDER *FILE &ACCESS))     /* 5178 */
+             CHGVAR     &FROMDEV ' '  /* SHOWMSG will exit          5178 */
+             GOTO       SHOWMSG                                  /* 5178 */
+             ENDDO                                               /* 5178 */
+
+/* 'Report not restored from optical' */
+             IF         (&OPTRTN *NE '0')  DO
+             RTVMSG     MSGID(ERR1473) MSGF(PSCON) MSG(&DSPMSG)
+             DLCOBJ     OBJ((&FLDLIB/&FOLDER *FILE &ACCESS))
+             CHGVAR     &FROMDEV ' '  /* SHOWMSG will exit */
+             GOTO       SHOWMSG
+             ENDDO
+             ENDDO
+
+/* UnLock Fldr */
+  END:       DLCOBJ     OBJ((&FLDLIB/&FOLDER *FILE &ACCESS))
+             ENDPGM

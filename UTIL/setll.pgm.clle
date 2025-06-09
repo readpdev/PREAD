@@ -1,0 +1,13 @@
+pgm
+
+monmsg cpf0000
+
+addlible pread
+addlible doc883src
+addlible doc882src
+addlible doc881src
+addlible doc880src
+addlible pr881obj
+addlible pr881dta
+
+endpgm

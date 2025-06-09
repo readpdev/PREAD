@@ -1,0 +1,34 @@
+             PGM        PARM(&OBJ &OBJTYP &TOLIB)
+
+             DCL        VAR(&OBJ) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&OBJNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OBJLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OBJTYP) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TOLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(80)
+
+             MONMSG     MSGID(CPF0000)
+
+             CHGVAR     VAR(&OBJNAM) VALUE(%SST(&OBJ 1 10))
+             CHGVAR     VAR(&OBJLIB) VALUE(%SST(&OBJ 11 10))
+
+             IF         COND(&OBJTYP = '*MODULE') THEN(DLTMOD +
+                          PGM(&TOLIB/&OBJNAM))
+
+             IF         COND(&OBJTYP = '*PGM') THEN(DLTPGM +
+                          PGM(&TOLIB/&OBJNAM))
+
+             IF         COND(&OBJTYP = '*SRVPGM') THEN(DLTSRVPGM +
+                          SRVPGM(&TOLIB/&OBJNAM))
+
+             CRTDUPOBJ  OBJ(&OBJNAM) FROMLIB(&OBJLIB) +
+                          OBJTYPE(&OBJTYP) TOLIB(&TOLIB)
+             MONMSG     MSGID(CPF2105 CPF2130) EXEC(DO)
+             RCVMSG     MSGQ(*PGMQ) MSG(&MSGDTA)
+             SNDPGMMSG  MSG(&MSGDTA)
+             GOTO       CMDLBL(ENDPGM)
+             ENDDO
+
+             SNDPGMMSG  MSG('Object copied.')
+
+ ENDPGM:     ENDPGM

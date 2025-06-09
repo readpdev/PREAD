@@ -1,0 +1,23 @@
+      *%METADATA                                                       *
+      * %TEXT FileClerk SpyLink Temporary Workfile                     *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... FCLNKWK - FileClerk SpyLink Temp Workfile *
+     A* Date created...... 08/30/96                                  *
+     A*                                                              *
+     A****************************************************************
+     A          R LNKWKR
+     A            LDXNAM        10A         TEXT('REPORT ID')
+     A                                      COLHDG('Report Id')
+     A            LXSEQ          9  0       TEXT('Sequence No')
+     A                                      COLHDG('Sequence #')
+     A            LXIMG#         9  0       TEXT('Image No')
+     A                                      COLHDG('Image #')
+     A            LXSPG          9  0       TEXT('Starting Page')
+     A                                      COLHDG('Starting pg')
+     A            LXEPG          9  0       TEXT('Ending Page')
+     A                                      COLHDG('Ending pg ')
+     A          K LDXNAM
+     A          K LXSEQ

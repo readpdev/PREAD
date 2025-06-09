@@ -1,0 +1,57 @@
+      *%METADATA                                                       *
+      * %TEXT Header File                                              *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * Physical file..... MHEADER - Magellan Header File
+      * Date created...... 3/11/93
+      *
+/3465 * 08-17-04 JMO Add AFP resource Id counter.
+/5635 * 01-07-04 PLR ADD AUDIT RECORD ID COUNTER.
+/4283 * 07-11-01 PLR CONVERT MAJORITY OF COUNTERS TO BASE36.
+/3765 * 02-28-01 JAM ADD REVID FOR DOCUMENT MANAGEMENT
+/1497 * 12-11-00 PLR ADD 16 BYTE ENCRYPTED FIELD FOR CONTROLLING # OF
+      *              ALLOWED INSTALLS. MAX 3 PER VERSION.
+      *  5-22-98 JJF Add 16 fields (MHSPY#-MHXMIT) transfrd from SysDft
+      *
+     A                                      REF(MVARDEFS)
+
+     A          R HEADER
+     A            VERSIO    R               REFFLD(VERSIO)
+     A            PTFLVL    R               REFFLD(PTFLVL)
+     A            BTALVL    R               REFFLD(BTALVL)
+     A            CREDAT    R               REFFLD(CREDAT)
+     A            CRETIM    R               REFFLD(CRETIM)
+c    A            LACDAT    R               REFFLD(LACDAT)
+     A            LACTIM    R               REFFLD(LACTIM)
+     A            NUMFLD    R               REFFLD(NUMFLD)
+     A            ADESC     R               REFFLD(ADESC)
+     A            OQMNUM    R               REFFLD(OQMNUM)
+     A            OQMUSR    R               REFFLD(OQMUSR)
+     A            OQMJOB    R               REFFLD(OQMJOB)
+     A            MHSPY#        10A         COLHDG('Report ID')
+     A            MHOFFL        10A         COLHDG('Offline' 'File')
+/4283A            MHRTYP        10A         COLHDG('Report' 'Type')
+/    A            MHINDX        10A         COLHDG('Index File')
+/    A            MHSEG         10A         COLHDG('Segment' 'File')
+/    A            MHLOG         10A         COLHDG('Log File')
+/    A            MHAFP         10A         COLHDG('AFP Folder')
+/    A            MHIMG         10A         COLHDG('Image File')
+/    A            MHBACH        10A         COLHDG('Batch' 'Number')
+/    A            MHWPRO        10A         COLHDG('WorkView' 'Process')
+/    A            MHWINT        10A         COLHDG('WorkView' 'Internal ID')
+/    A            MHWNOT        10A         COLHDG('WorkView' 'Note')
+/    A            MHWINX        10A         COLHDG('WorkView' 'Index')
+/    A            MHACCP        10A         COLHDG('Access' 'Path')
+/    A            MHOMNI        10A         COLHDG('OmniLink')
+/    A            MHXMIT         8A         COLHDG('Bundle' 'Xmit File')
+/    A            MHNOTE        10A         COLHDG('Note File')
+     A            MHALIC         7  0       COLHDG('Alias' 'Doc Class')
+     A            MHWPKT         9  0       COLHDG('StaffView' 'Work Packet')
+     A            MHOPTC         9  0       COLHDG('Optical' 'Cache File')
+     A            MHSVRI         9  0       COLHDG('StaffView' 'Request' 'ID')
+/3765A            MHRVID         9B 0       COLHDG('Doc Mgr' 'Revision' 'ID')
+     A            MHINSC        16          COLHDG('Header Control')
+/5635A            MHAUDC        15P 0       COLHDG('Audit Record ID')
+/3465A            MHRSID         8A         COLHDG('AFP Resource Id')

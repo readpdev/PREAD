@@ -1,0 +1,21 @@
+pgm
+
+updpgm BLDREPLNK mfkylicf
+updpgm CHGRPT    mfkylicf
+updpgm DSPRPT    mfkylicf
+updpgm MAG102    mfkylicf
+updpgm MAG1400   mfkylicf
+updpgm MAG1400A  mfkylicf
+updpgm MAG203    mfkylicf
+updpgm MAG503    mfkylicf
+updpgm MAG507    mfkylicf
+updpgm MAG601    mfkylicf
+updpgm MAG610    mfkylicf
+updpgm MAG8000   mfkylicf
+updpgm MAG8002   mfkylicf
+updpgm MAG8008   mfkylicf
+updpgm MAG8011   mfkylicf
+updpgm MAG8017   mfkylicf
+updpgm MAG955    mfkylicf
+updpgm MFSPYKEYR mfkylicf
+endpgm

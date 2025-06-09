@@ -1,0 +1,86 @@
+      *%METADATA                                                       *
+      * %TEXT Application Security Detail File                         *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... ASECURITY - Application security detail   *
+      * Date created......   4/19/95                                 *
+      *                                                              *
+      *  5/23/95 JJF Add fields.                                     *
+      *                                                              *
+      ****************************************************************
+     A                                      UNIQUE
+     A          R ASECRC
+     A            ASOBJ         10          COLHDG('Application')
+     A            ASUID         10          COLHDG('Usr/Sub' 'Grp/AutL' 'Id')
+     A            ASUTYP         1          COLHDG('Usr/Sub' 'Grp/AutL' 'Type')
+     A            ASAUTH        10          COLHDG('Application' 'Authority')
+  1  A            ASSEL          1          COLHDG('  1' 'Select' 'Option')
+  2  A            ASCHG          1          COLHDG('  2' 'Change' 'Option')
+  3  A            ASCOPY         1          COLHDG('  3' 'Copy' 'Option')
+  4  A            ASDEL          1          COLHDG('  4' 'Delete' 'Option')
+  5  A            ASVIEW         1          COLHDG('  5' 'View' 'Attributes')
+  6  A            ASPRT          1          COLHDG('  6' 'Print' 'Option')
+  7  A            ASRUN          1          COLHDG('Run' 'Authority')
+  8  A            ASCNFG         1          COLHDG('Configure')
+  9  A            ASMOVE         1          COLHDG('Move')
+ 10  A            ASCRT          1          COLHDG(' F6' 'Create' 'Key')
+ 11  A            ASBACK         1          COLHDG('Back-up')
+ 12  A            ASREST         1          COLHDG('Restore')
+ 13  A            ASSEC          1          COLHDG('Security')
+ 14  A            ASHIST         1          COLHDG(' 14' 'History')
+ 15  A            ASVWLN         1          COLHDG('View' 'Links')
+ 16  A            ASCGLN         1          COLHDG('Maint' 'Links')
+ 17  A            ASWSEG         1          COLHDG('WW' 'Segments')
+
+      ***-------- Report Viewer Security Section ---------***
+ 18  A            ASVR0          1          COLHDG('Rpt' 'Authority')
+ 19  A            ASVR1          1          COLHDG('Rpt' '1 Goto Page Abs')
+ 20  A            ASVR2          1          COLHDG('Rpt' '2 Goto Page Rel')
+ 21  A            ASVR3          1          COLHDG('Rpt' '3 Goto Top')
+ 22  A            ASVR4          1          COLHDG('Rpt' '4 Goto Bottom')
+ 23  A            ASVR5          1          COLHDG('Rpt' '5 General Info')
+
+ 24  A            ASVS0          1          COLHDG('Srch' 'Authority')
+ 25  A            ASVS1          1          COLHDG('Srch' '1 Srch String')
+ 26  A            ASVS2          1          COLHDG('Srch' '2 Change Srch Mode')
+ 27  A            ASVS3          1          COLHDG('Srch' '3 Srch Last Value')
+ 28  A            ASVS4          1          COLHDG('Srch' '4 Choose Srch Idx')
+ 29  A            ASVS5          1          COLHDG('Srch' '5 Create Index')
+ 30  A            ASVS6          1          COLHDG('Srch' '6 Create SpyLnk Idx')
+
+ 31  A            ASVN0          1          COLHDG('Notes' 'Authority')
+ 32  A            ASVN1          1          COLHDG('Notes' '1 Insert/Edit Note')
+ 33  A            ASVN2          1          COLHDG('Notes' '2 Work With Notes')
+
+ 34  A            ASVW0          1          COLHDG('Window' 'Authority ')
+ 35  A            ASVW1          1          COLHDG('Window' '1 Create Wndw')
+ 36  A            ASVW2          1          COLHDG('Window' '2 Select Wndw')
+ 37  A            ASVW3          1          COLHDG('Window' '3 Move Wndw Rht')
+ 38  A            ASVW4          1          COLHDG('Window' '4 Move Wndw Lft')
+ 39  A            ASVW5          1          COLHDG('Window' '5 Clear Wndw')
+ 40  A            ASVW6          1          COLHDG('Window' '6 Clear All Wndw')
+
+ 41  A            ASVP0          1          COLHDG('Print' 'Authority')
+ 42  A            ASVP1          1          COLHDG('Print' '1 To Printer')
+ 43  A            ASVP2          1          COLHDG('Print' '2 To File')
+ 44  A            ASVP3          1          COLHDG('Print' '3 To Fax')
+
+ 45  A            ASVC0          1          COLHDG('Config' 'Authority ')
+ 46  A            ASVC1          1          COLHDG('Config' '1 Display Row #')
+ 47  A            ASVC2          1          COLHDG('Config' '2 Display Col #')
+ 48  A            ASVC3          1          COLHDG('Config' '3 Lock Headings')
+ 49  A            ASVC4          1          COLHDG('Config' '4 UnLock Headings')
+ 50  A            ASVC5          1          COLHDG('Config' '5 Lft/Rht Scroll')
+ 51  A            ASVC6          1          COLHDG('Config' '6 Up/Down Scroll')
+ 52  A            ASVC7          1          COLHDG('Config' '7  80 Col Mode')
+ 53  A            ASVC8          1          COLHDG('Config' '8 132 Col Mode')
+ 54  A            ASVC9          1          COLHDG('Config' '9 Clr Sess Enviro')
+ 55  A            ASVCA          1          COLHDG('Config' 'A Sav Sess Enviro')
+ 56  A            ASVCB          1          COLHDG('Config' 'B Rst Sess Enviro')
+ 57  A            ASVCF          1          COLHDG('Config' 'F Forms')
+
+     A          K ASOBJ
+     A          K ASUID
+     A          K ASUTYP

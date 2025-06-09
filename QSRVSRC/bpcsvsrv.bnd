@@ -1,0 +1,10 @@
+STRPGMEXP PGMLVL(*CURRENT) SIGNATURE(X'000000000A7BBEB30DD6C81737A61946')
+/********************************************************************/
+/*   *SRVPGM      BPCSVSRV     BPEXPSRC     04/25/25  17:54:51      */
+/********************************************************************/
+  EXPORT SYMBOL("CLOSECSV")
+  EXPORT SYMBOL("CSVTABLEDS")
+  EXPORT SYMBOL("FETCHCSV")
+  EXPORT SYMBOL("GETFILESIZE")
+  EXPORT SYMBOL("OPENCSV")
+ENDPGMEXP

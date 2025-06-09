@@ -1,0 +1,51 @@
+      *%METADATA                                                       *
+      * %TEXT Archive Processing File                                  *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RARCHIVE - Archive Processing File        *
+     A* Date created......  2/18/94                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R ARCRC
+     A            AFLDR         10A         COLHDG('Folder')
+     A            AFLDRL        10A         COLHDG('Folder' 'Library')
+     A            AFILNA        10A         COLHDG('File')
+     A            AJOBNA        10A         COLHDG('Job')
+     A            AUSRNA        10A         COLHDG('User' 'Name')
+     A            AJOBNU         6A         COLHDG('Job' 'Number')
+     A            AFILNU         9B 0       COLHDG('File' 'Number')
+     A            ADATFO         9B 0       COLHDG('Date' 'file' 'opened')
+     A            AJOBNM        26A         COLHDG('Qualified' 'Job' 'Name')
+     A            AJOBID        16A         COLHDG('Internal' 'Job' 'Id')
+     A            ACOMPS         1A         COLHDG('Composite Report')
+     A*
+     A            AMONID         2          COLHDG('Monitor' 'Id')
+     A            AQPRTY         2S         COLHDG('Queue' 'Priority')
+     A*
+     A            AOPTIC         4          COLHDG('Parm' 'Optical')
+     A            APATH         12          COLHDG('Parm' 'Optical' 'Path')
+     A            ADLTAF         4          COLHDG('Parm' 'Delete' 'After')
+     A            APURHL         1          COLHDG('Parm' 'Hold' 'Delete')
+     A            ARMVSA         1          COLHDG('Parm' 'Remove' 'Save')
+     A            AHLDST         1          COLHDG('Parm' 'Hold' 'Status')
+     A            AMVQ          10          COLHDG('Parm' 'Move' 'Queue')
+     A            AMVQLB        10          COLHDG('Parm' 'Move' 'QueLib')
+     A            AEXTPG        10          COLHDG('Parm' 'Exit' 'Program')
+     A            AEXTLB        10          COLHDG('Parm' 'Exit' 'PgmLib')
+     A            AMSGQ          1          COLHDG('Parm' 'Message' 'Queue')
+     A            AIND           1          COLHDG('Parm' 'Index')
+     A            ACMPRS         1          COLHDG('Parm' 'Compress')
+     A            ASPL#          5          COLHDG('Parm' 'Spool' 'Number')
+1  K A          K AFLDR
+2  K A          K AFLDRL
+3  K A          K AFILNA
+4  K A          K AJOBNA
+5  K A          K AUSRNA
+6  K A          K AJOBNU
+7  K A          K AFILNU
+7  K A          K ADATFO

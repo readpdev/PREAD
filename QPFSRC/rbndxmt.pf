@@ -1,0 +1,41 @@
+      *%METADATA                                                       *
+      * %TEXT Bundle Transmission Control File                         *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RBNDXMT - Bundle Transmission Control     *
+     A* Date created...... 11/08/95                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R BNDXMT
+     A            BNDFIL         8A         TEXT('Bundle Data File Name')
+     A                                      COLHDG('Bundle' 'File Name')
+     A            BNODE         17A         TEXT('Node ID')
+     A                                      COLHDG('Node' 'ID')
+     A            BSECPW        10A         TEXT('Bundle Password')
+     A                                      COLHDG('Bundle' 'Password')
+     A            BNDLID        10A         TEXT('Bundle ID')
+     A                                      COLHDG('Bundle' 'I.D.')
+     A            BTFRTY         1A         TEXT('Transfer Type')
+     A                                      COLHDG('Transfer' 'Type')
+     A            BEADDR       128A         TEXT('Email Address/HFS Path')
+     A                                      COLHDG('Email Addr/' 'HFS Path')
+     A            BCRTDT         9B 0       TEXT('Bundle Create Date')
+     A                                      COLHDG('Create' 'Date')
+     A            BCRTTM         9B 0       TEXT('Bundle Create Time')
+     A                                      COLHDG('Create' 'Time')
+     A            BTOTSG         5P 0       TEXT('Total Segments')
+     A                                      COLHDG('Total' 'Segments')
+     A            BSNDDT         9B 0       TEXT('Bundle Send Date')
+     A                                      COLHDG('Send' 'Date')
+     A            BSNDTM         9B 0       TEXT('Bundle Send Time')
+     A                                      COLHDG('Send' 'Time')
+     A            BSNDST         1A         TEXT('Bundle Send Status: +
+     A                                            C=Complete, E=Error')
+     A                                      COLHDG('Send' 'Status')
+     A          K BNDFIL

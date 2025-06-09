@@ -1,0 +1,18 @@
+      *%METADATA                                                       *
+      * %TEXT DJE Printer Sequences                                    *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RRPTDJE  - Printer DJE Sequence File      *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*         3/27/95    Dlm            Created for ver 4.02       *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R PRTDJE
+     A            DJENAM        10          COLHDG('Sequence' 'Name')
+     A            DJRDES        30          COLHDG('Description')
+     A            DJESEQ        80          COLHDG('Printer' 'Sequence')
+     A          K DJENAM

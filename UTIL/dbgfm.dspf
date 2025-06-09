@@ -1,0 +1,192 @@
+      *%METADATA                                                       *
+      * %TEXT List jobs for debug                                      *
+      *%EMETADATA                                                      *
+     A*%%TS  SD  20160107  133219  PREAD       REL-V7R2M0  5770-WDS
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3                  -
+     A                                             27 132 *DS4)
+     A                                      INDARA
+     A                                      ALTHELP
+     A                                      CA03(03)
+     A                                      CA05(05)
+     A                                      CA12(12)
+     A                                      HELP(01)
+     A          R SFL01                     SFL
+     A                                      SFLNXTCHG
+     A*%%TS  SD  20040310  164158  PREAD       REL-V5R1M0  5722-WDS
+     A            RRNHID         4S 0H
+     A            R_INTJOB      16A  H
+     A            OPTION         1A  B  8  8
+     A                                      CHECK(FE)
+     A  31                                  DSPATR(ND)
+     A  31                                  DSPATR(PR)
+     A            R_JOBNAM      10A  O  8 12
+     A            R_USRNAM      10A  O  8 24
+     A            R_JOBNUM       6A  O  8 36
+     A            R_STATUS      10A  O  8 48
+     A            ACTJOBSTS      4A  O  8 60
+     A            FUNCTION      10A  O  8 66
+     A          R CTL01                     SFLCTL(SFL01)
+     A*%%TS  SD  20160107  133219  PREAD       REL-V7R2M0  5770-WDS
+     A  *DS3                                SFLSIZ(0011)
+     A  *DS4                                SFLSIZ(0011)
+     A  *DS3                                SFLPAG(0010)
+     A  *DS4                                SFLPAG(0010)
+     A                                      CA21(21)
+     A                                      CA07(07)
+     A                                      CA08(08)
+     A                                      CA11(11)
+     A                                      CA13(13)
+     A                                      OVERLAY
+     A                                      SFLCSRRRN(&CSRRRN1)
+     A  25                                  SFLDSP
+     A                                      SFLDSPCTL
+     A  26                                  SFLDLT
+     A N99                                  SFLEND(*MORE)
+     A            RRN1           4S 0H      SFLRCDNBR(CURSOR)
+     A            CSRRRN1        5S 0H
+     A                                  7  7'Opt'
+     A                                      DSPATR(UL)
+     A                                      DSPATR(HI)
+     A                                  7 12'Job Name  '
+     A                                      DSPATR(UL)
+     A                                      DSPATR(HI)
+     A                                  7 24'User Name '
+     A                                      DSPATR(UL)
+     A                                      DSPATR(HI)
+     A                                  7 36'Job Number'
+     A                                      DSPATR(HI)
+     A                                      DSPATR(UL)
+     A                                  7 48'Status          '
+     A                                      DSPATR(HI)
+     A                                      DSPATR(UL)
+     A                                  3 14'User:'
+     A            USER          10A  B  3 20DSPATR(HI)
+     A                                  3 49'Status:'
+     A                                  1 29'Work with Jobs for Debug'
+     A                                      DSPATR(HI)
+     A                                  5  8'1=StrDbg 2=Change 3=Hold 4=End 5=W-
+     A                                      rkJob 6=Rls 7=Stack'
+     A                                      COLOR(BLU)
+     A                                  7 66'Function  '
+     A                                      DSPATR(HI)
+     A                                      DSPATR(UL)
+     A                                  2  3'JobQ'
+     A                                      COLOR(RED)
+     A N32                                  DSPATR(ND)
+     A            HELDQ         26A  O  2  8COLOR(RED)
+     A N32                                  DSPATR(ND)
+     A                                  2 36'F8 to Release'
+     A                                      COLOR(RED)
+     A N32                                  DSPATR(ND)
+     A            VERSION       10A  O  1 69
+     A            STATUS        10A  O  3 57
+     A                                  3 32'Job:'
+     A            JOB           10A  B  3 37DSPATR(HI)
+     A                                  1  3SYSNAME
+     A            JOBNAM        10   O  1 13
+     A          R RECORD01
+     A*%%TS  SD  20061221  153225  PREAD       REL-V5R4M0  5722-WDS
+     A  70                                  OVERLAY
+     A                                 23  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 23 11'F5=Refresh'
+     A                                      COLOR(BLU)
+     A                                 23 23'F7=EndDbg'
+     A                                      COLOR(BLU)
+     A                                 23 34'F8=Hld/Rls JobQ'
+     A                                      COLOR(BLU)
+     A                                 23 51'F11=Toggle Status'
+     A                                      COLOR(BLU)
+     A                                 23 70'F21=CmdLin'
+     A                                      COLOR(BLU)
+     A          R DEBUGWDW
+     A*%%TS  SD  20030724  201338  PREAD       REL-V4R4M0  5769-PW1
+     A                                      WINDOW(2 2 3 19 *NOMSGLIN)
+     A                                  1  1'Program:'
+     A                                  2  1'Library:'
+     A            PGMNAM        10A  B  1 10DSPATR(HI)
+     A                                      DSPATR(UL)
+     A            PGMLIB        10A  B  2 10DSPATR(HI)
+     A                                      DSPATR(UL)
+     A                                  3  1'F12=Cancel'
+     A                                      COLOR(BLU)
+     A          R JOBQWDW
+     A*%%TS  SD  20030910  091321  PREAD       REL-V4R4M0  5769-PW1
+     A                                      WINDOW(2 2 3 19 *NOMSGLIN)
+     A                                  1  1'JobQ:'
+     A                                  2  1'Library:'
+     A            JOBQ          10A  B  1 10DSPATR(HI)
+     A                                      DSPATR(UL)
+     A            JOBQLIB       10A  B  2 10DSPATR(HI)
+     A                                      DSPATR(UL)
+     A                                  3  1'F12=Cancel'
+     A                                      COLOR(BLU)
+     A          R MSGSFL                    SFL
+     A                                      SFLMSGRCD(24)
+     A            MSGKEY                    SFLMSGKEY
+     A            PGMQ                      SFLPGMQ(10)
+     A          R MSGCTL                    SFLCTL(MSGSFL)
+     A                                      OVERLAY
+     A                                      SFLDSP
+     A                                      SFLDSPCTL
+     A                                      SFLINZ
+     A N99                                  SFLEND
+     A                                      SFLSIZ(0002)
+     A                                      SFLPAG(0001)
+     A            PGMQ                      SFLPGMQ(10)
+     A          R DUMMY
+     A                                      KEEP
+     A                                      ASSUME
+     A                                  1  3' '
+     A          R SFL02                     SFL
+     A*%%TS  SD  20070406  142038  PREAD       REL-V5R4M0  5722-WDS
+     A            RRNHID         4S 0H
+     A            R_INTJOB      16A  H
+     A            STK_PGM       10A  O  6 18
+     A            STK_MOD       10A  O  6 42
+     A            STK_PROC      10A  O  6 54
+     A            STK_LIB       10A  O  6 30
+     A          R CTL02                     SFLCTL(SFL02)
+     A*%%TS  SD  20070406  142038  PREAD       REL-V5R4M0  5722-WDS
+     A  *DS3                                SFLSIZ(0015)
+     A  *DS4                                SFLSIZ(0011)
+     A  *DS3                                SFLPAG(0014)
+     A  *DS4                                SFLPAG(0010)
+     A                                      CA21(21)
+     A                                      CA07(07)
+     A                                      CA08(08)
+     A                                      CA11(11)
+     A                                      OVERLAY
+     A  25                                  SFLDSP
+     A                                      SFLDSPCTL
+     A  26                                  SFLDLT
+     A N99                                  SFLEND(*MORE)
+     A            RRN2           4S 0H      SFLRCDNBR(CURSOR)
+     A                                  1 29'Work with Jobs for Debug'
+     A                                      DSPATR(HI)
+     A                                  2  3'JobQ'
+     A                                      COLOR(RED)
+     A N32                                  DSPATR(ND)
+     A            HELDQ         26A  O  2  8COLOR(RED)
+     A N32                                  DSPATR(ND)
+     A                                  3  3'F8 to Release'
+     A                                      COLOR(RED)
+     A N32                                  DSPATR(ND)
+     A            VERSION       10A  O  1 69
+     A                                  3 34'Display Stack'
+     A                                  5 18'Program'
+     A                                      DSPATR(HI)
+     A                                  5 42'Module'
+     A                                      DSPATR(HI)
+     A                                  5 54'Procedure'
+     A                                      DSPATR(HI)
+     A                                  5 30'Library'
+     A                                      DSPATR(HI)
+     A          R RECORD02
+     A*%%TS  SD  20070406  134232  PREAD       REL-V5R4M0  5722-WDS
+     A  70                                  OVERLAY
+     A                                 23  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 23 11'F12=Cancel'
+     A                                      COLOR(BLU)

@@ -1,0 +1,14 @@
+      *%METADATA                                                       *
+      * %TEXT StaffView Trace File                                     *
+      *%EMETADATA                                                      *
+      *
+/3595 * 01-03-01 PLR CREATED. WILL CONTAIN THE TRACE RECORDS FOR STAFFVIEW.
+      *
+                                            CCSID(65535)
+                R MSREC
+                  MSDATETIME      Z         TEXT('DATE TIME')
+                  MSLEVEL        9B 0       TEXT('MSG LVL')
+                  MSNODE        17          TEXT('NODE ID')
+                  MSJOBID        6          TEXT('JOB ID')
+                  MSMSG        128          TEXT('MESSAGE TEXT')
+                K MSDATETIME

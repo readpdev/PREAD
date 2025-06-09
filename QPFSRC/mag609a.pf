@@ -1,0 +1,30 @@
+      *%METADATA                                                       *
+      * %TEXT Bundle Printing Determination Temp File A                *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... MAG601A - Bundle Printing Determination   *
+     A* Date created...... 5/12/94                     Temp File A   *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A          R RC601A
+     A            #BPRIO         2A         COLHDG('Bundle' 'Priority')
+     A            #BUNDL        10A         COLHDG('Bundle' 'I.D')
+     A            #SUBSC        10A         COLHDG('Subscriber')
+     A            #REPT         10A         COLHDG('Report' 'Type' 'Id')
+     A            #SPRIO         2A         COLHDG('Segment' 'Priority')
+     A            #SEGMT        10A         COLHDG('Segment' 'I.D')
+     A            #SUBSL        10A         COLHDG('Subscriber' 'List' 'Id')
+     A            #AVLPR         1A         COLHDG('Available' 'To Print')
+     A            #PRTDT         9B         COLHDG('Print Date')
+     A            #PRTTM         9B         COLHDG('Print Time')
+     A          K #BPRIO
+     A          K #BUNDL
+     A          K #SUBSC
+     A          K #REPT
+     A          K #SPRIO
+     A          K #SEGMT

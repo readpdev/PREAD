@@ -1,0 +1,47 @@
+      *%METADATA                                                       *
+      * %TEXT Storage Volumes                                          *
+      *%EMETADATA                                                      *
+      *
+/3350 * 02-08-01 PLR ADDED A SWITCH TO ALLOW READ-ONLY ACCESS TO MIRROR BACKUP.
+      *              DONE IN CASE PRIMARY STORAGE BECOMES CORRUPT.
+      *
+     A                                      UNIQUE
+     A                                      CCSID(65535)
+     A          R STGVOLF
+     A            SVVOL         12          COLHDG('Volume' 'Name')
+     A            SVACT          1          COLHDG('Active')
+     A            SVTYP          1          COLHDG('Volume' 'Type')
+      *                                      Y=Backup, N=REGULAR
+     A            SVUSE         15  0       COLHDG('Used BYTES')
+     A            SVCAP         15  0       COLHDG('Capacity BYTES')
+     A            SVTHR          5  2       COLHDG('Threshhold %')
+     A            SVFUL          1          COLHDG('Full Y/N')
+     A            SVDEV         10          COLHDG('Device')
+     A            SVDFU          9B 0       COLHDG('Date' 'First' 'Used')
+     A                                      EDTWRD('     /  /  ')
+     A            SVTFU          9B 0       COLHDG('Time' 'First' 'Used')
+     A                                      EDTWRD('     :  :  ')
+     A            SVDLR          9B 0       COLHDG('Date' 'Last' 'Read')
+     A                                      EDTWRD('     /  /  ')
+     A            SVTLR          9B 0       COLHDG('Time' 'Last' 'Read')
+     A                                      EDTWRD('     :  :  ')
+     A            SVDLW          9B 0       COLHDG('Date' 'Last' 'Write')
+     A                                      EDTWRD('     /  /  ')
+     A            SVTLW          9B 0       COLHDG('Time' 'Last' 'Write')
+     A                                      EDTWRD('     :  :  ')
+     A            SVDTR          9B 0       COLHDG('Date' 'Threshold' 'Reached')
+     A                                      EDTWRD('     /  /  ')
+     A            SVTTR          9B 0       COLHDG('Time' 'Threshold' 'Reached')
+     A                                      EDTWRD('     :  :  ')
+     A            SVBVOL        12          COLHDG('Backup' 'Volume' 'Name')
+     A            SVBTYP         1          COLHDG('Backup' 'Type')
+      *                                       I=Immed
+      *                                       M=MANUAL
+      *                                       N=None
+     A            SVSTS          1          COLHDG('Status')
+      *                                       E=Error
+      *                                       R=Recover
+      *                                        =Normal
+/3350A            SVRFM          1          COLHDG('Read from' 'Mirror')
+
+     A          K SVVOL

@@ -1,0 +1,7 @@
+     A*%%TS  SD  20070607  141135  PREAD       REL-V5R4M0  5722-WDS
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3)
+     A          R EXIT
+     A*%%TS  SD  20070607  141135  PREAD       REL-V5R4M0  5722-WDS
+     A                                 13 37'Exit?'
+     A            EXIT           1   B 13 43

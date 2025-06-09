@@ -1,0 +1,41 @@
+      *%METADATA                                                       *
+      * %TEXT Mockup of keycode interface changes.                     *
+      *%EMETADATA                                                      *
+     A*%%TS  SD  20150220  081859  PREAD       REL-V6R1M0  5761-WDS
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3)
+     A          R CLIENT
+     A*%%TS  SD  20150220  081859  PREAD       REL-V6R1M0  5761-WDS
+     A                                  1 27'Open Text License Management'
+     A                                      DSPATR(HI)
+     A                                  3 20'Serial   '
+     A                                  3 46'Version   '
+     A                                  4 20'Model   '
+     A                                  5 20'Feature   '
+     A                                  5 46'LPAR Number   '
+     A                                  4 46'Library   '
+     A                                  3 29'1058E22   '
+     A                                      DSPATR(HI)
+     A                                  3 59'9.2   '
+     A                                      DSPATR(HI)
+     A                                  4 29'M15   '
+     A                                      DSPATR(HI)
+     A                                  5 29'5633   '
+     A                                      DSPATR(HI)
+     A                                  5 59'1   '
+     A                                      DSPATR(HI)
+     A                                  4 59'DOCMGROBJ   '
+     A                                      DSPATR(HI)
+     A                                  6 20'Key'
+     A                                  6 29'38B3E7CF9F017809DA6E02E33D445A4B'
+     A                                      DSPATR(HI)
+     A                                      DSPATR(UL)
+     A            OPTION         1   B 11  7DSPATR(HI)
+     A                                  8  3'Licensed Products                 -
+     A                                                                         -
+     A                                             '
+     A                                      DSPATR(HI)
+     A                                      DSPATR(UL)
+     A                                  9  4'Options  1=Select 4=Delete '
+     A                                      COLOR(BLU)
+     A                                 10  6'Opt'

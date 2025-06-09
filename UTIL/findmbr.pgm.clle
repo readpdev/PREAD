@@ -1,0 +1,61 @@
+      /*%METADATA                                                     */
+      /* %TEXT Find Source Member                                     */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&MEMBER &LIBRARY &OPERATION)
+
+             DCL        VAR(&MEMBER) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OPERATION) TYPE(*CHAR) LEN(1)
+
+             DCL        VAR(&USRLIBL) TYPE(*CHAR) LEN(2750)
+             DCL        VAR(&LIBNAMEP) TYPE(*PTR) ADDRESS(&USRLIBL)
+             DCL        VAR(&LIBNAME) TYPE(*CHAR) STG(*BASED) +
+                          LEN(10) BASPTR(&LIBNAMEP)
+
+             DCL        VAR(&SRCFILES) TYPE(*CHAR) LEN(110) +
+                          VALUE('H         QCSRC     QRPGSRC   +
+                          QRPGLESRC QCMDSRC   QCLSRC    QCLLESRC  +
+                          QDDSSRC   QPFSRC    QLFSRC    UTIL      ')
+             DCL        VAR(&SRCFILP) TYPE(*PTR) ADDRESS(&SRCFILES)
+             DCL        VAR(&SRCFIL) TYPE(*CHAR) STG(*BASED) +
+                          LEN(10) BASPTR(&SRCFILP)
+
+             DCL        VAR(&I) TYPE(*INT)
+             DCL        VAR(&FOUND) TYPE(*LGL) VALUE('0')
+             DCL        VAR(&FOUNDONE) TYPE(*LGL) VALUE('0')
+
+             RTVJOBA    USRLIBL(&USRLIBL)
+
+             IF         COND(&LIBRARY *NE ' ') THEN(CHGVAR +
+                          VAR(&LIBNAME) VALUE(&LIBRARY))
+
+             DOWHILE    COND(&LIBNAME *NE ' ')
+             DOFOR      VAR(&I) FROM(1) TO(11)
+             CHGVAR     VAR(&FOUND) VALUE('1')
+             CHKOBJ     OBJ(&LIBNAME/&SRCFIL) OBJTYPE(*FILE) +
+                          MBR(&MEMBER)
+             MONMSG     MSGID(CPF9801 CPF9802 CPF9810 CPF9815 +
+                          CPF9820 CPF9830 CPF9899) EXEC(DO)
+             CHGVAR     VAR(&FOUND) VALUE('0')
+             RCVMSG     RMV(*YES)
+             ENDDO
+             IF         COND(&FOUND) THEN(DO)
+             CHGVAR     VAR(&FOUNDONE) VALUE(&FOUND)
+             IF         COND(&OPERATION *EQ 'F') THEN(WRKMBRPDM +
+                          FILE(&LIBNAME/&SRCFIL) MBR(&MEMBER))
+             IF         COND(&OPERATION *EQ 'B') THEN(STRSEU +
+                          SRCFILE(&LIBNAME/&SRCFIL) SRCMBR(&MEMBER) +
+                          OPTION(5))
+             ENDDO
+             CHGVAR     VAR(%OFS(&SRCFILP)) +
+                          VALUE(%OFS(&SRCFILP) + 10)
+             ENDDO
+             CHGVAR     VAR(&SRCFILP) VALUE(%ADDR(&SRCFILES))
+             CHGVAR     VAR(%OFS(&LIBNAMEP)) VALUE(%OFS(&LIBNAMEP) + +
+                          11)
+             ENDDO
+
+             IF         COND(&FOUNDONE = '0') THEN(SNDPGMMSG +
+                          MSG('Member not found in library list.'))
+
+             ENDPGM

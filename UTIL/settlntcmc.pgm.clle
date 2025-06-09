@@ -1,0 +1,24 @@
+             PGM        PARM(&SYSTEM &PWD)
+
+             DCL        VAR(&SYSTEM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PWD) TYPE(*CHAR) LEN(30)
+
+             DCL        VAR(&DFTSTR) TYPE(*CHAR) LEN(100)
+
+             CHKOBJ     OBJ(&SYSTEM) OBJTYPE(*CMD)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+             CRTDUPOBJ  OBJ(TELNET2CMD) FROMLIB(*LIBL) OBJTYPE(*CMD) +
+                          NEWOBJ(&SYSTEM)
+             CHGVAR     VAR(&DFTSTR) VALUE('SYSTEM(' |< '''' |< +
+                          &SYSTEM |< '''' |< ')')
+             CHGCMDDFT  CMD(&SYSTEM) NEWDFT(&DFTSTR)
+             ENDDO
+
+             CHGVAR     VAR(&DFTSTR) VALUE('PASSWORD(' |< '''' |< +
+                          &PWD |< '''' |< ')')
+
+             CHGCMDDFT  CMD(&SYSTEM) NEWDFT(&DFTSTR)
+
+             CALL       PGM(QCMDEXC) PARM(&SYSTEM 10)
+
+             ENDPGM

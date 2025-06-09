@@ -1,0 +1,18 @@
+      *%METADATA                                                       *
+      * %TEXT Web Security - User Registration                         *
+      *%EMETADATA                                                      *
+      *********--------
+      * WEUSRP  WEB Security - User Description
+      *********--------
+
+     A                                      UNIQUE
+     A          R WEUSRF                    TEXT('WEB User Registration')
+      *           ******
+      *
+     A            WEUSR         20          COLHDG('User')
+     A            WEDSC         40          COLHDG('Description')
+     A            WEACT          1          COLHDG('Active' 'Y/N')
+     A            WEPRF         10          COLHDG('System' 'Profile')
+     A
+     A          K WEUSR
+

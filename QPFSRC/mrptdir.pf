@@ -1,0 +1,107 @@
+      *%METADATA                                                       *
+      * %TEXT Report Directory File                                    *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... MRPTDIR - Magellan Report Directory File  *
+      * Date created...... 3/11/93                                   *
+      *                                                              *
+/9003 *  5/27/04 added new field MRHASH to hold a hash value         *
+ JMO  * 10/16/03 REMOVED KEY. ALL KEYED ACCESS WILL NOW USE MRPTDIR1 *
+ DM   *  1/28/94 ADD LOCSFC AND PKVER                                *
+ DM   * 10/04/94 ADD APFTYP                                          *
+      ********-------------------------------------------------------*
+      * NOTE:  IF A FIELD IS ADDED OR SUBTRACTED MRPTDIR NEEDS TO BE *
+      *        COPIED TO MAG5022R, MRPTOPN, NEWDIR, TRPTDIR          *
+      *        ALSO CHANGE THE RECORD LENGTH IN SPYCSRPTN PROGRAM    *
+      ********-------------------------------------------------------*
+     A                                      CCSID(65535)
+     A                                      REF(MVARDEFS)
+      *
+     A          R RPTDIR
+K1   A            FLDR          10A         COLHDG('Folder')
+K2   A            FLDRLB        10A         COLHDG('Folder' 'Library')
+K3   A            FILNAM        10A         COLHDG('File')
+K4   A            JOBNAM        10A         COLHDG('Job')
+K5   A            USRNAM        10A         COLHDG('User' 'Name')
+K6   A            JOBNUM         6A         COLHDG('Job' 'Number')
+K7   A            FILNUM         9B 0       COLHDG('File' 'Number')
+     A            CHKSUM    R               REFFLD(CHKSUM)
+     A            FRMTYP    R               REFFLD(FRMTYP)
+     A            USRDTA    R               REFFLD(USRDTA)
+     A            HLDF      R               REFFLD(HLDF)
+     A            SAVF      R               REFFLD(SAVF)
+     A            TOTPAG    R               REFFLD(TOTPAG)
+     A            TOTCPY    R               REFFLD(TOTCPY)
+     A            LPI       R               REFFLD(LPI)
+     A            CPI       R               REFFLD(CPI)
+     A            OUTQNM    R               REFFLD(OUTQNM)
+     A            OUTQLB    R               REFFLD(OUTQLB)
+     A            DATFOP    R               REFFLD(DATFOP)
+     A            TIMFOP    R               REFFLD(TIMFOP)
+     A            DEVFNA    R               REFFLD(DEVFNA)
+     A            PGMOPF    R               REFFLD(PGMOPF)
+     A            PRTTXT    R               REFFLD(PRTTXT)
+     A            DEVCLS    R               REFFLD(DEVCLS)
+     A            OVRLIN    R               REFFLD(OVRLIN)
+     A            PRTFON    R               REFFLD(PRTFON)
+     A            PAGROT    R               REFFLD(PAGROT)
+     A            MAXSIZ         9B 0       COLHDG('Max' 'Record' 'Length')
+     A            ADSF           9B 0       COLHDG('SplFil' 'Archive' 'Date')
+     A            EXPDAT         9B 0       COLHDG('SplFil' 'Expiration' 'Date')
+     A            LOCSFA         9B 0       COLHDG('SplFil' 'Attr' 'Location')
+     A            LOCSFD         9B 0       COLHDG('SplFil' 'Data' 'Location')
+     A            LOCSFP         9B 0       COLHDG('SplFil' 'PagTbl' 'Location')
+     A            LOCSFC         9B 0       COLHDG('SplFil' 'PakTbl' 'Location')
+      *    Locs:  A= 1st Attribute rec (2nd rpt rec)
+      *           D= 1st Data rec (SFA + 13)
+      *           P= 1st Page table rec
+      *           C= 1st Compressed page teble rec (if 0, not cmprssd)
+     A            PAGSIZ    R               REFFLD(PAGSIZ)
+     A            RECOVR    R               REFFLD(RECOVR)
+     A            REPIND        10A         COLHDG('Report' 'Index')
+      *    RepInd = SPYnnnnnnn
+     A            RPIXNM    R               REFFLD(RPIXNM)
+     A            DFTPRT    R               REFFLD(DFTPRT)
+     A            DPDESC    R               REFFLD(DPDESC)
+     A            REPLOC    R               REFFLD(REPLOC)
+      *    RepLoc = blank/0=Dasd  1=Tape 2=Optical
+      *             4=R/DARS Optical
+      *             5=R/DARS QDLS (DASD/ONLINE)
+      *             6=ImageView Optical
+     A            OFRVOL        10A         COLHDG('Offline' 'Rep.' 'Volume')
+     A            OFRDAT         9B 0       COLHDG('Offline' 'Rep.' 'Date')
+     A            OFRNAM        10A         COLHDG('Offline' 'Rep.' 'Name')
+     A            PKVER          1A         COLHDG('Compress' 'Ver.')
+     A            APFTYP         1A         COLHDG('Adv.Prt.' 'Type')
+      *     ApfTyp: blank: Regular SCS
+      *                 1: IPDS and Advanced SCS
+      *                 2: AFPDS and USERASCII
+      *                 3: PCL5
+     A            OFRSYS         1A         COLHDG('Tape' 'File' 'Sys' )
+      *                 B: BRMS
+     A            OFRTYP         1A         COLHDG('Tape' 'File' 'Type')
+      *                 R: Record level (not object) access*
+     A            OFRSEQ         4A         COLHDG('Tape' 'File' 'Seq#')
+     A            MDATOP         9B 0       COLHDG('Override' 'Date' 'Created')
+     A            MTIMOP         9B 0       COLHDG('Override' 'Time' 'Created')
+     A            FILLR3    R               REFFLD(FILLR3)
+     A            RPTTYP        10          COLHDG('Report' 'Type ID')
+     A            MRHASH        16H         COLHDG('Report' 'Hash')
+     A                                      DFT(X'00000000000000000000+
+     A                                      000000000000')
+      *
+      * Logicals: 1. Folder, Libr, File, Job, Usr, Jobno, Filno
+      *           2. Folder, Libr, Usr, File, Job, Jobno, Filno
+      *           3. Fil,Job,Pgm,Usr,Usrdta,Fldr,Lib,DtBlt(d),TimBlt(d)
+      *           4. File, Folder, Libr, Job, Usr, Jobno, Filno
+      *           5. Usr, File, Job, Pgm, UsrDta, Folder, Libr
+      *           6. Jobno, Filno, DtBlt
+      *           7. RepInd (Spy Identifier)
+      *           8. Folder, Libr, File, Job, Pgm, Usr, UsrDta
+      *           9. File, Job, Pgm, Usr, UsrDta
+      *          10. Fldr,Libr,Date,File,Time,Job,Usr,Jobno,Filno
+      *          11. Folder,Libr,UserDta,File,Job,Usr,Jobno,Filno
+      *          12. Fldr,Libr,RepTyp,Date,Time,RepInd
+      *          13. RepTyp,Date,Time,RepInd

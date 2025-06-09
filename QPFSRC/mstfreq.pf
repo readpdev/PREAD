@@ -1,0 +1,72 @@
+      *%METADATA                                                       *
+      * %TEXT StaffView Request file                                   *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      * StaffView Server Request
+      *
+     A                                      CCSID(65535)
+     A          R STFREQ
+      *
+     A            STRQID         9B 0       TEXT('Request ID')
+     A                                      EDTCDE(Z)
+     A            STOPCD         1          TEXT('Operation Code')
+     A                                      COLHDG('Op' 'Code')
+      *                                     'S'=Start a Case
+      *                                     'T'=Trigger a Case Event
+     A            STSTS          1          TEXT('Status')
+     A                                      COLHDG('Status')
+      *                                     'N'=New, not sent yet
+      *                                     'R'=Released (was held)
+      *                                     'H'=Held
+      *                                     'E'=ERROR
+      *
+     A            STPROC         8          TEXT('StaffView Procedure')
+     A                                      COLHDG('StaffView' 'Procedure')
+     A            STSTEP         8          TEXT('StaffView Step')
+     A                                      COLHDG('StaffView' 'Step')
+     A            STCASE        10          TEXT('StaffView Case')
+     A                                      COLHDG('StaffView' 'Case')
+     A            STWPID         9B 0       TEXT('Work Packet ID')
+     A                                      EDTCDE(Z)
+      *
+     A            STPRO         10          TEXT('WorkView Prcess')
+     A                                      COLHDG('WorkView' 'Process')
+     A            STPRJ         10          TEXT('WorkView Project')
+     A                                      COLHDG('WorkView' 'Project')
+     A            STRTYP        10          TEXT('SpyView Doc Class')
+     A                                      COLHDG('SpyView' 'Doc Class')
+     A            STOBJ         20          TEXT('SpyView Object')
+     A                                      COLHDG('SpyView' 'Object')
+     A            STTYP         10          TEXT('SpyView Object Type')
+     A                                      COLHDG('SpyView' 'Object' 'Type')
+      *
+     A            STCDAT         8B 0       TEXT('Capture Date')
+     A                                      COLHDG('Capture' 'Date' 'YYYYMMDD')
+     A                                      EDTWRD('    .  .  ')
+     A            STCTIM         6B 0       TEXT('Capture Time')
+     A                                      COLHDG('Capture' 'Time' 'HHMMSS')
+     A                                      EDTWRD('  :  :  ')
+      *
+     A            STUDAT         8B 0       TEXT('Upload Date')
+     A                                      COLHDG('Upload' 'Date' 'YYYYMMDD')
+     A                                      EDTWRD('    .  .  ')
+     A            STUTIM         6B 0       TEXT('Upload Time')
+     A                                      COLHDG('Upload' 'Time' 'HHMMSS')
+     A                                      EDTWRD('  :  :  ')
+      *
+     A            STNDAT         8B 0       TEXT('Notify Date')
+     A                                      COLHDG('Notify' 'Date' 'YYYYMMDD')
+     A                                      EDTWRD('    .  .  ')
+     A            STNTIM         6B 0       TEXT('Notify Time')
+     A                                      COLHDG('Notify' 'Time' 'HHMMSS')
+     A                                      EDTWRD('  :  :  ')
+      *
+     A            STRTRY         9B 0       TEXT('Error Retry Count')
+     A                                      COLHDG('Error' 'Retry' 'Count')
+     A                                      EDTCDE(Z)
+     A            STEMSG         7A         TEXT('Error Message ID')
+     A                                      COLHDG('Error' 'MSGID')
+     A            STEDTA       100A         TEXT('Error Message Data')
+     A                                      COLHDG('Error' 'MSG' 'Data')
+     A          K STRQID

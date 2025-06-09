@@ -1,0 +1,25 @@
+      *%METADATA                                                       *
+      * %TEXT Maduro - Text Data for Overlay Test                      *
+      *%EMETADATA                                                      *
+     A*%%***********************************************************************
+     A*%%TS  RD  20090318  104142  PREAD       REL-V6R1M0  5761-WDS
+     A*%%FI+10660100000000000000000000000000000000000000000000000000
+     A*%%FI       0000000000000000000000000000000000000000000000000
+     A*%%***********************************************************************
+     A          R RCD002
+     A*%%***********************************************************************
+     A*%%RI 00001
+     A*%%SS
+     A*%%SS     this is                some                sample data
+     A*%%CP+999CRTPRTF
+     A*%%CP+    FILE(PREAD/MADURO)
+     A*%%CP+    DEVTYPE(*SCS)
+     A*%%CP     PAGESIZE(*N       132      *N     )
+     A*%%CS+999CRTPRTF
+     A*%%CS+    FILE(QTEMP/QPRDRPT   )
+     A*%%CS+    DEVTYPE(*SCS)
+     A*%%CS     PAGESIZE(*N       132      *N     )
+     A*%%***********************************************************************
+This  *          is                a                 test
+line 2
+yet an*ther line

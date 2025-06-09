@@ -1,0 +1,24 @@
+      *%METADATA                                                       *
+      * %TEXT Index Lock File                                          *
+      *%EMETADATA                                                      *
+      * CRTOPT REUSEDLT(*YES)
+      * CRTOPT SIZE(*NOMAX)
+      **********
+      * MIDXLCK  SpyView Index Lock File
+      **********
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R IDXLCKF                   TEXT('SpyView Index Lock File')
+     A            ILBCH         10A         COLHDG('Batch ID')
+     A            ILSEQ          9  0       COLHDG('Batch' 'Seq#')
+     A                                      EDTCDE(Z)
+     A            ILJOB         10A         COLHDG('Job' 'Name')
+     A            ILUSR         10A         COLHDG('Job' 'User')
+     A            ILJOBN         6A         COLHDG('Job' 'Number')
+     A            ILODAT         9B 0       COLHDG('Date' 'Opened')
+     A                                      EDTWRD('     /  /  ')
+     A            ILOTIM         9B 0       COLHDG('Time' 'Opened')
+     A                                      EDTWRD('     :  :  ')
+     A            ILSTS          1A         COLHDG('Status')
+     A          K ILBCH
+     A          K ILSEQ

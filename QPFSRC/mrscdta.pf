@@ -1,0 +1,14 @@
+      *%METADATA                                                       *
+      * %TEXT Resource Data File                                       *
+      *%EMETADATA                                                      *
+      **********
+      * MRSCDTA  Resource Data file
+      **********
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R RSCDTA                    TEXT('Resource Data')
+     A            RARID         10A         COLHDG('Resource' 'ID')
+     A            RARSEQ         9B 0       COLHDG('Resource' 'Sequence#')
+     A            RADATA      1024A         COLHDG('Resource' 'Data')
+     A          K RARID
+     A          K RARSEQ

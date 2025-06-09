@@ -1,0 +1,14 @@
+      *%METADATA                                                       *
+      * %TEXT Annotation Template Data File                            *
+      *%EMETADATA                                                      *
+      **********
+      * MATMDTA  Annotation Template Data file
+      **********
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R ATMDTA                    TEXT('Annotation Template Data')
+     A            AATID          9B 0       COLHDG('ATM' 'ID')
+     A            AATSEQ         9B 0       COLHDG('ATM' 'Sequence#')
+     A            AADATA      1024A         COLHDG('ATM' 'Data')
+     A          K AATID
+     A          K AATSEQ

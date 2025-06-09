@@ -1,0 +1,17 @@
+      /*%METADATA                                                     */
+      /* %TEXT Reclaim activation group                               */
+      /*%EMETADATA                                                    */
+             PGM
+
+             RCLRSC
+             RCLRSC     OPTION(*ABNORMAL)
+             RCLRSC     LVL(*CALLER)
+             RCLRSC     LVL(*CALLER) OPTION(*ABNORMAL)
+
+             RCLACTGRP  ACTGRP(*ELIGIBLE)
+             RCLACTGRP  ACTGRP(*ELIGIBLE) OPTION(*ABNORMAL)
+             RCLACTGRP  ACTGRP(*ELIGIBLE)
+
+             SNDPGMMSG  MSG('Activation and resource reclamation +
+                          complete.')
+             ENDPGM

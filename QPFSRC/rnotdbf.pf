@@ -1,0 +1,20 @@
+      *%METADATA                                                       *
+      * %TEXT Note Database                                            *
+      *%EMETADATA                                                      *
+      *                    Magellan Software
+      *
+      * Physical file..... RNOTDBF  - NOTE Database Template
+      * Date created......  10/95
+
+     A                                      UNIQUE
+     A          R NOTDBF
+     A            NOTPG          9B 0       COLHDG('Page No.')
+     A            NOTNBR         9B 0       COLHDG('Note No.')
+     A            NOTCD          1          COLHDG('Record' 'Type')
+     A            NOTSEQ         9B 0       COLHDG('Seq' 'No.')
+     A            NOTDTA        72          COLHDG('Note Text')
+
+     A          K NOTPG
+     A          K NOTNBR
+     A          K NOTCD
+     A          K NOTSEQ

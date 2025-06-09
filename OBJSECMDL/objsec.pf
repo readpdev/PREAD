@@ -1,0 +1,16 @@
+      *%METADATA                                                       *
+      * %TEXT Object Security                                          *
+      *%EMETADATA                                                      *
+                R OBJSECREC
+                  OSR_OBJID     10          COLHDG('Object' 'ID')
+                                            TEXT('Object ID')
+                  OSR_OBJSID    10          COLHDG('Object' 'SubID')
+                                            TEXT('Object SubID')
+                  OSR_OBJLIB    10          COLHDG('Object' 'Library')
+                                            TEXT('Object Library')
+                  OSR_OBJTYP    10          COLHDG('Object' 'Type')
+                                            TEXT('Object Type')
+                  OSR_OBJUGP    10          COLHDG('User' 'Group' 'Public')
+                                            TEXT('User/Group/Public')
+                  OSR_OBJSEC    16          COLHDG('Object' 'Permissions')
+                                            TEXT('Object Permissions')

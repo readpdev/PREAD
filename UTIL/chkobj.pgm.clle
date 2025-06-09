@@ -1,0 +1,14 @@
+             PGM        PARM(&OBJECT &LIBRARY &TYPE &RTNSTATUS)
+
+             DCL        VAR(&OBJECT) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TYPE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RTNSTATUS) TYPE(*LGL)
+
+             CHGVAR     VAR(&RTNSTATUS) VALUE('1')
+             CHKOBJ     OBJ(&LIBRARY/&OBJECT) OBJTYPE(&TYPE)
+             MONMSG     MSGID(CPF9801 CPF9810) EXEC(CHGVAR VAR(&RTNSTATUS) VALUE('0'))
+
+             RETURN
+
+             ENDPGM

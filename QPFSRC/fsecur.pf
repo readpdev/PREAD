@@ -1,0 +1,34 @@
+      *%METADATA                                                       *
+      * %TEXT Folder Security Detail File                              *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * Physical file..... FSECUR - Folder Security Detail File
+      * Date created...... 12/19/94
+      *
+      *
+      ****************************************************************
+     A                                      UNIQUE
+     A          R FSECRC
+K1   A            FSFLD         10          COLHDG('Folder')
+K2   A            FSFLDL        10          COLHDG('Folder' 'Library')
+K3   A            FSID          10          COLHDG('Usr/Sub' 'Grp/AutL' 'Id')
+K4   A            FSIDTY         1          COLHDG('Usr/Sub' 'Grp/AutL' 'Type')
+
+     A            FAUTH         10          COLHDG('Folder' 'Authority')
+     A            FVIEW          1          COLHDG('  1' 'Select' 'Option')
+     A            FCHG           1          COLHDG('  2' 'Change' 'Option')
+     A            FCOPY          1          COLHDG('  3' 'Copy'   'Option')
+     A            FDEL           1          COLHDG('  4' 'Delete' 'Option')
+     A            FATTR          1          COLHDG('  5' 'View' 'Attributes')
+     A            FSEC           1          COLHDG('  6' 'Security' 'Option')
+     A            FLINK          1          COLHDG('  8' 'SpyLinks' 'Option')
+     A            FBAK           1          COLHDG(' 11' 'Backup'   'Option')
+     A            FRST           1          COLHDG(' 12' 'Restore'  'Option')
+     A            FCRT           1          COLHDG(' F6' 'Create' 'Folders')
+
+     A          K FSFLD
+     A          K FSFLDL
+     A          K FSID
+     A          K FSIDTY

@@ -1,0 +1,24 @@
+      *%METADATA                                                       *
+      * %TEXT Help Database                                            *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... FMAGHELP  - Magellan Help                 *
+     A* Date created......  11/26/94                                 *
+     A*                                                              *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R MAGHLPF2
+     A*
+     A            HMFIL         10          COLHDG('File')
+     A            HMRCD         10          COLHDG('Format')
+     A            HMSEQ          5  0       COLHDG('Sequence')
+     A                                      EDTCDE(Z)
+     A            HMTX2         65          COLHDG('Text')
+     A            HMUSR         10          COLHDG('User')
+     A            HMDAT          6  0       COLHDG('Date')
+     A*
+     A          K HMFIL
+     A          K HMRCD
+     A          K HMSEQ

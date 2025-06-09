@@ -1,0 +1,36 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Object Link                                   *
+      *%EMETADATA                                                      *
+      *********-----------------------------------------------------
+      * WvObjP  Object Link:
+      *********-------------
+
+/4283 * 07-20-01 PLR BASE36 COUNTER CONVERSION.
+
+     A                                      UNIQUE
+     A          R WVOBJF                    TEXT('Object Link')
+      *           ******
+
+/4283A            FJPNR         10          COLHDG('Process' 'Number')
+K2   A            FJONR          6  0       COLHDG('Object' 'Number')
+     A                                      EDTCDE(Z)
+     A            FJTYP         10          COLHDG('Object' 'Type')
+     A            FJDESC        30          COLHDG('Description')
+     A            FJOBJ         20          COLHDG('Object' 'Name')
+     A            FJPATH       100          COLHDG('Object' 'Path')
+     A            FJDD           2  0       COLHDG('Day' 'Attached')
+     A                                      EDTCDE(Z)
+     A            FJMM           2  0       COLHDG('Month' 'Attached')
+     A                                      EDTCDE(Z)
+     A            FJYY           4  0       COLHDG('Year' 'Attached')
+     A                                      EDTCDE(Z)
+     A            FJTIM          4  0       COLHDG('Time' 'Attached')
+     A                                      EDTWRD('  :  ')
+     A            FJUSR         10          COLHDG('User' 'Attached')
+
+     A          K FJPNR
+     A          K FJONR                     DESCEND
+
+      *----------------------------------------------------------------
+      * Logical 1:  ObjectName  Path
+

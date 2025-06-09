@@ -1,0 +1,34 @@
+             PGM
+
+             DCL        VAR(&FIRSTLVL) TYPE(*CHAR) LEN(131)
+             DCL        VAR(&SECLVL) TYPE(*CHAR) LEN(2999)
+             DCL        VAR(&SEVERITY) TYPE(*DEC) LEN(2)
+             DCL        VAR(&SYSTEM) TYPE(*CHAR) LEN(8)
+             DCL        VAR(&JOB) TYPE(*CHAR) LEN(80)
+             DCL        VAR(&LF) TYPE(*CHAR) LEN(1) VALUE(X'25')
+             DCL        VAR(&FR_DATE) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&TO_DATE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TIME) TYPE(*CHAR) LEN(8)
+
+             RTVNETA    SYSNAME(&SYSTEM)
+
+ RECEIVE:    RCVMSG     MSGQ(QSYSOPR) WAIT(*MAX) RMV(*NO) +
+                          MSG(&FIRSTLVL) SECLVL(&SECLVL) +
+                          SEV(&SEVERITY) SENDER(&JOB)
+             IF         COND(&SEVERITY > 90) then(do)
+             CHGVAR     VAR(&FR_DATE) VALUE(%SST(&JOB 43 13))
+             CVTDAT     DATE(&FR_DATE) TOVAR(&TO_DATE) +
+                          FROMFMT(*CYMD) TOFMT(*ISO) TOSEP(*NONE)
+             CHGVAR     VAR(&TIME) VALUE(%SST(&JOB 50 2) |< ':' |< +
+                          %SST(&JOB 52 2) |< ':' |< %SST(&JOB 54 2))
+             SNDDST     TYPE(*LMSG) TOINTNET((pread@opentext.com)) +
+                          DSTD('System error' |> &SYSTEM) +
+                          LONGMSG('Date/Time:' |> &TO_DATE |> &TIME +
+                          |< &LF |< 'Job:' |> %SST(&JOB 1 26) |< +
+                          &LF |< 'First level:' |> &FIRSTLVL |< &LF +
+                          |< 'Second level:' |> &SECLVL |< &LF)
+             ENDDO
+
+             GOTO       CMDLBL(RECEIVE)
+
+ ENDPGM:     ENDPGM

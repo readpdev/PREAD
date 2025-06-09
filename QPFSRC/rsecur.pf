@@ -1,0 +1,44 @@
+      *%METADATA                                                       *
+      * %TEXT Report Security Detail File                              *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * Physical file..... RSECUR - Report Security Detail File
+      * Date created...... 2/11/93
+      *
+      *
+      ****************************************************************
+     A                                      UNIQUE
+     A                                      REF(MAGFLDR)
+     A          R SECRC
+K1   A            SRNAM     R               REFFLD(RNAM)
+K2   A            SJNAM     R               REFFLD(JNAM)
+K3   A            SUNAM     R               REFFLD(UNAM)
+K4   A            SPNAM     R               REFFLD(PNAM)
+K5   A            SUDAT     R               REFFLD(UDAT)
+K6   A            SUSER     R               REFFLD(DSPID)
+K7   A            SSIDTY         1          COLHDG('Usr/Sub' 'Grp/AutL' 'Type')
+
+     A            SREAD     R               REFFLD(READ)
+     A            SDEL      R               REFFLD(DELET)
+     A            SPRNT     R               REFFLD(PRINT)
+     A            SAUTH         10          COLHDG('Report' 'Authority')
+     A            SCHG           1          COLHDG('Change' 'Option')
+     A            SCOPY          1          COLHDG('Copy' 'Option')
+     A            SATTR          1          COLHDG('View' 'Attributes')
+     A            SSEC           1          COLHDG('Security' 'Option')
+     A            SCFG           1          COLHDG('Configure' 'Option')
+     A            SLINK          1          COLHDG('SpyLinks' 'Option')
+     A            SBAK           1          COLHDG('Backup' 'Option')
+     A            SRST           1          COLHDG('Restore' 'Option')
+     A            SSEG           1          COLHDG('Segments' 'Option')
+     A            SMOVE          1          COLHDG('Move' 'Option')
+
+     A          K SRNAM
+     A          K SJNAM
+     A          K SPNAM
+     A          K SUNAM
+     A          K SUDAT
+     A          K SUSER
+     A          K SSIDTY

@@ -1,0 +1,31 @@
+      *%METADATA                                                       *
+      * %TEXT Report Printer Table                                     *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RPTABLE  - Report Printer Table           *
+     A* Date created......  2/15/93                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*         2/15/93    Ed Malley                                 *
+     A****************************************************************
+     A                                      UNIQUE
+     A                                      REF(MAGFLDR)
+     A          R PTABRC
+     A            PRTNM     R               REFFLD(PRTNM)
+     A            PDESC     R               REFFLD(PDESC)
+     A            PRTDV     R               REFFLD(PRTDV)
+     A            PFILT     R               REFFLD(FILT)
+     A            POUTQ     R               REFFLD(POUTQ)
+     A            PLIBR     R               REFFLD(PLIBR)
+     A            PDJEB         10A         COLHDG('DJE' 'Before')
+     A            PDJEA         10A         COLHDG('DJE' 'After')
+     A            PBANID        10A         COLHDG('Banner' 'Id')
+     A            PINSTR        10A         COLHDG('Instruction' 'Id')
+     A            PPRTFL        10A         COLHDG('Print' 'File')
+     A            PPRTLB        10A         COLHDG('Print' 'File' 'Library')
+     A            PNODID        17A         COLHDG('Server' 'Node' 'ID')
+     A            PPRTYP        10A         COLHDG('Printer' 'Typ')
+     A          K PRTNM

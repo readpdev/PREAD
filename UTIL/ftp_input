@@ -1,0 +1,9 @@
+open inetsd01.boulder.ibm.com
+user ascf8ma y4u3f8ed
+namefmt 1
+lcd /fixes
+cd /b6209166/294110/c
+binary
+get C4300510_3.bin
+get C4300510_4.bin
+quit

@@ -1,0 +1,241 @@
+:pnlgrp submsgf='*LIBL/PSCON'.
+.************************************************************************
+.*  Help for command DOCMOVIMG
+.************************************************************************
+:help name='DOCMOVIMG'.
+Move/Consolidate Image Files - Help
+:p.The Move/Consolidate Image Files (DOCMOVIMG) command <...>
+.* Describe the function provided by the command.
+:p.:hp2.Restrictions::ehp2.
+:ul.
+:li.
+You must have <...>
+.* List all special authorities required to run the command.
+:li.
+You must have <...>
+.* List object or data authorities required to run the command.
+:li.
+This command is conditionally threadsafe, <...>
+.* If conditionally threadsafe, list threadsafe conditions or restrictions.
+:li.
+<...>
+.* Describe other command-level restrictions.
+.* Parameter-level restrictions belong in parameter help sections, not here.
+:eul.
+:ehelp.
+.*******************************************
+.*   Help for parameter DOCCLASS
+.*******************************************
+:help name='DOCMOVIMG/DOCCLASS'.
+&msg(P004178). (DOCCLASS) - Help
+:xh3.&msg(P004178). (DOCCLASS)
+:p.Specifies <...>
+.* Describe the function provided by the parameter.
+:p.This is a required parameter.
+:parml.
+:pt.:pk.*ALL:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:pt.:pv.character-value:epv.
+:pd.
+Specify the <...>
+.* Describe the function provided by the user-defined parameter value.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter DATBGN
+.*******************************************
+:help name='DOCMOVIMG/DATBGN'.
+&msg(STG0248). (DATBGN) - Help
+:xh3.&msg(STG0248). (DATBGN)
+:p.Specifies <...>
+.* Describe the function provided by the parameter.
+:parml.
+:pt.:pk def.*FIRST:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:pt.:pv.character-value:epv.
+:pd.
+Specify the <...>
+.* Describe the function provided by the user-defined parameter value.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter DATEND
+.*******************************************
+:help name='DOCMOVIMG/DATEND'.
+&msg(STG0249). (DATEND) - Help
+:xh3.&msg(STG0249). (DATEND)
+:p.Specifies <...>
+.* Describe the function provided by the parameter.
+:parml.
+:pt.:pk def.*LAST:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:pt.:pv.character-value:epv.
+:pd.
+Specify the <...>
+.* Describe the function provided by the user-defined parameter value.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter JOBD
+.*******************************************
+:help name='DOCMOVIMG/JOBD'.
+&msg(CMD1147). (JOBD) - Help
+:xh3.&msg(CMD1147). (JOBD)
+:p.Specifies <...>
+.* Describe the function provided by the parameter.
+:p.:hp2.Single values:ehp2.
+:parml.
+:pt.:pk.*NONE:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:eparml.
+:p.:hp2.Qualifier 1: &msg(CMD1147).:ehp2.
+:parml.:pt.:pk def.SPYGLSARC:epk.
+:pd.
+<...>
+.* Describe the function provided by the default parameter value.
+:pt.:pv.name:epv.
+:pd.
+Specify the name of <...>
+.* Describe the function provided by the user-defined parameter value.
+:eparml.
+:p.:hp2.Qualifier 2: &msg(CMD0012).:ehp2.
+:parml.
+:pt.:pk def.*LIBL:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:pt.:pv.name:epv.
+:pd.
+Specify the name of <...>
+.* Describe the function provided by the user-defined parameter value.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter OUTQ
+.*******************************************
+:help name='DOCMOVIMG/OUTQ'.
+&msg(CMD0318). (OUTQ) - Help
+:xh3.&msg(CMD0318). (OUTQ)
+:p.Specifies <...>
+.* Describe the function provided by the parameter.
+:p.:hp2.Single values:ehp2.
+:parml.
+:pt.:pk def.*CURRENT:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:pt.:pk.*JOBD:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:eparml.
+:p.:hp2.Qualifier 1: &msg(CMD0318).:ehp2.
+:parml.
+:pt.:pv.name:epv.
+:pd.
+Specify the name of <...>
+.* Describe the function provided by the user-defined parameter value.
+:eparml.
+:p.:hp2.Qualifier 2: &msg(CMD0012).:ehp2.
+:parml.
+:pt.:pk def.*LIBL:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:pt.:pv.name:epv.
+:pd.
+Specify the name of <...>
+.* Describe the function provided by the user-defined parameter value.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter STARTSTOP
+.*******************************************
+:help name='DOCMOVIMG/STARTSTOP'.
+Start or stop the application (STARTSTOP) - Help
+:xh3.Start or stop the application (STARTSTOP)
+:p.Specifies <...>
+.* Describe the function provided by the parameter.
+:parml.
+:pt.:pk def.*START:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:pt.:pk.*STOP:epk.
+:pd.
+<...>
+.* Describe the function provided by the pre-defined parameter value.
+:eparml.
+:ehelp.
+.**************************************************
+.*
+.* Examples for DOCMOVIMG
+.*
+.**************************************************
+:help name='DOCMOVIMG/COMMAND/EXAMPLES'.
+Examples for DOCMOVIMG - Help
+:xh3.Examples for DOCMOVIMG
+:p.:hp2.Example 1: Simple Command Example:ehp2.
+:xmp.
+DOCMOVIMG  KWD1(PARMVAL1)
+:exmp.
+:p.This command <...>
+.* Describe a simple invocation of the command.
+.*
+:p.:hp2.Example 2: More Complex Command Example:ehp2.
+:xmp.
+DOCMOVIMG   KWD1(PARMVAL1)  KWD2(PARMVAL2)
+            KWD3(PARMVAL3)
+:exmp.
+:p.This command <...>
+.* Describe a more complex invocation of the command.
+:ehelp.
+.**************************************************
+.*
+.* Error messages for DOCMOVIMG
+.*
+.**************************************************
+:help name='DOCMOVIMG/ERROR/MESSAGES'.
+&msg(CPX0005,QCPFMSG). DOCMOVIMG - Help
+:xh3.&msg(CPX0005,QCPFMSG). DOCMOVIMG
+:p.:hp3.*ESCAPE &msg(CPX0006,QCPFMSG).:ehp3.
+.************************************************************************
+.* List the *ESCAPE, *STATUS, and *NOTIFY messages signalled from the command.
+.* The following are generic messages defined in message file QCPFMSG.
+.* Modify this list to match the list of error messages for the command.
+.************************************************************************
+:DL COMPACT.
+:DT.CPF9801
+:DD.&MSG(CPF9801,QCPFMSG,*LIBL,nosub).
+:DT.CPF9802
+:DD.&MSG(CPF9802,QCPFMSG,*LIBL,nosub).
+:DT.CPF9803
+:DD.&MSG(CPF9803,QCPFMSG,*LIBL,nosub).
+:DT.CPF9807
+:DD.&MSG(CPF9807,QCPFMSG,*LIBL,nosub).
+:DT.CPF9808
+:DD.&MSG(CPF9808,QCPFMSG,*LIBL,nosub).
+:DT.CPF9810
+:DD.&MSG(CPF9810,QCPFMSG,*LIBL,nosub).
+:DT.CPF9811
+:DD.&MSG(CPF9811,QCPFMSG,*LIBL,nosub).
+:DT.CPF9812
+:DD.&MSG(CPF9812,QCPFMSG,*LIBL,nosub).
+:DT.CPF9820
+:DD.&MSG(CPF9820,QCPFMSG,*LIBL,nosub).
+:DT.CPF9830
+:DD.&MSG(CPF9830,QCPFMSG,*LIBL,nosub).
+:DT.CPF9899
+:DD.&MSG(CPF9899,QCPFMSG,*LIBL,nosub).
+:EDL.
+:ehelp.
+:epnlgrp.
+

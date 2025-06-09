@@ -1,0 +1,21 @@
+      *%METADATA                                                       *
+      * %TEXT SQL CLI Link Table Header                                *
+      *%EMETADATA                                                      *
+      *
+J4772 * 07-23-15 PLR Prototypes for SQL link search module.
+      *
+
+     D sqlDBopen       pr            10i 0 extproc('sqlDBopen')
+     D  handle                        5i 0 value
+     D  sqlStmt                        *   value options(*string:*trim)
+
+     d sqlDBread       pr            10i 0 extproc('sqlDBread')
+     d  handle                        5i 0 value
+     d  opcode                         *   value options(*string:*trim)
+     d  linkDSp                        *   value
+
+     d sqlDBclose      pr            10i 0 extproc('sqlDBclose')
+     d  handle                        5i 0 value
+
+     d sqlDBquit       pr            10i 0 extproc('sqlDBquit')
+

@@ -1,0 +1,40 @@
+      *%METADATA                                                       *
+      * %TEXT Omni-Report Index Descriptions                           *
+      *%EMETADATA                                                      *
+      **************-----------------------------------
+      * D Rpt Idx D   OmniLink Report Index Description
+      **************-----------------------------------
+     A                                      UNIQUE
+     A          R DRPTIDX                   TEXT('REPORT INDEX DESC')
+      *
+     A            DRNAM         10          COLHDG('Report')
+     A            DJNAM         10          COLHDG('Job')
+     A            DPNAM         10          COLHDG('Program')
+     A            DUNAM         10          COLHDG('User name')
+     A            DUDAT         10          COLHDG('User data')
+      *
+     A            DHNAM         10          COLHDG('OmniLink name')
+     A            DINAM         10          COLHDG('Omni index name')
+     A            DRINA         10          COLHDG('Report index name')
+      *
+     A            DART           1          COLHDG('A=Alf N=Num')
+     A            DLAN           2  0       COLHDG('Size')
+     A            DDEZ           1  0       COLHDG('Decimal pos')
+     A            DDZZ           1          COLHDG('Decimal char')
+     A            DTAU           1          COLHDG('Thous. sep.')
+     A            DVOR           1          COLHDG('Minus L/R/O')
+     A            DNUL           1          COLHDG('Display Zeros')
+     A            DFNU           1          COLHDG('Leading Zeros')
+     A            DEZN           1          COLHDG('Single zero Y/N')
+     A            DWRD          40          COLHDG('Edit word')
+     A            DWRL           2  0       COLHDG('Edit word size')
+     A            DLOC           1          COLHDG('LC Y/N')
+      *
+     C          K DHNAM
+     C          K DINAM
+     C          K DRNAM
+     C          K DJNAM
+     C          K DPNAM
+     C          K DUNAM
+     C          K DUDAT
+     C          K DRINA

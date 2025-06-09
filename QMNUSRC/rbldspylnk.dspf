@@ -1,0 +1,21 @@
+      *%METADATA                                                       *
+      * %TEXT Rebuild SpyLinks                                         *
+      *%EMETADATA                                                      *
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      PRINT
+     A                                      INDARA
+     A          R RBLDSPYLNK
+     A                                      LOCK
+     A            TITLE         16   O  1 32MSGID(MNU0000 RBLDSPYLNK)
+     A                                      DSPATR(UL)
+     A                                      DSPATR(HI)
+     A            SELOPT        30   O  4  2MSGID(MNU9999 RBLDSPYLNK)
+     A                                      COLOR(BLU)
+     A            OPTION1       45   O  6  7MSGID(MNU0001 RBLDSPYLNK)
+     A            OPTION2       36   O  8  7MSGID(MNU0002 RBLDSPYLNK)
+     A            OPTION3       36   O 10  7MSGID(MNU0003 RBLDSPYLNK)
+     A            OPTION4       36   O 12  7MSGID(MNU0004 RBLDSPYLNK)
+     A            OPTION5       36   O 14  7MSGID(MNU0005 RBLDSPYLNK)
+     A            OPTION90      50   O 18  7MSGID(MNU0090 RBLDSPYLNK)
+/2998A            COPYRT        51   O 20 27MSGID(P001154 PSCON)
+     A                                      DSPATR(HI)

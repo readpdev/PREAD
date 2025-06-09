@@ -1,0 +1,20 @@
+      *%METADATA                                                       *
+      * %TEXT Audit Log Detail                                         *
+      *%EMETADATA                                                      *
+      *
+/5635 * 01-22-04 PLR AUDIT LOGGING DETAIL FILE.
+      *
+                                            CCSID(65535)
+                R MLAUDDTLF
+                  ADENTID       15P 0       COLHDG('Entry' 'ID')
+                                            TEXT('Entry ID')
+                  ADDTLSEQ       5P 0       COLHDG('Detail' 'Seq Nbr')
+                                            TEXT('Detail Sequence Nbr')
+                  ADDTLTYP       5P 0       COLHDG('Detail' 'Type')
+                                            TEXT('Detail Type')
+                  ADNAME       256          VARLEN
+                                            COLHDG('Detail' 'Name')
+                                            TEXT('Detail Name')
+                  ADVALUE    31742          VARLEN
+                                            COLHDG('Detail' 'Value')
+                                            TEXT('Detail Value')

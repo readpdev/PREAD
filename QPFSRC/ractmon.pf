@@ -1,0 +1,16 @@
+      *%METADATA                                                       *
+      * %TEXT Active Monitor Data File                                 *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... RACTMON - Active Monitor Data File        *
+      * Date created......  1/17/96                                  *
+      ****************************************************************
+     A                                      UNIQUE
+     A          R ACTMON
+     A            AMID           2A         COLHDG('Id')
+     A            AMJBID        26A         COLHDG('Qualified' 'Job' 'Name')
+     A            AMWFLD        20A         COLHDG('Work' 'Folder')
+     A            AMCFLD        20A         COLHDG('Current' 'Folder')
+     A          K AMID

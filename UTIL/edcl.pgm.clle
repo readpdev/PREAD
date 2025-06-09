@@ -1,0 +1,13 @@
+      /*%METADATA                                                     */
+      /* %TEXT End debug - see ed *cmd                        '       */
+      /*%EMETADATA                                                    */
+             PGM
+
+             ENDDBG
+             MONMSG     MSGID(CPF0000)
+             ENDSRVJOB
+             MONMSG     MSGID(CPF0000)
+
+             SNDPGMMSG  MSG('End debug/srvjob complete.')
+
+             ENDPGM

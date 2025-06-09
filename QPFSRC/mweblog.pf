@@ -1,0 +1,17 @@
+      *%METADATA                                                       *
+      * %TEXT Web Useage Log                                           *
+      *%EMETADATA                                                      *
+      **********----------------------
+      * MWEBLOG  Magellan Web Log file
+      **********----------------------
+      *  3-19-99 JJF New file
+      *
+     A                                      CCSID(65535)
+     A          R WEBLOG                    TEXT('SpyView/Web Log File')
+     A            WBAPP         10          COLHDG('Application')
+     A            WBUSER        20          COLHDG('Web user')
+     A            WBNODE        17          COLHDG('TCP/IP address')
+     A            WBUPRF        10          COLHDG('AS400 profile')
+     A            WBTYPE         1          COLHDG('In/Out')
+     A            WBTIME          Z         COLHDG('Time stamp')
+     A            WBDUR          9B 0       COLHDG('Seconds')

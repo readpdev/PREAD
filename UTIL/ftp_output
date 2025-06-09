@@ -1,0 +1,52 @@
+Output redirected to a file.
+Input read from specified override file.
+Number of arguments not valid for subcommand CONNECT.
+Enter an FTP subcommand.
+> open inetsd01.boulder.ibm.com
+Connecting to host inetsd01.boulder.ibm.com at address 207.25.253.62 using port
+220-****************************************************************************
+220-*
+220-*  IBM's internal systems must be used only for conducting IBM's business
+220-*  or for purposes authorized by IBM management.
+220-*
+220-*  Use is subject to audit at any time by IBM management.
+220-*
+220-****************************************************************************
+220-
+220 inetsd01 FTP server (Version wu-2.6.2(4) Custom Thu Feb 12 14:27:47 MST 2004
+Enter an FTP subcommand.
+> user ascf8ma ********
+331 Password required for ascf8ma.
+230 User ascf8ma logged in.  Access restrictions apply.
+UNIX Type: L8
+Enter an FTP subcommand.
+> namefmt 1
+500 'SITE NAMEFMT 1': command not understood.
+Client NAMEFMT is 1.
+Enter an FTP subcommand.
+> lcd /fixes
+Local working directory is /fixes
+Enter an FTP subcommand.
+> cd /b6209166/294110/c
+250 CWD command successful.
+Enter an FTP subcommand.
+> binary
+200 Type set to I.
+Enter an FTP subcommand.
+> get C4300510_3.bin
+227 Entering Passive Mode (207,25,253,62,135,198)
+150 Opening BINARY mode data connection for C4300510_3.bin (657152000 bytes).
+226 Transfer complete.
+657152000 bytes transferred in 2701.035 seconds. Transfer rate 243.296 KB/sec.
+Enter an FTP subcommand.
+> get C4300510_4.bin
+227 Entering Passive Mode (207,25,253,62,202,61)
+150 Opening BINARY mode data connection for C4300510_4.bin (341164032 bytes).
+226 Transfer complete.
+341164032 bytes transferred in 2060.605 seconds. Transfer rate 165.565 KB/sec.
+Enter an FTP subcommand.
+> quit
+221-You have transferred 998316032 bytes in 2 files.
+221-Total traffic for this session was 998317474 bytes in 2 transfers.
+221-Thank you for using the FTP service on inetsd01.
+221 Goodbye.

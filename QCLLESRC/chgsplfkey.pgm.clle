@@ -1,0 +1,63 @@
+      /*%METADATA                                                     */
+      /* %TEXT Change Splf Key                                        */
+      /*%EMETADATA                                                    */
+/* CHGSPLFKEY                                                         +
+                                                                      +
+    Update Record                                                     +
+                                                                      +
+P6708    J. OLEN 10/7/03  Changed logic to support spool file numbers +
+             greater than 9999.  Also, standardized to use 4 byte     +
+             binary field for spool file number in all pgms.          +
+                                                                      +
+P6394    P. READ 3/26/02  Allow input of 6 byte file number for       +
+         version v5r1m0.                                              +
+                                                                      +
+P2812HQ  D.SMITH 7/25/00  Changed command to create CHGBIG5 file in   +
+         QTEMP. This will allow for multiple execution of the command +
+         Also changed &NEWBIG5 field to be consistantly defined at a  +
+         length of 52 not 50.                                         +
+                                                                      +
+P3955HQ  D.SMITH 5/02/01  Added edit for user name to avoid error if  +
+         in error.  NOTE: &NEWBIG5 must remain at 53 here so "*" can  +
+         mark end of blanks in field and ensure full field is passed. +
+                                                                     */
+             PGM        PARM(&FILE &JOB &FILNBR &NEWBIG5)
+
+
+             DCL        VAR(&FILE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&USRNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&NEWUSR) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&NEWJOB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOB) TYPE(*CHAR) LEN(26)
+             DCL        VAR(&FILNBR) TYPE(*CHAR) LEN(4) /* P6708 */
+             DCL        VAR(&NEWBIG5) TYPE(*CHAR) LEN(53)
+             DCL        &MSGF   *CHAR 10
+             DCL        &MSGLIB *CHAR 10
+             DCL        &MSGID  *CHAR  7
+             DCL        &MSGDTA *CHAR 100
+             CHGVAR     VAR(&JOBNAM) VALUE(%SST(&JOB 1 10))
+             CHGVAR     VAR(&USRNAM) VALUE(%SST(&JOB 11 10))
+             CHGVAR     VAR(&NEWJOB) VALUE(%SST(&NEWBIG5 23 10))
+             CHGVAR     VAR(&NEWUSR) VALUE(%SST(&NEWBIG5 33 10))
+             CHGVAR     VAR(%SST(&NEWBIG5 53 1)) VALUE('*')
+/*                                                                   */
+             IF         COND(&NEWJOB *NE '*SAME') THEN(CHGVAR +
+                          VAR(&JOBNAM) VALUE(&NEWJOB))
+             IF         COND(&NEWUSR *NE '*SAME') THEN(CHGVAR +
+                          VAR(&USRNAM) VALUE(&NEWUSR))
+/*                                                                   */
+               CHKOBJ     OBJ(&USRNAM) OBJTYPE(*USRPRF)
+               MONMSG     MSGID(CPF0000) EXEC(DO)
+                 RCVMSG     MSGDTA(&MSGDTA) MSGID(&MSGID) MSGF(&MSGF) +
+                              MSGFLIB(&MSGLIB)
+                 SNDPGMMSG  MSGID(&MSGID) MSGF(&MSGLIB/&MSGF) +
+                              MSGDTA(&MSGDTA)
+                 RETURN
+               ENDDO
+
+             CALL       PGM(CHGSPLOUT) PARM(&FILE &JOB &FILNBR +
+                          &NEWBIG5)
+
+             SNDPGMMSG  MSG('Job was submitted.')
+             ENDPGM

@@ -1,0 +1,14 @@
+      /*%METADATA                                                     */
+      /* %TEXT Display Program References                             */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&OBJ &LIB)
+
+             DCL        VAR(&OBJ) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&LIB) TYPE(*CHAR) LEN(10)
+
+             DSPPGMREF  PGM(&LIB/&OBJ) OUTPUT(*OUTFILE) +
+                          OBJTYPE(*ALL) OUTFILE(QTEMP/DPRPF)
+
+             RUNQRY     QRYFILE((QTEMP/DPRPF))
+
+             ENDPGM

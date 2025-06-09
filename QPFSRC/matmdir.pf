@@ -1,0 +1,14 @@
+      *%METADATA                                                       *
+      * %TEXT Annotation Template Directory File                       *
+      *%EMETADATA                                                      *
+      **********
+      * MATMDIR  Annotation Template Directory file
+      **********
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R ATMDIR                    TEXT('Annotation Template Dir.')
+     A            ADTID          9B 0       COLHDG('ATM' 'ID')
+     A            ADTYPE         2A         COLHDG('ATM' 'Type')
+     A            ADVERS         2A         COLHDG('ATM' 'Version')
+     A            ADNAME        40A         COLHDG('ATM' 'Name')
+     A          K ADTID

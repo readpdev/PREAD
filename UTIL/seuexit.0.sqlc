@@ -1,0 +1,311 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<ctype.h>
+#include<qwcrdtaa.h>
+#include<qusec.h>
+#include<qsnapi.h>
+exec sql include sqlca;
+
+#define OVERFLOW 80
+FILE *qsysprt;
+char pbuf[132];
+int of;
+char syscmd[256];
+
+typedef struct input
+{
+  int recordLen;
+  int cursorRRN;
+  int cursorPos;
+  int ccsid;
+  int numberRcds;
+  char member[10];
+  char file[10];
+  char library[10];
+  char memberType[10];
+  char functionKey;
+  char mode;
+  char splitSession;
+  char reserved;
+} input_t;
+
+typedef struct output
+{
+  char returnCode;
+  char reserved1;
+  int numberRcds;
+  char sequenceNbr[7];
+  char reserved2;
+} output_t;
+
+typedef struct text
+{
+  char lineCmd[7];
+  char returnCode; /* 0=OK, 1=Errors on this line */
+  char sequenceNbr[6];
+  char changeDate[6];
+} text_t;
+
+typedef struct sdaS
+{
+  char user[10];
+  char pass[10];
+} sda_t;
+
+typedef struct dataAreaRcvrS
+{
+  Qwc_Rdtaa_Data_Returned_t dataRtn;
+  sda_t sda;
+} dataAreaRcvr_t;
+
+input_t *i;
+output_t *o;
+text_t *t;
+char *textP;
+char *src;
+
+void lprint(void);
+void changeCase(char mode);
+void setReturn(void);
+void clearLineCmd(char *lineCmd);
+void checkOverFlow(void);
+void bugNumber(void);
+void getNextTextRcd(void);
+void flashRed(void);
+void listOptions(void);
+char *trimr(char *, int);
+void viewProject(void);
+void writeAndRoll(char *);
+
+void main(int argc, char **argv[])
+{
+  i = (input_t *)(*argv[1]);
+  o = (output_t *)(*argv[2]);
+  textP = (char *)*argv[3];
+  t = (text_t *)textP;
+  src = textP + sizeof(*t);
+
+  o->numberRcds = 0;
+
+  if (!memcmp(t->lineCmd, "LPRINT", 6) && i->numberRcds > 2)
+    lprint();
+
+  if (!memcmp(t->lineCmd, "UC", 2))
+    changeCase('U');
+
+  if (!memcmp(t->lineCmd, "LC", 2))
+    changeCase('L');
+
+  if (i->functionKey == '7')
+    bugNumber();
+
+  if (i->functionKey == '8')
+    viewProject();
+
+  if (!memcmp(t->lineCmd, "?", 1))
+    listOptions();
+
+  return;
+}
+
+void lprint(void)
+{
+  int x;
+  sprintf(syscmd,"ovrprtf file(qsysprt) splfname(%s) pagesize(88 132) lpi(8)\
+ cpi(16.7) ovrflw(80) pagrtt(0) duplex(*yes) ovrscope(*job) ctlchar(*fcfc\
+) usrdta(%.10s)","LPRINT",i->member);
+  system(syscmd);
+  qsysprt = fopen("*LIBL/QSYSPRT", "wb, lrecl=132");
+  of = 80;
+  checkOverFlow();
+  for (x = 0; x < i->numberRcds - 1; x++)
+  {
+    memset(&pbuf, ' ', sizeof(pbuf));
+    memcpy(&pbuf[1], (char *)t + sizeof(text_t), i->recordLen);
+    fwrite(pbuf, 1, 132, qsysprt);
+    checkOverFlow();
+    clearLineCmd("LPRINT");
+    getNextTextRcd();
+  }
+  fclose(qsysprt);
+  system("dltovr *all lvl(*job)");
+  return;
+}
+
+void changeCase(char mode)
+{
+  int x, y;
+  char *z;
+  for (x = 0; x < i->numberRcds; x++)
+  {
+    z = src;
+    for (y = 0; y < i->recordLen; y++)
+    {
+      if (mode == 'L')
+        *z = tolower(*z);
+      else
+        *z = toupper(*z);
+      z++;
+    }
+    clearLineCmd(t->lineCmd);
+    getNextTextRcd();
+  }
+  setReturn();
+  return;
+}
+
+void clearLineCmd(char *lineCmd)
+{
+  if (!memcmp(lineCmd, t->lineCmd, strlen(lineCmd)))
+    memset(t->lineCmd, ' ', 7);
+  return;
+}
+
+void checkOverFlow(void)
+{
+  int x;
+  static int page;
+  if (++of >= OVERFLOW)
+  {
+    memset(&pbuf, ' ', sizeof(pbuf));
+    sprintf(pbuf, "1Library: %.10s File: %.10s Member: %.10s Page: %0d",
+      i->library, i->file, i->member, ++page);
+    fwrite(pbuf, 1, 132, qsysprt);
+    of = 1;
+  }
+  return;
+}
+
+void bugNumber(void)
+{
+  int x;
+  char bug[5];
+  char chgdate[6];
+  if (i->mode == 'U')
+  {
+    printf("Bug number update function only valid in browse mode.\n");
+    return;
+  }
+  printf("Enter source change date (yymmdd):\n");
+  gets(chgdate);
+  printf("Enter a project number:\n");
+  gets(bug);
+  sprintf(syscmd, "dlcobj obj((%s/%s *file *exclrd %s))",
+    trimr(i->library, sizeof(i->library)), trimr(i->file, sizeof(i->file)),
+    trimr(i->member, sizeof(i->member)));
+  system(syscmd);
+  system(syscmd);
+  sprintf(syscmd, "ovrdbf sourcembr %s/%s mbr(%s) ovrscope(*job)",
+    trimr(i->library, sizeof(i->library)), trimr(i->file, sizeof(i->file)),
+    trimr(i->member, sizeof(i->member)));
+  system(syscmd);
+  exec sql update sourcembr set srcdta = :bug ||
+    substr(srcdta, length(rtrim(:bug)) + 1, length(srcdta) -length(rtrim(:bug)))
+    where digits(srcdat) = :chgdate;
+  system("dltovr sourcembr lvl(*job)");
+  if (sqlca.sqlcode != 0)
+  {
+    printf("SQL error. SQLCode = %d\n", sqlca.sqlcode);
+    return;
+  }
+  o->returnCode = '0';
+  printf("Source file updated. Exit member and rebrowse to display changes.\n");
+  return;
+}
+
+void getNextTextRcd()
+{
+  textP = textP + (sizeof(*t) + i->recordLen);
+  t = (text_t *)textP;
+  src = textP + sizeof(*t);
+  return;
+}
+
+void listOptions()
+{
+  printf("\nAvailable Options:\n\n");
+  printf("UC     = Uppercase single line or block\n");
+  printf("LC     = Lowercase single line or block\n");
+  printf("LPRINT = Print 8 1/2 x 11 duplex block only\n");
+  printf("F7     = Enter bug number for changed lines by date. Browse mode only\
+    \n");
+  printf("F8     = Display url to view project through browser\n");
+  printf("\n");
+  clearLineCmd(t->lineCmd);
+  return;
+}
+
+char *trimr(char *field, int fieldLen)
+{
+  char *cp, *sp;
+  cp = malloc(fieldLen+1);
+  memset(cp, 0, fieldLen+1);
+  memcpy(cp, field, fieldLen);
+  sp = cp;
+  cp = cp + fieldLen - 1;
+  while (*cp == ' ' && cp > sp)
+  {
+    *cp = 0;
+    cp--;
+  }
+  return sp;
+}
+
+void viewProject(void)
+{
+  char projectID[10];
+  char url[80];
+  char userId[10];
+  char passWord[10];
+  dataAreaRcvr_t rcvr;
+  Qus_EC_t apiErr;
+  memset(projectID, 0, sizeof(projectID));
+  memcpy(projectID, src+i->cursorPos-1, 4);
+  memset(&apiErr, 0, sizeof(apiErr));
+  apiErr.Bytes_Provided = sizeof(apiErr);
+  QWCRDTAA(&rcvr, sizeof(rcvr), "SEU_UIDPWDQTEMP     ", 1, 20, &apiErr);
+  if (apiErr.Bytes_Available > 0 || (rcvr.sda.user == "" || rcvr.sda.pass == "")
+  {
+    printf("Enter project browser user name.\n");
+    gets(rcvr.sda.user);
+    printf("Enter project browser password.\n");
+    gets(rcvr.sda.pass);
+    if (apiErr.Bytes_Available > 0)
+      system("crtdtaara qtemp/seu_uidpwd *char 20");
+    sprintf(syscmd, "chgdtaara dtaara(qtemp/seu_uidpwd (1 20)) value('%-10s%-10s
+      rcvr.sda.user, rcvr.sda.pass);
+    system(syscmd);
+  }
+  sprintf(url,"http://code/trackbin/wtms.dll?action=queryDetail&scrId=%s&usernam
+    projectID, trimr(rcvr.sda.user, 10), trimr(rcvr.sda.pass, 10));
+  QsnClrScr('0', 0, 0, NULL);
+  writeAndRoll("Click on the url to display the project in a browser.");
+  writeAndRoll(" ");
+  writeAndRoll("Emulator url hotspot must be enabled.");
+  writeAndRoll("Edit/Preferences/Hotspots");
+  writeAndRoll(" ");
+  writeAndRoll(url);
+  writeAndRoll(" ");
+  writeAndRoll("Press Enter to continue.");
+  QsnGetAID(NULL, 0, NULL);
+  return;
+}
+
+void setReturn(void)
+{
+  o->numberRcds = i->numberRcds - 1;
+  o->returnCode = '0';
+  return;
+}
+
+void writeAndRoll(char *textToScreen)
+{
+  char t2s[128];
+  QsnRollUp(1, 1, 24, 0, 0, NULL);
+  memset(&t2s, ' ', sizeof(t2s));
+  memcpy(t2s, textToScreen, strlen(textToScreen));
+  QsnWrtDta(t2s, sizeof(t2s), 0, 24, 2, QSN_SA_NORM,
+    QSN_SA_NORM, QSN_SA_NORM, QSN_SA_NORM, 0, 0, NULL);
+  return;
+}

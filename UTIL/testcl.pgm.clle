@@ -1,0 +1,7 @@
+             PGM
+
+             DCL        VAR(&PCTUSED) TYPE(*INT)
+
+             CALL       PGM(RTVSYSSTS) PARM(&PCTUSED)
+
+             ENDPGM

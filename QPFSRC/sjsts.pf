@@ -1,0 +1,61 @@
+      *%METADATA                                                       *
+      * %TEXT SpoolJoiner Status *** SIZE(*NOMAX) REUSEDLT(Y)          *
+      *%EMETADATA                                                      *
+      *----------------------------------------------------------------
+      *  SJSTS     SpoolJoiner Status file
+      *
+      *            Key: JSJOB, JSUSR, JSJOBN, JSFILN
+      *----------------------------------------------------------------
+      *
+     A                                      UNIQUE
+     A          R SJSTSR                    TEXT('Spl Joiner Status')
+      *
+     A            JSFIL         10          COLHDG('File')
+     A            JSPGM         10          COLHDG('Program')
+     A            JSJOB         10          COLHDG('Job')
+     A            JSUSR         10          COLHDG('User')
+     A            JSJOBN         6          COLHDG('Job#')
+     A            JSFILN         9B 0       COLHDG('File#')
+      *
+     A            JSSTS          1  0       COLHDG('Status')
+      *                                     0=Not touched yet
+      *                                     1=New (in SpyJoiner OutQ)
+      *                                     2=Placed in PF
+      *                                     3=Joined
+      *                                     4=SpoolF deleted
+      *                                    -1=Error occured
+      *
+     A            JSHH           2  0       COLHDG('Hour')
+     A            JSMM           2  0       COLHDG('Minute')
+     A            JSSS           2  0       COLHDG('Second')
+     A            JSYEAR         2  0       COLHDG('Year')
+     A            JSMONT         2  0       COLHDG('Month')
+     A            JSDAY          2  0       COLHDG('Day')
+      *
+     A            JSNAM         10          COLHDG('Def name')
+     A            JSSOUT        10          COLHDG('Src OutQ')
+     A            JSSOLI        10          COLHDG('Src OutQ lib')
+      *
+     A          K JSJOB
+     A          K JSUSR
+     A          K JSJOBN
+     A          K JSFILN
+      *
+LF1   * SJSTS1  R SJSTSR                    PFILE(SJSTS)
+      *         K JSSTS
+LF2   * SJSTS2  R SJSTSR                    PFILE(SJSTS)
+      *         K JSNAM
+      *         K JSYEAR
+      *         K JSMONT
+      *         K JSDAY
+      *         K JSHH
+      *         K JSMM
+      *         S JSSTS                     COMP(EQ 1)
+      *         S JSSTS                     COMP(EQ 2)
+LF3   * SJSTS3  R SJSTSR                    PFILE(SJSTS)
+      *         K JSNAM
+      *         K JSYEAR
+      *         K JSMONT
+      *         K JSDAY
+      *         K JSHH
+      *         K JSMM

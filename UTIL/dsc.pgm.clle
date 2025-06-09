@@ -1,0 +1,32 @@
+      /*%METADATA                                                     */
+      /* %TEXT Display object source.                                 */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&OBJECT &OBJTYP)
+
+             DCL        VAR(&OBJECT) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&OBJTYP) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&OBJ) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&LIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(80)
+             DCL        VAR(&SRCFLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SRCF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SRCMBR) TYPE(*CHAR) LEN(10)
+
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ERROR))
+
+             CHGVAR     VAR(&OBJ) VALUE(%SST(&OBJECT 1 10))
+             CHGVAR     VAR(&LIB) VALUE(%SST(&OBJECT 11 10))
+
+             RTVOBJD    OBJ(&LIB/&OBJ) OBJTYPE(&OBJTYP) SRCF(&SRCF) +
+                          SRCFLIB(&SRCFLIB) SRCMBR(&SRCMBR)
+
+             STRSEU     SRCFILE(&SRCFLIB/&SRCF) SRCMBR(&SRCMBR) +
+                          TYPE(X) OPTION(5)
+
+             GOTO       CMDLBL(ENDPGM)
+
+ ERROR:      RCVMSG     MSGQ(*PGMQ) MSGTYPE(*FIRST) MSG(&MSGDTA)
+             SNDPGMMSG  MSG(&MSGDTA)
+
+ ENDPGM:     ENDPGM

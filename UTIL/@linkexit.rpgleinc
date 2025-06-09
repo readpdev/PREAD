@@ -1,0 +1,52 @@
+      *%METADATA                                                       *
+      * %TEXT Link exit point header                                   *
+      *%EMETADATA                                                      *
+
+T5862 * PLR 11-08-06 Changed to correct SAR #. Was 5557.
+
+T5862 * PLR 08-07-06 Created. Copy member used to extend ability to document
+      *              link retrieval program (MCSPYHITR) allowing user defined
+      *              exit program to dictate hits to be returned.
+
+      * Buffer handler operation codes.
+     d BH_OP_GET       c                   1
+     d BH_OP_PUT       c                   2
+     d BH_OP_CLR       c                   3
+
+     d BH_NVP_INDEX#   c                   'INDEX#'
+      * The ordinal number of the index.
+     d BH_NVP_NDXVAL   c                   'NDXVAL'
+      * The index value.
+     d BH_NVP_ADDHIT   c                   'ADDHIT'
+      * Response from exit program as to add the hit or not.
+     d BH_NVP_DOCCLS   c                   'DOCCLS'
+      * Document class name
+     d BH_NVP_NDXNAM   c                   'NDXNAM'
+      * Validate DocClass - Determine if validation is required
+      * for specified DocClass.
+     d BH_NVP_CHKCLS   c                   'CHKCLS'
+      * Quit indicator from hit pgm to exit pgm. Issuing this
+      * from the exit pgm to the hit pgm will result in nothing.
+     d BH_NVP_QUIT     c                   'QUIT'
+
+      * Add hit response constants.
+     d BH_ADDHIT_YES   c                   '0'
+     d BH_ADDHIT_NO    c                   '1'
+
+      * Check class response constants.
+     d BH_CHKCLS_YES   c                   '0'
+     d BH_CHKCLS_NO    c                   '1'
+
+      * Return codes.
+     d BH_RTN_ERR      c                   -1
+     d BH_RTN_OK       c                   0
+     d BH_RTN_EOD      c                   1
+
+      * Prototype for handling name/value pair buffer.
+     d exitPgmBufHndlr...
+     d                 pr            10i 0 extproc(exitPgmBufP)
+     d  operation                    10i 0 const
+     d  pairName                       *   value options(*string:*nopass)
+     d  pairValue                      *   value options(*string:*nopass)
+     d exitPgmBufP     s               *   procptr
+

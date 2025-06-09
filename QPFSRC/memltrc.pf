@@ -1,0 +1,9 @@
+      *%METADATA                                                       *
+      * %TEXT Mail Monitor Trace File                                  *
+      *%EMETADATA                                                      *
+      **********
+      * MEMLTRC   Mail Monitor Trace File
+      **********
+     A                                      CCSID(65535)
+     A          R EMLTRCF                   TEXT('Mail Monitor Trace File')
+     A            EMTRC       1024A         COLHDG('Trace Data')

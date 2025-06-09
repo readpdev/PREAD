@@ -1,0 +1,55 @@
+             PGM
+
+             DCL        VAR(&CREATE) TYPE(*CHAR) LEN(10) VALUE('*NO')
+
+
+/* image file */
+             CHKOBJ     OBJ(PR850DTA/I000000006) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(CHGVAR VAR(&CREATE) +
+                          VALUE('*YES'))
+             CPYF       FROMFILE(PREAD/I6) +
+                          TOFILE(PR850DTA/I000000006) +
+                          MBROPT(*REPLACE) CRTFILE(&CREATE) +
+                          FMTOPT(*NOCHK)
+
+/* link file */
+             CHGVAR     VAR(&CREATE) VALUE('*NO')
+             CHKOBJ     OBJ(PR850DTA/@000000500) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(CHGVAR VAR(&CREATE) +
+                          VALUE('*YES'))
+             CPYF       FROMFILE(@500) TOFILE(PR850DTA/@000000500) +
+                          TOMBR(@000000500) MBROPT(*REPLACE) +
+                          CRTFILE(&CREATE)
+
+/* display file */
+             CHKOBJ     OBJ(PR850OBJ/DSP000000H) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+             CRTDUPOBJ  OBJ(DSPH) FROMLIB(PREAD) OBJTYPE(*FILE) +
+                          TOLIB(PR850OBJ)
+             RNMOBJ     OBJ(PR850OBJ/DSPH) OBJTYPE(*FILE) +
+                          NEWOBJ(DSP000000H)
+             ENDDO
+
+/* image directory records */
+             CLRPFM     FILE(PR850DTA/MIMGDIR)
+             CPYF       FROMFILE(PREAD/IMGDIR) +
+                          TOFILE(PR850DTA/MIMGDIR) MBROPT(*ADD)
+
+/* create index for first field of link file */
+             CHKOBJ     OBJ(PR850DTA/@000000501) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(SQL STATEMENT('CREATE +
+                          INDEX PR850DTA/@000000501 ON +
+                          PR850DTA/@000000500 (LXIV1 ASC) WITH 1 +
+                          DISTINCT VALUES'))
+
+/* add link file and display file names back into link definition record */
+             SQL        STATEMENT('update rlnkdef set lnkfil = +
+                          ''@000000500'', rdspf = ''DSP000000H'' +
+                          where lrnam = ''IMAGES''')
+
+/* update folder counters */
+             SQL        STATEMENT('update mflddir set fdidsd = 1, +
+                          fdidlt = 0, fdiopc = 0')
+
+
+             ENDPGM

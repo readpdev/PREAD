@@ -1,0 +1,14 @@
+             PGM
+             CRTDUPOBJ  OBJ(SDTA600) FROMLIB(SPYRLS600) +
+                          OBJTYPE(*FILE) TOLIB(QTEMP) DATA(*YES)
+             CRTDUPOBJ  OBJ(SPGMR600) FROMLIB(SPYRLS600) +
+                          OBJTYPE(*FILE) TOLIB(QTEMP) DATA(*YES)
+             CRTDUPOBJ  OBJ(SPTFR600) FROMLIB(SPYRLS600) +
+                          OBJTYPE(*FILE) TOLIB(QTEMP) DATA(*YES)
+             RSTOBJ     OBJ(*ALL) SAVLIB(SINSR600) DEV(*SAVF) +
+                          SAVF(SPYRLS600/SINSR600) RSTLIB(QTEMP)
+             CALL       PGM(QTEMP/SPYINSTALL) PARM('*SAVF')
+             DLTCMD     CMD(QSYS/STRSPY)
+             DLTCMD     CMD(QSYS/SPYVIEW)
+             DLTCMD     CMD(QSYS/SPY)
+             ENDPGM

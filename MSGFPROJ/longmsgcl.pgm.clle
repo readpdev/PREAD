@@ -1,0 +1,19 @@
+      /*%METADATA                                                     */
+      /* %TEXT Test for long message truncation in display files      */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&MSGF &MSGFLIB &SRCF &SRCFLIB &PATH)
+
+             DCL        VAR(&MSGF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGFLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SRCF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SRCFLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PATH) TYPE(*CHAR) LEN(256)
+
+             DLTF       FILE(MBRLIST)
+             MONMSG     MSGID(CPF0000)
+             DSPFD      FILE(&SRCFLIB/&SRCF) TYPE(*MBRLIST) OUTPUT(*OUTFILE) OUTFILE(QTEMP/MBRLIST)
+             OVRDBF     FILE(QAFDMBRL) TOFILE(QTEMP/MBRLIST) OVRSCOPE(*CALLLVL)
+             CALL       PGM(LONGMSGR) PARM(&MSGF &MSGFLIB &PATH)
+             DLTOVR     FILE(QAFDMBRL)
+
+             ENDPGM

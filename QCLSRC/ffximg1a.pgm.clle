@@ -1,0 +1,64 @@
+      /*%METADATA                                                     */
+      /* %TEXT Custom check tape volume loaded                        */
+      /*%EMETADATA                                                    */
+/******************************************************************** +
+   PROGRAM: CHKTAPSPY - Checks Tape Device to see if the correct tape +
+   --------             volume is loaded.                             +
+                                                                      +
+   FUNCTION:  This CL Program is used for the purpose of insuring     +
+   ---------  that the tape loaded in the tape drive is the correct   +
+              volume.  When SpyGlass calls this program and finds     +
+              the volume is not the one asked for it sends a warning. +
+              This Program is always called before restoring any      +
+              object with the RSTOBJSPY CL Program.                   +
+                                                                      +
+   PARAMETERS:                                                        +
+   -----------                                                        +
+          TAPDEV  - Tape Device Name            Input                 +
+          TAPVOL  - Tape Volume Name            Input                 +
+          MSGID   - Returned Error Msg Id       Output                +
+          MSG     - Returned Message text       Output                +
+                                                                      +
+   Note: Checking the tape volume is successful if both MSGID and MSG +
+         are blank when returned to the calling program, otherwise    +
+         the CPF or MCH error message is returned.                    +
+                                                                      +
+   TO CUSTOMIZE:  (1)  Replace the CHKTAP command with your custom    +
+   -------------       command     -OR-                               +
+                       Remove both the CHKTAP and MONMSG commands     +
+                       so as to no-op this program entirely.          +
+                  (2)  Save the new source.                           +
+                  (3)  Compile the new source.                        +
+                          CRTCLPGM PGM(SPYGLASS/CHKTAPSPY) +          +
+                                   SRCFILE(SPYGLASS/QCLSRC)           +
+                                                                      +
+--------------------------------------------------------------------- +
+   UPDATE LOG:                                                        +
+   -----------                                                        +
+   11/30/94 Magellan Software Inc.                                    +
+                 Program Created                                      +
+/*********************************************************************/
+
+             PGM        PARM(&TAPDEV &TAPVOL &MSGID &MSG)
+
+/* Program Parmameter Variables */
+             DCL        VAR(&TAPDEV) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TAPVOL) TYPE(*CHAR) LEN(6)
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(70)
+
+/* Initialize Return Parameters */
+             CHGVAR     VAR(&MSGID) VALUE(' ')
+             CHGVAR     VAR(&MSG) VALUE(' ')
+
+/* OS400 Command to Insure the correct tape volume is loaded.     +
+   (SpyGlass Default)                                            */
+/*           CHKTAP     DEV(&TAPDEV) VOL(&TAPVOL) SEQNBR(*NONE) +      */
+/*                       LABEL(*NONE) CRTDATE(*NONE) ENDOPT(*REWIND)   */
+
+/* Process Message */
+             MONMSG     MSGID(MCH0000 CPF0000) EXEC(RCVMSG +
+                          MSGTYPE(*LAST) RMV(*NO) MSG(&MSG) +
+                          MSGID(&MSGID))
+
+             ENDPGM

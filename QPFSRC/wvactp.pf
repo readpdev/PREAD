@@ -1,0 +1,97 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - ActionFile                                    *
+      *%EMETADATA                                                      *
+      *********--------
+      * WvActP  Action
+      *********--------
+
+/4283 * 07-20-01 PLR BASE36 COUNTER CONVERSION.
+
+     A                                      UNIQUE
+     A          R WVACTF                    TEXT('ACTION FILE')
+      *           ******
+      *
+     A            FGSID         10          COLHDG('Subscriber ID')
+     A            FGFRM         10          COLHDG('Sender' 'User')
+     A            FGFRS         10          COLHDG('Sender' 'Subscr')
+     A            FGSTS          2  0       COLHDG('Status')
+     A                                      EDTCDE(Z)
+      *                         10=New
+      *                         30=Waiting for return
+      *                         40=Returned
+      *                         50=Delayed
+      *             Note: codes 90+ do not appear in mailboxes.
+      *                         90=Closed
+      *                         93=Sent back
+      *                         94=Detoured
+      *                         95=Deleted
+
+     A            FGPRO         10          COLHDG('Process')
+     A            FGPRJ         10          COLHDG('Project')
+     A            FGTRA          3  0       COLHDG('Transaction')
+     A                                      EDTCDE(Z)
+     A            FGTXT         25          COLHDG('To do' 'Text')
+     A            FGREF         25          COLHDG('Reference')
+     A            FGIDD          2  0       COLHDG('Income' 'Day')
+     A                                      EDTCDE(Z)
+     A            FGIMM          2  0       COLHDG('Income' 'Month')
+     A                                      EDTCDE(Z)
+     A            FGIYY          4  0       COLHDG('Income' 'Year')
+     A                                      EDTCDE(Z)
+     A            FGITI          4  0       COLHDG('Income' 'Time')
+     A                                      EDTWRD('  :  ')
+     A            FGDDD          2  0       COLHDG('Delay' 'Day')
+     A                                      EDTCDE(Z)
+     A            FGDMM          2  0       COLHDG('Delay' 'Month')
+     A                                      EDTCDE(Z)
+     A            FGDYY          4  0       COLHDG('Delay' 'Year')
+     A                                      EDTCDE(Z)
+     A            FGDTI          4  0       COLHDG('Delay' 'Time')
+     A                                      EDTWRD('  :  ')
+     A            FGKDD          2  0       COLHDG('Ok' 'Day')
+     A                                      EDTCDE(Z)
+     A            FGKMM          2  0       COLHDG('Ok' 'Month')
+     A                                      EDTCDE(Z)
+     A            FGKYY          4  0       COLHDG('Ok' 'Year')
+     A                                      EDTCDE(Z)
+     A            FGKTI          4  0       COLHDG('Ok' 'Time')
+     A                                      EDTWRD('  :  ')
+     A            FGSDD          2  0       COLHDG('Scedule' 'Day')
+     A                                      EDTCDE(Z)
+     A            FGSMM          2  0       COLHDG('Scedule' 'Month')
+     A                                      EDTCDE(Z)
+     A            FGSYY          4  0       COLHDG('Scedule' 'Year')
+     A                                      EDTCDE(Z)
+     A            FGSTI          4  0       COLHDG('Scedule' 'Time')
+     A                                      EDTWRD('  :  ')
+     A            FGODD          2  0       COLHDG('Open' 'Day')
+     A                                      EDTCDE(Z)
+     A            FGOMM          2  0       COLHDG('Open' 'Month')
+     A                                      EDTCDE(Z)
+     A            FGOYY          4  0       COLHDG('Open' 'Year')
+     A                                      EDTCDE(Z)
+     A            FGOTI          4  0       COLHDG('Open' 'Time')
+     A                                      EDTWRD('  :  ')
+/4283A            FGPNR         10          COLHDG('Process' 'Number')
+/4283A            FGINR         10          COLHDG('Index' 'Number')
+/4283A            FGRPN         10          COLHDG('Return' 'Index')
+     A            FGRTN          3  0       COLHDG('Return' 'Counter')
+     A                                      EDTCDE(Z)
+     A            FGRRC          3  0       COLHDG('Return' 'Received')
+     A                                      EDTCDE(Z)
+     A            FGREX          1          COLHDG('Return' 'Expected')
+     A            FGCPRO        10          COLHDG('Cancel' 'Process')
+     A            FGCTRA         3  0       COLHDG('Cancel' 'Transaction')
+     A                                      EDTCDE(Z)
+     A            FGCSOR         5  0       COLHDG('Cancel' 'Sort Key')
+     A                                      EDTCDE(Z)
+
+     A          K FGINR
+
+      *----------------------------------------------------------------
+      * Logicals: 1   Subscriber Index#                (Index# always
+      *           2   Process#   Index#                     last)
+      *           3   Project    Process#   Index#
+      *           4   Process    Process#   Index#
+      *           5   IncomeYear,Month,Day  Index#
+      *           6   OkYear,Month,Day,Tim  Index#

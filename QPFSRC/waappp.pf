@@ -1,0 +1,24 @@
+      *%METADATA                                                       *
+      * %TEXT Web Security - Application                               *
+      *%EMETADATA                                                      *
+      *********--------
+      * WBAPPP  WEB Security - Application Signon
+      *********--------
+
+     A                                      UNIQUE
+     A          R WAAPPF                    TEXT('WEB Applications')
+      *           ******
+      *
+     A            WAAPP         10          COLHDG('Application')
+     A            WADSC         40          COLHDG('Description')
+     A            WAACT          1          COLHDG('Active' 'Y/N')
+     A            WAPRF         10          COLHDG('System' 'Profile')
+      *
+     A            WADFVW        10          COLHDG('Default' 'View')
+/2815A            WARPFM        10          COLHDG('Report' 'Format')
+/     *                                   VALUES: *HTML, *PDF
+/2815A            WASLLS         1          COLHDG('SpyLink' 'Limit' 'Scroll')
+/     *                                   VALUES: Y, N, " "=System Default
+
+     A          K WAAPP
+

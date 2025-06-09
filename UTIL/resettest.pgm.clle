@@ -1,0 +1,23 @@
+             PGM
+
+             MONMSG     MSGID(CPF0000)
+
+             DLTUSRPRF  USRPRF(BASICUSR1) OWNOBJOPT(*DLT)
+             DLTUSRPRF  USRPRF(BASICUSR2) OWNOBJOPT(*DLT)
+
+             RUNSQL     SQL('delete from rsubscr where subsid in +
+                          (''BASICUSR1'',''BASICUSR2'',''PREAD'')') +
+                          COMMIT(*NONE)
+
+             RUNSQL     SQL('delete from nsecur where nsuser in +
+                          (''BASICUSR1'',''BASICUSR2'',''PREAD'')') +
+                          COMMIT(*NONE)
+
+             RUNSQL     SQL('delete from rsecur where suser in +
+                          (''BASICUSR1'',''BASICUSR2'',''PREAD'')') +
+                          COMMIT(*NONE)
+
+             CLRPFM     FILE(N000000000)
+             CLRPFM     FILE(MNOTDIR)
+
+ ENDPGM:     ENDPGM

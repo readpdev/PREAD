@@ -1,0 +1,28 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Note Header                                   *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A                                      UNIQUE
+     A          R WVNHDF                    TEXT('NOTE HEADER')
+      *
+      **************************************************************
+      *
+/4283 * 07-20-01 PLR BASE36 COUNTER CONVERSION.
+      *
+     A            FHUSR         10          COLHDG('User')
+     A            FHNDD          2  0       COLHDG('Note' 'Day')
+     A                                      EDTCDE(Z)
+     A            FHNMM          2  0       COLHDG('Note' 'Month')
+     A                                      EDTCDE(Z)
+     A            FHNYY          4  0       COLHDG('Note' 'Year')
+     A                                      EDTCDE(Z)
+     A            FHNTI          4  0       COLHDG('Note' 'Time')
+     A                                      EDTWRD('  :  ')
+/4283A            FHPNR         10          COLHDG('Process' 'Number')
+/4283A            FHINR         10          COLHDG('Index' 'Number')
+     A            FHONR          6  0       COLHDG('Object' 'Number')
+     A                                      EDTCDE(Z)
+/4283A            FHNID         10          COLHDG('Note' 'ID')
+/4283A            FHNNR         10          COLHDG('Note' 'Number')
+      *
+     A          K FHNNR

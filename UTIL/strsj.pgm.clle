@@ -1,0 +1,103 @@
+      /*%METADATA                                                     */
+      /* %TEXT Start SpoolJoiner                                      */
+      /*%EMETADATA                                                    */
+/******----------------------                                         +
+ STRSJ  Start the SpoolJoiner                                         +
+*******----------------------                                         +
+                                                                      +
+ 04-19-07 PLR Remove the chgcmd in this cl. Customer auditor          +
+              perceives this as a violation of SOX compliance.        +
+              T6257.                                                  +
+ 2-16-00 JJF Check user's authority to run                            +
+ 3-25-98 JJF Start the SpyGlass subsystem                             +
+                                                                     */
+             PGM        PARM(&frcjnr &sbmjob &jobd &lib &init)
+
+             DCL        &frcjnr    *CHAR   4
+             DCL        &sbmjob    *CHAR   4
+             DCL        &jobd      *CHAR  10
+             DCL        &lib       *CHAR  10   /* JobD's libr */
+             DCL        &init      *CHAR   4
+
+             DCL        &pgmlib    *CHAR  10   /* Spy pgm lib */
+             DCL        &dtalib    *CHAR  10   /* Spy dta lib */
+             DCL        &msgdta    *CHAR 200
+             DCL        &msgdtalen *DEC    5  VALUE(200)
+             DCL        &msgid     *CHAR   7
+             DCL        &msgf      *CHAR  10
+             DCL        &msgflib   *CHAR  10
+             DCL        &chglibl   *DEC    1
+             DCL        &dtaq      *CHAR  10 'SPLJNR'
+             DCL        &dtadat    *CHAR 200 'ENDFRC'
+             DCL        &dtalng    *DEC    5 VALUE(200)
+             DCL        &ret1      *CHAR   1
+
+/* Exit if Job Desc doesn't exist  */
+             CHKOBJ     OBJ(&lib/&jobd) OBJTYPE(*JOBD)
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+               RCVMSG     MSGTYPE(*LAST) RMV(*NO) MSGDTA(&msgdta) +
+                            MSGDTALEN(&msgdtalen) MSGID(&msgid) +
+                            MSGF(&msgf) MSGFLIB(&msgflib)
+               SNDPGMMSG  MSGID(&msgid) MSGF(&msgflib/&msgf) +
+                            MSGDTA(%SST(&msgdta 1 &msgdtalen)) +
+                            MSGTYPE(*ESCAPE)
+               GOTO END
+             ENDDO
+
+/* Add PgmLib to lib list      */
+             CALL       MAG103B &chglibl
+
+/* Exit if no authority to run  */
+             CALL       SPYAUT  ('STRSJ     ' &ret1)
+             IF         (&ret1 *NE 'Y')   DO
+               SNDPGMMSG  MSGID(SPY0013) MSGF(PSCON)
+               GOTO       END
+             ENDDO
+
+/* Init DTAQ */
+             IF         (&init *EQ '*YES')  DO
+               CALL       QCLRDTAQ PARM('SPLJNR' '*LIBL')
+               MONMSG     MSGID(CPF9999)
+             ENDDO
+
+/* Get PgmLib and DtaLib names */
+             RTVDTAARA  DTAARA(SYSDFT (296 10)) RTNVAR(&pgmlib)
+             RTVDTAARA  DTAARA(SYSDFT (306 10)) RTNVAR(&dtalib)
+
+/* Put job desc name,libr in ENVDFT DtaAra */
+             CHGDTAARA  DTAARA(&pgmlib/ENVDFT (908 10)) VALUE(&jobd)
+             CHGDTAARA  DTAARA(&pgmlib/ENVDFT (918 10)) VALUE(&lib)
+
+/* Exit if the SPLPCKP file is in use. Joiner is already running.    */
+             ALCOBJ     OBJ((&dtalib/SPLPCKP *FILE *EXCL)) WAIT(0)
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+               SNDPGMMSG  MSGID(SPL0013) MSGF(&pgmlib/PSCON)
+               GOTO END
+             ENDDO
+
+             DLCOBJ     OBJ((&dtalib/SPLPCKP *FILE *EXCL))
+
+/* If Forced Joining, send ENDFRC Command to DTAQ */
+             IF         (&frcjnr *EQ '*YES') CALL QSNDDTAQ +
+                          (&dtaq &pgmlib &dtalng &dtadat)
+
+/* Start SpyGlass subsystem */
+             CALL       MAG1049
+
+/* Submit the Joiner */
+             IF         (&sbmjob *EQ '*YES')  DO
+               SBMJOB     CMD(CALL &pgmlib/MAG1400) +
+                            JOBD(&lib/&jobd) INLLIBL(*CURRENT)
+               SNDPGMMSG  MSGID(SPL0030) MSGF(&pgmlib/PSCON)
+             ENDDO
+
+/* Call the Joiner */
+             ELSE       CMD(DO)
+               CALL       MAG1400
+               MONMSG     MSGID(CPF9999)
+               DLCOBJ     OBJ((&dtalib/SPLPCKP *FILE *EXCL))
+               MONMSG     MSGID(CPF9999)
+             ENDDO
+
+END:         IF         (&chglibl *EQ 1) RMVLIBLE &pgmlib
+             ENDPGM

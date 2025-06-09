@@ -1,0 +1,55 @@
+      *%METADATA                                                       *
+      * %TEXT Report Distribution Definitions                          *
+      *%EMETADATA                                                      *
+      *****************************************************************
+      *                   Magellan Software                           *
+      *                                                               *
+      * File... RDSTDEF   Report Distribution Definition              *
+      *                                                               *
+      * For each Subsrriber-Report type-Segment name, provide the     *
+      * bundle ID and "how to process" parameters.                    *
+      *                                                               *
+      *  4-11-94     New file                                         *
+      ****************************************************************
+     A                                      UNIQUE
+     A          R DSTDEF
+K1   A            RDSUBR        10          COLHDG('Subscriber' 'ID')
+K2   A            RDREPT        10          COLHDG('Report' 'Type')
+K3   A            RDSEG         10          COLHDG('Segment' 'ID')
+     A            RDBNDL        10          COLHDG('Bundle' 'ID')
+     A            RDPRTF        10          COLHDG('Segment' 'Print' 'File')
+     A            RDPRTL        10          COLHDG('Segment' 'PrtFil' 'Lib')
+     A            RDHOLD         1          COLHDG('Hold' 'After' 'Print')
+     A            RDSAVE         1          COLHDG('Save' 'After' 'Print')
+     A            RDFORM        10          COLHDG('Segment' 'Form' 'Type')
+     A            RDUDAT        10          COLHDG('Segment' 'UserData')
+     A            RDPGWD         3  0       COLHDG('Seg.' 'PgWidth' 'Override')
+     A            RDPGLN         3  0       COLHDG('Seg.' 'PgLength' 'Override')
+     A            RDCPI          3  0       COLHDG('Segment' 'CPI' 'Override')
+     A            RDLPI          3  0       COLHDG('Segment' 'LPI' 'Override')
+     A            RDPSEP         1          COLHDG('Prt' 'Segment' 'Separator')
+     A            RDSTXT        50          COLHDG('Segment' 'Separator' 'Text')
+     A            RDPRTY         2          COLHDG('Segment' 'Priority')
+     A            RDCOPY         3  0       COLHDG('Segment' 'Copies')
+     A            RDSNDM         1          COLHDG('Send' 'Completed' 'Msg')
+     A            RDMSGQ        10          COLHDG('Segment' 'Message' 'Queue')
+     A            RDMSGL        10          COLHDG('Segment' 'MsgQ' 'Library')
+     A            RDEPGM        10          COLHDG('Segment' 'External' 'Pgm')
+     A            RDELIB        10          COLHDG('External' 'Pgm' 'Library')
+     A            RDACCT        15          COLHDG('Accounting' 'Code')
+     A            RDSTAT         1          COLHDG('Segment' 'Status')
+     A            RDDJEB        10A         COLHDG('DJE' 'Before')
+     A            RDDJEA        10A         COLHDG('DJE' 'After')
+     A            RDAPRT         1A         COLHDG('Auto' 'Print' 'Ind')
+     A            RDEMAL         1A         COLHDG('Email' 'Ind')
+
+     A          K RDSUBR
+     A          K RDREPT
+     A          K RDSEG
+      *---------
+      * Logicals
+      *---------
+      *  1:  RDREPT RDSEG  RDSUBR
+      *  2:  RDBNDL RDREPT RDSEG
+      *  3:  RDSUBR RDREPT RDSEG  RDBNDL
+      *  4:  RDBNDL RDSUBR RDREPT RDSEG

@@ -1,0 +1,21 @@
+      *%METADATA                                                       *
+      * %TEXT Bundle Xmit Determination Temp File                      *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... MAG610  - Bundle Xmit Determination       *
+     A* Date created...... 5/11/94                       Temp File   *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A          R RC601
+     A            #PRIOR         2A         TEXT('Bundle Priority')
+     A                                      COLHDG('Bundle' 'Priority')
+     A            #BUNDL        10A         TEXT('Bundle I.D.')
+     A                                      COLHDG('Bundle' 'I.D')
+     A            #HSTCN         9B 0       TEXT('Count of History Records')
+     A                                      COLHDG('History' 'Records' 'Count')
+     A          K #PRIOR

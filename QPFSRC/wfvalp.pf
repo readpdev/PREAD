@@ -1,0 +1,19 @@
+      *%METADATA                                                       *
+      * %TEXT Web Security - User Value Table                          *
+      *%EMETADATA                                                      *
+      *********--------
+      * WFVALP  WEB Security - User Value Table
+      *********--------
+
+     A                                      UNIQUE
+     A          R WFVALF                    TEXT('WEB User Value Table')
+      *           ******
+      *
+     A            WFUSR         20          COLHDG('User')
+     A            WFVID         10          COLHDG('Value ID')
+     A            WFVAL         30          COLHDG('Value')
+     A
+     A          K WFUSR
+     A          K WFVID
+     A          K WFVAL
+

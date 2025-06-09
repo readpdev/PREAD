@@ -1,0 +1,20 @@
+      /*%METADATA                                                     */
+      /* %TEXT Change default command library                         */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&LIBRARY)
+
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(10)
+
+             DSPOBJD    OBJ(&LIBRARY/*ALL) OBJTYPE(*CMD) +
+                          DETAIL(*BASIC) OUTPUT(*OUTFILE) +
+                          OUTFILE(QTEMP/QADSPOBJ)
+
+             OVRDBF     FILE(QADSPOBJ) TOFILE(QTEMP/QADSPOBJ)
+
+             CALL       PGM(PREAD/DFTCMDLIBR)
+
+             DLTOVR     FILE(QADSPOBJ)
+
+             DLTF       FILE(QTEMP/QADSPOBJ)
+
+             ENDPGM

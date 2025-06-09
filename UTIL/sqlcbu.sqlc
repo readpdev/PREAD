@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <qusec.h>
+#include <qmhrtvm.h>
+
+exec sql include sqlca;
+
+#define MAXMSG 256
+#define MAXSTMT 5000
+#define OVERFLOW 250
+#define OPEN 1
+#define WRITE 2
+#define CLOSE 3
+
+int of;
+char msgnbr[5];
+char stmt[128];
+
+void lprint(int opCode, char *buffer);
+void checkOverFlow(char *buffer);
+
+int main(int argc, char *argv[])
+{
+  typedef _Packed struct msgRcvr
+  {
+    Qmh_Rtvm_RTVM0100_t rtvm0100;
+    char Message[80];
+  } msgRcvr_t;
+  msgRcvr_t rcvr;
+  Qus_EC_t qusec;
+  char msgid[7];
+  char sqlmsgf[20] = "QSQLMSG   *LIBL     ";
+  char formattedMsg[MAXMSG], *z;
+  int x;
+
+  if (argc < 2)
+  {
+     printf("Usage: sql 'statement'");
+     return 0;
+  }
+  memset(&stmt, ' ', sizeof(stmt));
+  memcpy(&stmt, argv[1], strlen(argv[1]));
+  exec sql execute immediate :stmt;
+/*if (sqlca.sqlcode < 0)
+  {
+    printf("test");
+    return -1;
+  }*/
+  printf("test");
+  return 0;
+}
+
+void lprint(int opCode, char *buffer)
+{
+  static FILE *qsysprt;
+  static int page;
+  char syscmd[512];
+  if (opCode == OPEN)
+  {
+    sprintf(syscmd,"ovrprtf file(qsysprt) splfname(temp) pagesize(255 378) lpi(\
+9) cpi(20) ovrflw(250) ovrscope(*calllvl) ctlchar(*fcfc)");
+    system(syscmd);
+    qsysprt = fopen("QSYSPRT", "wb, lrecl=255");
+    of = OVERFLOW;
+  }
+  if (opCode == WRITE)
+  {
+    if (++of >= OVERFLOW)
+    {
+      fwrite("1Header", 1, 255, qsysprt);
+      of = 1;
+    }
+    fwrite(' ' + buffer, 1, 255, qsysprt);
+  }
+  if (opCode == CLOSE)
+  {
+    fclose(qsysprt);
+    system("dltovr qsysprt");
+  }
+  return;
+}
+
+void checkOverFlow(char *buffer)
+{
+  int x;
+  return;
+}

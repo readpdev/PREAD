@@ -1,0 +1,23 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - SpyLink Distribution Definition               *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A                                      UNIQUE
+     A          R WVLDDF                    TEXT('SpyLink Distr. Def.')
+      *
+      **************************************************************
+      *
+     A            FMRTYP        10          COLHDG('Report' 'Type')
+     A            FMSID         10          COLHDG('Subscriber ID')
+     A            FMPRO         10          COLHDG('Process')
+     A            FMSEQ          5  0       COLHDG('Sequence')
+     A                                      EDTCDE(Z)
+     A            FMAO           1          COLHDG('And' 'Or')
+     A            FMIDX         10          COLHDG('Index')
+     A            FMCMP          2          COLHDG('Compare')
+     A            FMVAL         40          COLHDG('Compare Value')
+      *
+     A          K FMPRO
+     A          K FMRTYP
+     A          K FMSID
+     A          K FMSEQ

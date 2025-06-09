@@ -1,0 +1,8 @@
+      /*%METADATA                                                     */
+      /* %TEXT Prompt Printer Custom DocLink Opt 9                    */
+      /*%EMETADATA                                                    */
+             PGM
+
+             ?          SPYAPICMD OPCODE(*PRINT)
+
+             ENDPGM

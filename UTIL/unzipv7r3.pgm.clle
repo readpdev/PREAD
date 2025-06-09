@@ -1,0 +1,122 @@
+             pgm
+
+
+/*              UNZIP      +                                                                                      */
+/*                           ARCHIVE('/V7R3_Zip/5761_CM1_ENGLISH_UL_SBCS_Commun+                                  */
+/*                           ications_Utilities_20080125_093124_.iso.zip') +                                      */
+/*                           DIR('/V7R3_Img')                                                                     */
+/*                                                                                                                */
+/*              UNZIP      +                                                                                      */
+/*                           ARCHIVE('5770_BR1_IBM_i_730_BRMS_Advanced_LCD8_213+                                  */
+/*                           7_01.udf.zip') DIR('/V7R3_Img')                                                      */
+
+             UNZIP      +
+                          ARCHIVE('/V7R3_Zip/5770_BR1_IBM_i_730_BRMS_Network+
+                          _LCD8_2134_01.udf.zip') DIR('/V7R3_Img')
+
+             UNZIP      +
+                          ARCHIVE('/V7R3_Zip/5770_BR1_IBM_i_730_GROUP1_BRMS_+
+                          LCD8_2131_01.udf.zip') DIR('/V7R3_Img')
+             UNZIP      +
+                          ARCHIVE('/V7R3_Zip/5770_JS1_IBM_i_720_GROUP1_LCD8_+
+                          2143_00.udf.zip') DIR('/V7R3_Img')
+             UNZIP      +
+                          ARCHIVE('/V7R3_Zip/5770_QU1_IBM_i_730_GROUP1_LCD8_+
+                          2158_01.udf.zip') DIR('/V7R3_Img')
+             UNZIP      +
+                          ARCHIVE('/V7R3_Zip/5770_ST1_IBM_i_730_GROUP1_LCD8_+
+                          2161_01.udf.zip') DIR('/V7R3_Img')
+             UNZIP      +
+                          ARCHIVE('/V7R3_Zip/5770_WDS_IBM_i_730_GROUP1_ADTS_+
+                          LCD8_2181_01.udf.zip') DIR('/V7R3_Img')
+             UNZIP      +
+                          ARCHIVE('/V7R3_Zip/5770_WDS_IBM_i_730_GROUP1_Herit+
+                          age_Comp_LCD8_2178_01.udf.zip') DIR('/V7R3_Img')
+             unzip      +
+                          '/V7R3_Zip/5770_WDS_IBM_i_730_GROUP1_ILE_Compilers+
+                          _LCD8_2173_01.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/5770_WDS_IBM_i_730_GROUP1_Rtl_Dev_Studi+
+                          o_LCD8_2170_01.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/5770_XH2_IBM_i_720_GROUP1_Access_for_We+
+                          b_LCD8_2164_00.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/5770_XW1_IBM_i_730_GROUP1_Access_Family+
+                          _LCD8_2167_01.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/5770-AF1_IBM_i_720_GROUP1_AFP_Utilities+
+                          _LCD8_2128_00.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/5770-SS1_IBM_i_730_Media_and_Storage_Ex+
+                          t_LCD8_2122_01.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/5770-SS1_IBM_i_730_PSF_Anyspeed_Printer+
+                          _LCD8_2125_01.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/B_GROUP1_01_IBM_i_RS_730-00_LCD8_2288_0+
+                          0.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/B_GROUP1_02_IBM_i_RS_730-00_LCD8_2289_0+
+                          0.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/B_GROUP1_03_IBM_i_RS_730-00_LCD8_2290_0+
+                          0.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/B_GROUP1_04_IBM_i_RS_730-00_LCD8_2291_0+
+                          0.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/B_GROUP1_05_IBM_i_RS_730-00_LCD8_2292_0+
+                          0.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/BM_i_Access_Client_Solutions_LCD8_2010_+
+                          16.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/DB2_Web_Query_for_i_V2.2.0_LCD8_1900_02+
+                          .udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/F_MULTI_NLV_IBM_i_730_DB2_Multisystem_L+
+                          CD8_2112_01.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/F_MULTI_NLV_IBM_i_730_DB2_Symm_Multipro+
+                          c_LCD8_2111_01.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/F2924_01_Infoprint_Server_for_iSeries_5+
+                          722-IP1_V5_R3_M0_20070806_124957_.iso.zip' +
+                          '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/I_BASE_01_Licensed_Machine_Code_RS_730-+
+                          C_LCD8_2287_02.udf.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/IBM_i_Access_Client_Solutions_-_Win_AP_+
+                          LCD8_2011_07.zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/IBM_i_Access_for_Windows_DVD_042010.iso+
+                          .zip' '/V7R3_Img'
+
+             unzip      +
+                          '/V7R3_Zip/L2924_02_IP1_02_Infoprint_Server_for_iS+
+                          eries_5722-IP1_V5_R3_M0_20080806_124955_.zip' +
+                          '/V7R3_Img'
+
+             endpgm
+

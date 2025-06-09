@@ -1,0 +1,23 @@
+      *%METADATA                                                       *
+      * %TEXT Report Resources archived                                *
+      *%EMETADATA                                                      *
+      **********
+      * MRPTRSC  Report Resources archived file
+      **********
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R RPTRSC                    TEXT('Rpt Resources archived')
+     A            RRSPYN        10A         COLHDG('Report' 'SPYnumber')
+     A            RROBJT        10A         COLHDG('Resource' 'Object' 'Type')
+     A            RROBJN        10A         COLHDG('Resource' 'Object' 'Name')
+     A            RROBJL        10A         COLHDG('Resource' 'Object' 'Lib')
+     A            RRCDAT         9B 0       COLHDG('Resource' 'Create' 'Date')
+     A            RRCTIM         9B 0       COLHDG('Resource' 'Create' 'Time')
+     A            RRVRID         9B 0       COLHDG('Resource' 'Version' 'ID')
+     A          K RRSPYN
+     A          K RROBJT
+     A          K RROBJN
+     A          K RROBJL
+     A          K RRCDAT
+     A          K RRCTIM
+     A          K RRVRID

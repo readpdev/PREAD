@@ -1,0 +1,5 @@
+**free
+
+dcl-pr run int(10) extproc('system');
+  *n pointer value options(*string:*trim);
+end-pr;

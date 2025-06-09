@@ -1,0 +1,139 @@
+      /*%METADATA                                                     */
+      /* %TEXT Add Upgrade Files to Image Catalog Upgrade             */
+      /*%EMETADATA                                                    */
+             pgm
+
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          FROMFILE('/V7R3_Zip/5761_CM1_ENGLISH_UL_SBCS_Commu+
+                          nications_Utilities_20080125_093124_.iso') +
+                          TOFILE(*FROMFILE)
+
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('5770_BR1_IBM_i_730_BRMS_Advanced_LCD8_21+
+                          37_01.udf.zip')    TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_BR1_IBM_i_730_BRMS_Networ+
+                          k_LCD8_2134_01.udf.zip')    TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_BR1_IBM_i_730_GROUP1_BRMS+
+                          _LCD8_2131_01.udf.zip') TOFILE(*FROMFILE)
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_JS1_IBM_i_720_GROUP1_LCD8+
+                          _2143_00.udf.zip')   TOFILE(*FROMFILE)
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_QU1_IBM_i_730_GROUP1_LCD8+
+                          _2158_01.udf.zip')      TOFILE(*FROMFILE)
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_ST1_IBM_i_730_GROUP1_LCD8+
+                          _2161_01.udf.zip')      TOFILE(*FROMFILE)
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_WDS_IBM_i_730_GROUP1_ADTS+
+                          _LCD8_2181_01.udf.zip')    TOFILE(*FROMFILE)
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_WDS_IBM_i_730_GROUP1_Heri+
+                          tage_Comp_LCD8_2178_01.udf.zip')   +
+                          TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_WDS_IBM_i_730_GROUP1_ILE_+
+                          Compilers_LCD8_2173_01.udf.zip' ) +
+                          tofile(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_WDS_IBM_i_730_GROUP1_Rtl_+
+                          Dev_Studio_LCD8_2170_01.udf.zip' ) +
+                          tofile(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_XH2_IBM_i_720_GROUP1_Acce+
+                          ss_for_Web_LCD8_2164_00.udf.zip') +
+                          tofile(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770_XW1_IBM_i_730_GROUP1_Acce+
+                          ss_Family_LCD8_2167_01.udf.zip') +
+                          tofile(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770-AF1_IBM_i_720_GROUP1_AFP_+
+                          Utilities_LCD8_2128_00.udf.zip') +
+                          tofile(*fromfile)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770-SS1_IBM_i_730_Media_and_S+
+                          torage_Ext_LCD8_2122_01.udf.zip') +
+                          tofile(*fromfile)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/5770-SS1_IBM_i_730_PSF_Anyspee+
+                          d_Printer_LCD8_2125_01.udf.zip'  ) +
+                          TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/B_GROUP1_01_IBM_i_RS_730-00_LC+
+                          D8_2288_00.udf.zip'  ) TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/B_GROUP1_02_IBM_i_RS_730-00_LC+
+                          D8_2289_00.udf.zip'     ) TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/B_GROUP1_03_IBM_i_RS_730-00_LC+
+                          D8_2290_00.udf.zip') tofile(*fromfile)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/B_GROUP1_04_IBM_i_RS_730-00_LC+
+                          D8_2291_00.udf.zip' ) TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/B_GROUP1_05_IBM_i_RS_730-00_LC+
+                          D8_2292_00.udf.zip') TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/BM_i_Access_Client_Solutions_L+
+                          CD8_2010_16.zip') TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/DB2_Web_Query_for_i_V2.2.0_LCD+
+                          8_1900_02.udf.zip') TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/F_MULTI_NLV_IBM_i_730_DB2_Mult+
+                          isystem_LCD8_2112_01.udf.zip') TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/F_MULTI_NLV_IBM_i_730_DB2_Symm+
+                          _Multiproc_LCD8_2111_01.udf.zip') +
+                          TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/F2924_01_Infoprint_Server_for_+
+                          iSeries_5722-IP1_V5_R3_M0_20070806_124957_.iso.zip+
+                          ' ) TOFILE(*FROMFILE)
+
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/I_BASE_01_Licensed_Machine_Cod+
+                          e_RS_730-C_LCD8_2287_02.udf.zip' ) +
+                          TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/IBM_i_Access_Client_Solutions_+
+                          -_Win_AP_LCD8_2011_07.zip' ) TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/IBM_i_Access_for_Windows_DVD_0+
+                          42010.iso.zip' ) TOFILE(*FROMFILE)
+
+             ADDIMGCLGE IMGCLG(UPGRADE) +
+                          fromfile('/V7R3_Zip/L2924_02_IP1_02_Infoprint_Serv+
+                          er_for_iSeries_5722-IP1_V5_R3_M0_20080806_124955_.+
+                          zip'  ) TOFILE(*FROMFILE)
+
+
+             endpgm
+

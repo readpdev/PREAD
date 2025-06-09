@@ -1,0 +1,30 @@
+      *%METADATA                                                       *
+      * %TEXT Forms Overlay Data File                                  *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RFORMS   - Forms Overlay Data File        *
+     A* Date created......  1/18/94   Dlm                            *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*         2/21/95    Dlm            Added Type Field           *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R RFORRC
+     A            FRNAM         10A         COLHDG('Report' 'Name')
+     A            FJNAM         10A         COLHDG('Job' 'Name')
+     A            FPNAM         10A         COLHDG('Program' 'Name')
+     A            FUNAM         10A         COLHDG('User' 'Name')
+     A            FUDAT         10A         COLHDG('User' 'Data')
+     A            FTYPE          1A         COLHDG('Type' '(S)creen' '(R)eport')
+     A            FLINE          4B 0       COLHDG('Line' 'Number')
+     A            FDATA        247A         COLHDG('Form' 'Overlay' 'Data')
+     A          K FRNAM
+     A          K FJNAM
+     A          K FPNAM
+     A          K FUNAM
+     A          K FUDAT
+     A          K FTYPE
+     A          K FLINE

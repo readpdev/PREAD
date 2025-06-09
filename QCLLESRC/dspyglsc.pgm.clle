@@ -1,0 +1,353 @@
+      /*%METADATA                                                     */
+      /* %TEXT Spyglass menu CL Menu 1.00  Main Menu                  */
+      /*%EMETADATA                                                    */
+/* DSPYGLSC - MAGELLAN SpyGlass Menu                                  +
+                                                                      +
+   FUNCTION: MAIN COMMAND PROCEDURE FOR SPYGLASS MENU 1.00            +
+                                                                      +
+    Update Record                                                     +
+DM   4/27/93 PROGRAM CREATED                                          +
+DM   8/10/93 ADDLIBLE (QTEMP,&SPYLIB,QOPTICAL,MPGOPT)                 +
+DM   3/29/94 ADDLIBLE (IMGBRIDGE)                                     +
+DM   6/14/94 ADDED INDICATOR 16 FOR DISPLAY DISTRIBUTION OPTIONS      +
+Dlm  8/ 9/94 Added code to handle if the enter key is needed          +
+Dlm  8/30/94 Replaced imgbridge to fclerkpgml                         +
+Dlm 11/ 9/94 Replaced all the addlible to a call to mag103a           +
+Dlm  1/12/95 Added code to save and restore library list              +
+PAF 12/14/95 Added LOGO display record to prompt Magellan Trade Mark  +
+DM  03/07/96 Commented out the LOGO display                           +
+PLR 09/18/00 REMOVE NON-DISPLAY OF OPTIONS BASED ON PRODUCT AUTH.1497.+
+JAM 03/01/01 FORMAT VERSION.                                          +
+GT  05/01/03 Comment call of SPYPTFVER (not available on svr)   /8143 +
+EPG 10/29/14 Removed unused fields and variables. Converted from CLP  +
+             to CLLE                                                  +
+                                                                      +
+----------------------------------------------------------------------+
+                                                                      +
+   DSPYGLSC- MAGELLAN SpyGlass Menu- used by MSYSCMDC                 +
+                Main Menu                    DSPGLC1                  +
+                                             DSPGLC2A                 +
+                                             DSPGLC2                  +
+                                             DSPGLC3A                 +
+                                             DSPGLC3                  +
+                                             DSPGLC4                  +
+                                             DSPGLC5                  +
+                                             DSPGLC6                  +
+                                             DSPGLC7                  +
+                                             DSPGLC8                  +
+                                             DSPGLC9                  +
+                                             DSPGLC10                 +
+---------------------------------------------------------------------*/
+             PGM
+             DCLF       DSPYGLSD
+
+/*           INCLUDE    SRCMBR(COPYRIGHTL) */
+
+             DCL        &SELECT   *DEC  LEN(1)
+             DCL        &SELEC1   *DEC  LEN(1)
+             DCL        &SELEC2   *DEC  LEN(1)
+             DCL        &VERSIO   *CHAR LEN(3)
+             DCL        &PTFLVL   *CHAR LEN(2)
+             DCL        &BTALVL   *CHAR LEN(2)
+             DCL        &RLSDAT   *CHAR LEN(8)
+             DCL        &RLSTIM   *CHAR LEN(6)
+/* /4060 */  DCL        &FMTVER   *CHAR LEN(8)
+             DCL        VAR(&ITXT) TYPE(*CHAR) LEN(50)
+             DCL        VAR(&SPYLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&DEMO) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&LMENU) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(80)
+             DCL        VAR(&CHANGE) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&CMDSEC) TYPE(*CHAR) LEN(1)
+
+/*===================================================================*/
+/* MONITOR FOR ALL MESSAGES TO PREVENT PROGRAM FROM CRASHING.        */
+/*===================================================================*/
+             MONMSG     MSGID(CPF0000 MCH0000)
+
+/* SpyView pgm lib */
+             RTVOBJD    OBJ(DOC921OBJ/STRDOCMGR) OBJTYPE(*CMD) +
+                          TEXT(&ITXT)
+             RCVMSG     MSGTYPE(*LAST)
+
+             CHGVAR     &SPYLIB (%SST(&ITXT 41 10))
+
+             IF         (&SPYLIB *NE ' ')  DO
+             ADDLIBLE   &SPYLIB
+             MONMSG     MSGID(CPF2118) EXEC(GOTO ERROR)
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(GOTO NOCHANGE)
+             CHGVAR     &CHANGE 'Y'
+ NOCHANGE:   RCVMSG     MSGTYPE(*LAST)
+             ENDDO
+
+             CALL       PGM(MAG1031) PARM(DSPYGLSC ' ')
+             CALL       PGM(MAG103A)
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(DO)
+             CALL       PGM(MAG1031) PARM(DSPYGLSC Q)
+             MONMSG     MSGID(CPF0000 MCH0000)
+             GOTO       CMDLBL(ERROR)
+             ENDDO
+
+             RTVDTAARA  DTAARA(SYSDFT (121 1)) RTNVAR(&LMENU)
+             CHGVAR     VAR(&IN67) VALUE('0')
+             IF         COND(&LMENU *NE 'Y') THEN(CHGVAR VAR(&IN67) +
+                          VALUE('1'))
+
+             CHGVAR     VAR(&IN16) VALUE('1') /* 1497 */
+             CHGVAR     VAR(&IN17) VALUE('1') /* 1497 */
+
+/* /4060 */  CALL       PGM(SPYVERSION) PARM(&VERSIO &PTFLVL &BTALVL +
+                          &RLSDAT &RLSTIM &FMTVER)
+/* /4060 */  CHGVAR     VAR(&RELESE) VALUE(&FMTVER)
+             IF         COND(&BTALVL *EQ ' ') THEN(CHGVAR VAR(&IN80) +
+                          VALUE('0'))
+             ELSE       CMD(CHGVAR VAR(&IN80) VALUE('1'))
+
+  DISPLAY:   CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELECT VALUE(0)
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             SNDF       RCDFMT(MENU)
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(DO)
+             CALL       PGM(MAG1031) PARM(DSPYGLSC Q)
+             IF         COND(&CHANGE *EQ 'Y') THEN(RMVLIBLE +
+                          LIB(&SPYLIB))
+             GOTO       CMDLBL(ERROR)
+             ENDDO
+             SNDRCVF    RCDFMT(MENU1)
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+
+                                           /* CF21*/
+  CHECK:     IF         (&IN99 *EQ '1')   DO
+             RTVDTAARA  DTAARA(SYSDFT (223 1)) RTNVAR(&CMDSEC)
+             IF         (&CMDSEC *EQ 'S')   DO
+             RTVMSG     MSGID(SPY0105) MSGF(SPYMSGF) MSG(&DSPMSG)
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO
+             CALL       MSYSCMDC
+             CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELECT VALUE(0)
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             RCVF       RCDFMT(MENU1)
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+             GOTO       CHECK
+             ENDDO      /* CF21 */
+                                           /* CF3 */
+             IF         (&IN93 *EQ '1')   DO
+             CALL       PGM(MAG1031) PARM(DSPYGLSC Q)
+             IF         COND(&CHANGE *EQ 'Y') THEN(RMVLIBLE +
+                          LIB(&SPYLIB))
+             RETURN     /* Normal end of Program */
+             ENDDO      /* CF3 */
+                                           /* CF12 */
+             IF         (&IN98 *EQ '1')   DO
+             CALL       PGM(MAG1031) PARM(DSPYGLSC Q)
+             IF         COND(&CHANGE *EQ 'Y') THEN(RMVLIBLE +
+                          LIB(&SPYLIB))
+             RETURN     /* Cancel                */
+             ENDDO      /* CF12 */
+
+             IF         COND(&IN01 *EQ '1') THEN(DO)       /* HELP */
+             CALL       PGM(SPYHLP) PARM('DSPYGLSD' 'MENU1')
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO      /* display */
+                                           /* Select 0 */
+ SELECT0:    IF         (&SELECT *EQ 0 )  DO
+             CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             CHGVAR     VAR(&DSPMSG) VALUE(' ')
+             SNDRCVF    RCDFMT(MENU1)
+
+             IF         COND(&IN01 *EQ '1') THEN(DO)       /* HELP */
+             CALL       PGM(SPYHLP) PARM('DSPYGLSD' 'MENU1')
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO
+
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+             GOTO       CHECK
+             ENDDO      /* Select 0 */
+                                           /* Select 1 */
+ SELECT1:    IF         (&SELECT *EQ 1 )  DO
+             CALL       DSPGLC1
+             CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELECT VALUE(0)
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             CHGVAR     VAR(&DSPMSG) VALUE(' ')
+             SNDRCVF    RCDFMT(MENU1)
+
+             IF         COND(&IN01 *EQ '1') THEN(DO)       /* HELP */
+             CALL       PGM(SPYHLP) PARM('DSPYGLSD' 'MENU1')
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO
+
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+             GOTO       CHECK
+             ENDDO      /* Select 1 */
+                                           /* Select 2 */
+ SELECT2:    IF         (&SELECT *EQ 2 )  DO
+             CALL       DSPGLC2
+             CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELECT VALUE(0)
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             CHGVAR     VAR(&DSPMSG) VALUE(' ')
+             SNDRCVF    RCDFMT(MENU1)
+
+             IF         COND(&IN01 *EQ '1') THEN(DO)       /* HELP */
+             CALL       PGM(SPYHLP) PARM('DSPYGLSD' 'MENU1')
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO
+
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+             GOTO       CHECK
+             ENDDO      /* Select 2 */
+                                           /* Select 3 */
+ SELECT3:    IF         (&SELECT *EQ 3 )  DO
+             CALL       DSPGLC3
+             CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELECT VALUE(0)
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             CHGVAR     VAR(&DSPMSG) VALUE(' ')
+             SNDRCVF    RCDFMT(MENU1)
+
+             IF         COND(&IN01 *EQ '1') THEN(DO)       /* HELP */
+             CALL       PGM(SPYHLP) PARM('DSPYGLSD' 'MENU1')
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO
+
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+             GOTO       CHECK
+             ENDDO      /* Select 3 */
+                                           /* Select 4 */
+ SELECT4:    IF         (&SELECT *EQ 4 )  DO
+             CALL       DSPGLC4
+
+             RTVDTAARA  DTAARA(SYSDFT (121 1)) RTNVAR(&LMENU)
+             CHGVAR     VAR(&IN67) VALUE('0')
+             IF         COND(&LMENU *NE 'Y') THEN(CHGVAR VAR(&IN67) +
+                          VALUE('1'))
+
+             CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELECT VALUE(0)
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             CHGVAR     VAR(&DSPMSG) VALUE(' ')
+             SNDRCVF    RCDFMT(MENU1)
+
+             IF         COND(&IN01 *EQ '1') THEN(DO)       /* HELP */
+             CALL       PGM(SPYHLP) PARM('DSPYGLSD' 'MENU1')
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO
+
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+             GOTO       CHECK
+             ENDDO      /* Select 4 */
+                                           /* Select 5 */
+ SELECT5:    IF         (&SELECT *EQ 5 )  DO
+             CALL       DSPGLC5
+             CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELECT VALUE(0)
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             CHGVAR     VAR(&DSPMSG) VALUE(' ')
+             SNDRCVF    RCDFMT(MENU1)
+
+             IF         COND(&IN01 *EQ '1') THEN(DO)       /* HELP */
+             CALL       PGM(SPYHLP) PARM('DSPYGLSD' 'MENU1')
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO
+
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+             GOTO       CHECK
+             ENDDO      /* Select 5 */
+
+ SELECT6:    IF         COND(&SELECT *EQ 6 *AND &IN17 *EQ '1') THEN(DO)
+             CALL       DSPGLC6
+             CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELECT VALUE(0)
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             CHGVAR     VAR(&DSPMSG) VALUE(' ')
+             SNDRCVF    RCDFMT(MENU1)
+
+             IF         COND(&IN01 *EQ '1') THEN(DO)       /* HELP */
+             CALL       PGM(SPYHLP) PARM('DSPYGLSD' 'MENU1')
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO
+
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+             GOTO       CHECK
+             ENDDO      /* Select 6 */
+ SELECT7:    IF         COND(&SELECT *EQ 7) THEN(DO)
+             CALL       MFSPYKEYL
+             CHGVAR     &SELEX1 VALUE(' ')
+             CHGVAR     &SELEX2 VALUE(' ')
+             CHGVAR     &SELECT VALUE(0)
+             CHGVAR     &SELEC1 VALUE(0)
+             CHGVAR     &SELEC2 VALUE(0)
+             CHGVAR     VAR(&DSPMSG) VALUE(' ')
+             SNDRCVF    RCDFMT(MENU1)
+
+             IF         COND(&IN01 *EQ '1') THEN(DO)       /* HELP */
+             CALL       PGM(SPYHLP) PARM('DSPYGLSD' 'MENU1')
+             GOTO       CMDLBL(DISPLAY)
+             ENDDO
+
+             IF      COND(&SELEX1 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX1))
+             IF      COND(&SELEX2 *NE ' ') THEN(CHGVAR VAR(&SELECT) +
+                          VALUE(&SELEX2))
+             GOTO       CHECK
+             ENDDO      /* Select 7 */
+                                           /* Select 9 */
+ SELECT9:    IF         (&SELECT *EQ 9 ) DO
+             SIGNOFF
+             ENDDO      /* Select 9 */
+
+             GOTO       CMDLBL(END)
+
+  ERROR:     RCVMSG     RMV(*NO) MSGDTA(&MSGDTA) MSGID(&MSGID)
+             SNDPGMMSG  MSGID(&MSGID) MSGF(QCPFMSG) MSGDTA(&MSGDTA)
+
+  END:       ENDPGM

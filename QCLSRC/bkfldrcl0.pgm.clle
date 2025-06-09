@@ -1,0 +1,331 @@
+      /*%METADATA                                                     */
+      /* %TEXT Backup folder to tape or optical                       */
+      /*%EMETADATA                                                    */
+/**********-----------------------------------------------------------+
+ * BKFLDRCL  BACKUP SPYFOLDER.  UPDATE FIELDS IN MFLDDIR AND MRPTDIR  +
+ **********-----------------------------------------------------------+
+               DAVID MICKLE  5/93                                     +
+ 3-10-10 PLR Changed to work with backup of images to tape via folder.+
+             J2370.                                                   +
+ 6-14-01 DLS Save tape info to DTAARA even if not INZTAP (P4614HQ)    +
+ 1-25-01 DLS Add Ignore of Open Batch Error (P3717HQ)                 +
+12-28-00 KAC REMOVE OPT ID (OBSOLETE AS OF 6.0.6)                     +
+ 5-11-00 DLS Remove auto advance on selection of tape/optical on dspf +
+ 6-06-97 JJF Save APF db files to *SAVF                               +
+10-  -96 JJF Add optical output option; call BKFLD RPG                +
+ 9-06-95     CHANGE ERROR MESSAGES TO MESSAGE IDS                     +
+ 4-20-95     ALLOW FOR BRMS SYSTEM INTEGRATION                        +
+12-01-94     CALL TO CHKTAPSPY AND SAVOBJSPY INZTAPSPY PGMS           +
+ 3-24-93     ADD MARKOFF PGM CALL AND ADDED NEW PARMS FOR             +
+             UPDFLDBAK AND UPDREPBAK (CHGDT).  CHECK TO SEE IF        +
+             FOLDER WAS OFFLINE BEFORE ....                           +
+---------------------------------------------------------------------*/
+
+             PGM        PARM(&FLDLIB &FOLDER &FDESC &RETN)
+             COPYRIGHT  TEXT('Open Text, Inc.')
+             DCLF       BKFLDRFM
+
+             DCL        &FOLDER  *CHAR  10
+             DCL        &FLDLIB  *CHAR  10
+             DCL        &FDESC   *CHAR  30
+             DCL        &RETN    *CHAR   8
+
+             DCL        &VOL     *CHAR   6
+             DCL        &OWN     *CHAR  14
+             DCL        &DEV     *CHAR  10
+             DCL        &DEN     *CHAR  11
+             DCL        &TAPSEQ  *CHAR   4
+             DCL        &BRMSYN  *CHAR   1
+             DCL        &ENDOPT  *CHAR  10
+
+             DCL        &MSGFIL  *CHAR  10
+             DCL        &MSGLIB  *CHAR  10
+             DCL        &MSGDTA  *CHAR 100
+             DCL        &MSGID   *CHAR   7
+             DCL        &DSPMSG  *CHAR  50
+             DCL        &INTMSG  *CHAR  62
+
+             DCL        &MSGID   *CHAR   7
+             DCL        &MSG     *CHAR  70
+
+             DCL        &OFFVOL  *CHAR   6
+             DCL        &OFFYMD6 *CHAR   6
+             DCL        &OFFMDY  *CHAR   8
+             DCL        &CHGDT   *CHAR   1
+             DCL        &RTN     *CHAR   1
+
+             DCL        &OUTDEV  *CHAR   1
+             DCL        &OPTDRV  *CHAR  15
+             DCL        &PATH    *CHAR  12
+             DCL        &MSGQUE  *CHAR  10
+             DCL        &MSGLIB  *CHAR  10
+
+             DCL        &ACCESS  *CHAR   7
+             DCL        &RETRN   *CHAR   6
+
+             DCL        &APFNAM   *CHAR  10
+             DCL        &APFPGTBL *CHAR  10
+             DCL        &JUNK1    *CHAR   6
+             DCL        &JUNK2    *CHAR   1
+             DCL        &FEXIST   *CHAR   1
+
+
+/*------------------------------------------------------------------ +
+ Warn user if folder has been saved and no new reports have been     +
+          added since then.                                          +
+--------------------------------------------------------------------*/
+
+             CHGVAR     &IGNOR   'N'
+             CHGVAR     &RTN '1'
+             CALL       MARKOFF (&FOLDER &FLDLIB &OFFVOL +
+                          &OFFYMD6 &RTN)
+
+             IF         (&RTN *EQ '0')  DO
+             CHGVAR     &OFFMDY (%SST(&OFFYMD6 3 2) *TCAT +
+                          '/' *TCAT %SST(&OFFYMD6 5 2) *TCAT '/' +
+                          *TCAT %SST(&OFFYMD6 1 2))
+             RTVMSG     MSGID(DSP1201) MSGF(PSCON) MSG(&DSPMSG)
+/* 'ENTER to  Continue Saving' */
+
+MRKOFF:      SNDRCVF    RCDFMT(MRKOFF)
+
+             IF         (&IN92 *EQ '1')  RETURN       /* F12 */
+             IF         (&IN93 *EQ '1')  DO           /* F3  */
+             CHGVAR     (%SST(&RETN 8 1)) (X'33')
+             RETURN
+             ENDDO
+             IF         (&IN11 *EQ '1')  DO           /* F1  */
+             CALL       SPYHLP ('BKFLDRFM' 'MRKOFF')
+             GOTO       MRKOFF
+             ENDDO
+             IF         (&IN75 *EQ '1')  DO           /* F5  */
+             CHGVAR     &CHGDT 'N'
+             CHGVAR     &VOL   &OFFVOL
+             GOTO       OFFLINE
+             ENDDO
+
+             ENDDO
+
+
+/*---------------------+
+| Choose output device +
+----------------------*/
+ CHSDEV:     SNDRCVF    RCDFMT(CHSDEV)
+
+             IF         (&IN92   *EQ '1') RETURN      /* F12 */
+             IF         (&IN93 *EQ '1')   DO          /* F3  */
+             CHGVAR     %SST(&RETN 8 1) X'33'
+             RETURN
+             ENDDO
+             IF         (&IN11 *EQ '1')   DO          /* F1  */
+             CALL       SPYHLP ('BKFLDRFM' 'CHSDEV')
+             GOTO       CHSDEV
+             ENDDO
+
+             IF         (&OUTDEV *EQ '1') GOTO TAPE
+
+/*--------+
+| Optical +
+----------*/
+/* Load defaults for DspOpt screen */
+             CHGVAR     &REPORT  'Y'
+             CHGVAR     &IMAGE   'Y'
+             CHGVAR     &SBMJOB  'Y'
+             RTVDTAARA  DTAARA(ENVDFT (75 10)) RTNVAR(&JOBDSC)
+             RTVDTAARA  DTAARA(ENVDFT (85 10)) RTNVAR(&JOBLIB)
+
+             RTVDTAARA  DTAARA(SYSDFT (100 12)) RTNVAR(&PATH)
+             RTVMSG     DSP1201  MSGF(PSCON) MSG(&DSPMSG)
+
+DSPOPT:      SNDRCVF    RCDFMT(DSPOPT)
+
+             IF         (&IN92 *EQ '1') GOTO CHSDEV   /* F12 */
+             IF         (&IN93 *EQ '1') DO            /* F3  */
+             CHGVAR     (%SST(&RETN 8 1)) (X'33')
+             RETURN
+             ENDDO
+             IF         (&IN11 *EQ '1') DO            /* F1  */
+             CALL       SPYHLP ('BKFLDRFM' 'DSPOPT')
+             GOTO       DSPOPT
+             ENDDO
+             IF         (&IN94 *EQ '1') DO            /* F4  */
+             IF         (&FLD *EQ 'PATH')   CALL WRKVOL +
+                          (&PATH '            ' '        ')
+             IF         (&FLD *EQ 'JOBDSC') CALL  MAG2042   +
+                          ('*ALL      ' '*LIBL     ' '*JOBD     ' +
+                           '          ' &JOBDSC &JOBLIB)
+             IF         (&FLD *EQ 'JOBLIB') CALL  MAG2042   +
+                          ('*ALL      ' '*LIBL     ' '*LIB      ' +
+                           '          ' &JOBLIB '          ')
+             GOTO       DSPOPT
+             ENDDO
+
+/* "Optical Volume Name must be entered" */
+             IF         (&PATH *EQ ' ')  DO
+             RTVMSG     ERR013A  MSGF(PSCON) MSG(&DSPMSG)
+             GOTO       DSPOPT
+             ENDDO
+
+/* Check Job Desc */
+             CHKOBJ     &JOBLIB/&JOBDSC OBJTYPE(*JOBD)
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+             RCVMSG     MSGDTA(&MSGDTA) MSGID(&MSGID) MSGF(&MSGFIL) +
+                          MSGFLIB(&MSGLIB)
+             RTVMSG     &MSGID  MSGF(&MSGLIB/&MSGFIL) +
+                          MSGDTA(&MSGDTA) MSG(&DSPMSG)
+             GOTO       DSPOPT
+             ENDDO
+
+/* "Select either Images or Reports */
+             IF         (&REPORT *EQ 'N' *AND &IMAGE *EQ 'N')  DO
+             RTVMSG     ERR0131  MSGF(PSCON) MSG(&DSPMSG)
+             GOTO       DSPOPT
+             ENDDO
+
+             RTVDTAARA  DTAARA(SYSDFT (33 10)) RTNVAR(&MSGQUE)
+             RTVDTAARA  DTAARA(SYSDFT (43 10)) RTNVAR(&MSGLIB)
+
+             IF         (&SBMJOB *EQ 'N')  CALL BKFLD    +
+                          (&FOLDER &FLDLIB &VOL &OPTDRV  +
+                           &PATH &DEV &DEN &IMAGE &REPORT &IGNOR)
+             ELSE       SBMJOB         CMD(CALL BKFLD  +
+                          (&FOLDER &FLDLIB &VOL &OPTDRV  +
+                           &PATH &DEV &DEN &IMAGE &REPORT &IGNOR)) +
+                          JOB(SPYBACKUP) JOBD(&JOBLIB/&JOBDSC) +
+                          SYSLIBL(*CURRENT) INLLIBL(*CURRENT)
+
+             RETURN
+/*-----+
+| Tape +
+-------*/
+TAPE:        RTVDTAARA  DTAARA(SYSDFT (150  6)) RTNVAR(&VOL)
+             RTVDTAARA  DTAARA(SYSDFT (156 10)) RTNVAR(&DEV)
+             RTVDTAARA  DTAARA(SYSDFT (166 14)) RTNVAR(&OWN)
+             RTVDTAARA  DTAARA(SYSDFT (180 11)) RTNVAR(&DEN)
+             RTVDTAARA  DTAARA(SYSDFT (372 1))  RTNVAR(&BRMSYN)
+             RTVDTAARA  DTAARA(SYSDFT (404 10)) RTNVAR(&ENDOPT)
+
+             RTVMSG     MSGID(DSP1201) MSGF(PSCON) MSG(&DSPMSG)
+ DISPLAY:    SNDRCVF    RCDFMT(DSPLY)
+             CHGVAR     &DSPMSG ' '
+
+             IF         (&IN92 *EQ '1') GOTO CHSDEV   /* F12 */
+             IF         (&IN93 *EQ '1') DO            /* F3  */
+             CHGVAR     (%SST(&RETN 8 1)) (X'33')
+             RETURN
+             ENDDO
+             IF         (&IN11 *EQ '1')  DO           /* F1  */
+             CALL       SPYHLP ('BKFLDRFM' 'DSPLY')
+             GOTO       DISPLAY
+             ENDDO
+
+/* F7=Init Tape */
+             IF         (&IN97 *EQ '1')  DO
+             RTVMSG     MSGID(ERR4121) MSGF(PSCON) MSG(&INTMSG)
+ INITTP:     SNDRCVF    RCDFMT(INITTP)
+             IF         (&IN92 *EQ '1') GOTO DISPLAY  /* F12 */
+             IF         (&IN93 *EQ '1')  DO           /* F3  */
+             CHGVAR     (%SST(&RETN 8 1)) (X'33')
+             RETURN
+             ENDDO
+             IF         (&IN11 *EQ '1')  DO           /* F1  */
+             CALL       SPYHLP ('BKFLDRFM' 'INITTP')
+             GOTO       INITTP
+             ENDDO
+
+             CHGVAR     &MSGID ' '
+             CHGVAR     &MSG   ' '
+             CHGVAR     &INTMSG ' '
+             CALL       INZTAPSPY  (&DEV &DEN &VOL &OWN &MSGID &MSG)
+             IF         (&MSGID *NE ' ')  DO
+             CHGVAR     &INTMSG %SST(&MSG 1 50)
+             GOTO       INITTP
+             ENDDO
+             GOTO       DISPLAY
+             ENDDO
+/* End Init Tape */
+
+/* Check Vol */
+             CHGVAR     &MSGID ' '
+             CHGVAR     &MSG   ' '
+             IF         (&BRMSYN *NE 'Y')  CALL CHKTAPSPY +
+                          (&DEV &VOL &MSGID &MSG)
+
+             IF         (&MSGID *NE ' ')  DO
+             CHGVAR     &DSPMSG %SST(&MSG 1 50)
+             GOTO       DISPLAY
+             ENDDO
+
+/* Save Tape parms */
+             CHGDTAARA  DTAARA(SYSDFT (150  6)) VALUE(&VOL)
+             CHGDTAARA  DTAARA(SYSDFT (156 10)) VALUE(&DEV)
+             CHGDTAARA  DTAARA(SYSDFT (166 14)) VALUE(&OWN)
+             CHGDTAARA  DTAARA(SYSDFT (180 11)) VALUE(&DEN)
+
+             CHGVAR     &RETRN  ' '
+             CHGVAR     &ACCESS '*EXCL  '
+             CALL       CHKACTFLD  (&FOLDER &FLDLIB &ACCESS +
+                          &MSGID &MSG &RETRN)
+
+/* FOLDER in use */
+             IF         (&RETRN *NE ' ')  DO
+             RTVMSG     ERR1406  MSGF(PSCON) MSGDTA(&FOLDER) +
+                          MSG(&DSPMSG)
+             GOTO       DISPLAY
+             ENDDO
+
+/*-------------------+
+| Lock it & Save it  +
+---------------------*/
+             ALCOBJ     OBJ((&FLDLIB/&FOLDER *FILE &ACCESS)) WAIT(0)
+             CHGVAR     &MSGID  ' '
+             CHGVAR     &MSG    ' '
+             CHGVAR     &TAPSEQ '0001'
+
+             CALL       GETFLDVOL (&FLDLIB &FOLDER &JUNK1 &JUNK2 +
+                         &APFNAM)
+             IF         (&APFNAM *NE ' ')    DO
+             CALL       SPCHKOBJ (&APFNAM &FLDLIB *FILE &FEXIST)
+/* No APF */
+             IF         (&FEXIST *EQ '1')    DO
+             CHGVAR     &APFNAM ' '
+             GOTO       SAVETAPE
+             ENDDO
+/* APF */
+             CHGVAR     &APFPGTBL ('AP' *TCAT %SST(&APFNAM 3 8))
+             CALL       SPCHKOBJ (&APFPGTBL &FLDLIB *FILE &FEXIST)
+             IF         (&FEXIST *EQ '1')   CHGVAR &APFPGTBL ' '
+             ENDDO
+
+ SAVETAPE:   CALL       PGM(BKFLD) PARM(&FOLDER &FLDLIB &VOL &OPTDRV &PATH +
+                          &DEV &DEN &IMAGE &REPORT &IGNOR) /* J2370 */
+
+             IF         (&MSGID *NE ' ')  DO
+             CHGVAR     &DSPMSG %SST(&MSG 1 50)
+             DLCOBJ     OBJ((&FLDLIB/&FOLDER *FILE &ACCESS))
+             IF         COND(&ENDOPT *NE '*LEAVE') THEN(DO)
+               IF         COND(&ENDOPT *NE '*REWIND' *AND &ENDOPT *NE +
+                            '*UNLOAD') THEN(CHGVAR VAR(&ENDOPT) +
+                            VALUE('*REWIND'))
+               CHKTAP     DEV(&DEV) ENDOPT(&ENDOPT)
+             ENDDO
+             GOTO       DISPLAY
+             ENDDO
+
+/*-----------------------------------------------------+
+|  Update MFldDir: FLDLOC OFFVOL OFFDAT NUMOFF OFFSYS  +
+|         MRptDir: REPLOC OFRVOL OFRDAT OFRNAM OFRSYS  +
+-------------------------------------------------------*/
+
+             CHGVAR     &CHGDT 'Y'
+ OFFLINE:    CALL       UPDFLDBAK (&FLDLIB &FOLDER &VOL &CHGDT &BRMSYN)
+             CALL       UPDREPBAK (&FLDLIB &FOLDER &VOL &CHGDT &BRMSYN)
+
+/* Remove the MEMBER from the folder *FILE */
+             RMVM       &FLDLIB/&FOLDER  MBR(&FOLDER)
+
+/* Delete APF files */
+             IF         (&APFNAM   *NE ' ')  DLTF &FLDLIB/&APFNAM
+             IF         (&APFPGTBL *NE ' ')  DLTF &FLDLIB/&APFPGTBL
+
+             ENDPGM

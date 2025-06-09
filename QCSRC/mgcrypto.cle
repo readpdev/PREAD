@@ -1,0 +1,87 @@
+/* 04-20-09 PLR Created. Encryption/Decryption. T65J.                         */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <qc3dtaen.h>
+#include <qc3dtade.h>
+#include <qc3ctx.h>
+#include <qusec.h>
+
+#include "mgcrypto.h"
+
+#define OK 0
+#define ERROR -1
+#define ENCRYPT_DECRYPT_KEY "OpenText87"
+
+int docEncDcr(int operation, char *target, int targetLen, char *source,
+  int sourceLen, int *returnLen, Qus_EC_t *error)
+{
+  Qc3_Format_ALGD0200_T algDesc; //Algorithm description structure.
+  Qc3_Format_KEYD0200_T keyDesc; //Key description structure.
+  char cryptoProvider;
+  div_t ans;
+  Qc3_Format_ALGD0100_T contextToken;
+
+  typedef struct key_format
+  {
+    Qc3_Format_KEYD0200_T hdr;
+    char data[10];
+  } key_format_t;
+  key_format_t key;
+
+  /* Initialize algorithm format structure. */
+  memset(&algDesc,0,sizeof(algDesc));
+  algDesc.Block_Cipher_Alg = Qc3_AES;
+  algDesc.Block_Length = 16;
+  if (sourceLen > 16)
+  {
+    ans = div(sourceLen,16);
+    algDesc.Block_Length = ans.quot * 16;
+    if (ans.rem > 0)
+      algDesc.Block_Length += 16;
+  }
+  algDesc.Mode = Qc3_ECB;
+  algDesc.Pad_Option = Qc3_Pad_Char;
+  algDesc.Pad_Character = ' ';
+
+  /* Initialize key format structure. */
+  memset(&key,0,sizeof(key));
+  key.hdr.Key_Type = Qc3_AES;
+  strcpy(key.data, ENCRYPT_DECRYPT_KEY);
+  key.hdr.Key_String_Len = 16;
+  key.hdr.Key_Format = Qc3_Bin_String;
+
+  memset(error,0,sizeof(error));
+  error->Bytes_Provided = sizeof(error);
+
+  cryptoProvider = Qc3_Sfw_CSP;
+  memset(target,0,targetLen);
+
+  /* Create a context token */
+  contextToken.Final_Op_Flag = '0'; /* Final operation flag */
+  Qc3CreateAlgorithmContext((unsigned char *)&algDesc, "ALGD0200",
+    contextToken.Alg_Context_Token, error);
+
+  if (operation == DOC_OP_ENCRYPT && !error->Bytes_Available)
+    Qc3EncryptData(source, &sourceLen, Qc3_Data, (unsigned char *)&contextToken,
+      Qc3_Alg_Token, (unsigned char *)&key,Qc3_Key_Parms,
+      &cryptoProvider, NULL, target, &targetLen, returnLen,
+      error);
+
+  if (operation == DOC_OP_DECRYPT && !error->Bytes_Available)
+    Qc3DecryptData(source, &sourceLen, (unsigned char *)&contextToken,
+      Qc3_Alg_Token, (unsigned char *)&key,Qc3_Key_Parms,
+      &cryptoProvider, NULL, target, &targetLen, returnLen,
+      error);
+
+  contextToken.Final_Op_Flag = '1'; /* Final operation flag */
+  Qc3CreateAlgorithmContext((unsigned char *)&algDesc, "ALGD0200",
+    contextToken.Alg_Context_Token, error);
+  Qc3DestroyAlgorithmContext(contextToken.Alg_Context_Token, error);
+
+  if (error->Bytes_Available)
+    return ERROR;
+
+  return OK;
+}

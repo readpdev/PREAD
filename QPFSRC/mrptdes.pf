@@ -1,0 +1,32 @@
+      *%METADATA                                                       *
+      * %TEXT Report Description File                                  *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... MRPTDES - Magellan Report Description     *
+ JJF  * Date created...... 5/24/95                                   *
+      *                                                              *
+      ****************************************************************
+     A                                      UNIQUE
+     A                                      REF(MVARDEFS)
+      *
+     A          R RPTDES
+1    A            FLDR      R               REFFLD(FLDR)
+2    A            FLDRLB    R               REFFLD(FLDRLB)
+3    A            FILNAM    R               REFFLD(FILNAM)
+4    A            JOBNAM    R               REFFLD(JOBNAM)
+5    A            USRNAM    R               REFFLD(USRNAM)
+6    A            JOBNUM    R               REFFLD(JOBNUM)
+7    A            FILNUM    R               REFFLD(FILNUM)
+7    A            DATFOP    R               REFFLD(DATFOP)
+     A            RVDESC    R               REFFLD(RDESC MAGFLDR)
+      *
+   1 A          K FLDR
+   2 A          K FLDRLB
+   3 A          K FILNAM
+   4 A          K JOBNAM
+   5 A          K USRNAM
+   6 A          K JOBNUM
+   7 A          K FILNUM
+   8 A          K DATFOP

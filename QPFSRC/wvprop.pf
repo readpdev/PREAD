@@ -1,0 +1,13 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Process-Header                                *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A                                      UNIQUE
+     A          R WVPROF                    TEXT('Process Header')
+      *
+      **************************************************************
+      *
+     A            FAPRO         10          COLHDG('Process')
+     A            FADESC        40          COLHDG('Description')
+      *
+     A          K FAPRO

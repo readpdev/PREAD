@@ -1,0 +1,12 @@
+      *%METADATA                                                       *
+      * %TEXT Object Security by Library, ID, SubID, Type              *
+      *%EMETADATA                                                      *
+                R OBJSECREC                 PFILE(OBJSEC)
+                  OSR_OBJLIB
+                  OSR_OBJID
+                  OSR_OBJSID
+                  OSR_OBJTYP
+                K OSR_OBJLIB
+                K OSR_OBJID
+                K OSR_OBJSID
+                K OSR_OBJTYP

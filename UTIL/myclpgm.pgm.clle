@@ -1,0 +1,5 @@
+             PGM
+             DCL        VAR(&PAGES) TYPE(*DEC) LEN(9 0)
+             TIFPGCNT   DOCCLASS(PATIENTIMG) INDEXVAL1('HERTZ, +
+                          BARRY') #PAGES(&PAGES)
+             ENDPGM

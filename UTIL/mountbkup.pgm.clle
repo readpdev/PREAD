@@ -1,0 +1,14 @@
+      /*%METADATA                                                     */
+      /* %TEXT Mount Backup Directory for Testing/Reviewing           */
+      /*%EMETADATA                                                    */
+             PGM
+
+             MKDIR      DIR('/NFSBackup')
+             MOUNT      TYPE(*NFS) +
+                          MFS('ausstore03:/vol/Gauss_Backup') +
+                          MNTOVRDIR('/NFSBackup')
+             WRKLNK     OBJ('/NFSBackup/*')
+             UNMOUNT    TYPE(*NFS) MNTOVRDIR('/NFSBackup')
+             RMDIR      DIR('/NFSBackup')
+
+ ENDPGM:     ENDPGM

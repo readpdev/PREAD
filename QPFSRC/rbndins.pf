@@ -1,0 +1,20 @@
+      *%METADATA                                                       *
+      * %TEXT Report Bundle Instructions                               *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... RBNDINS - Bundle Instruction File         *
+     A* Date created...... 04/12/94                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R BNDINS
+     A            BIINST        10          TEXT('Instruction ID')
+     A                                      COLHDG('Instruction ID')
+     A            BILINE       800          TEXT('Instruction Line')
+     A                                      COLHDG('Instruction Line')
+     A          K BIINST

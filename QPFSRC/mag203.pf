@@ -1,0 +1,17 @@
+      *%METADATA                                                       *
+      * %TEXT Used to compile mag203 and mag503                        *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... MAG203  - Viewer Overlay Data Temp File   *
+     A* Date created...... 1/22/94                                   *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R MAGRC
+     A            #OVRKY         3S 0       COLHDG('Line' 'Number')
+     A            FDATA        247A         COLHDG('Form' 'Overlay' 'Data')
+     A          K #OVRKY

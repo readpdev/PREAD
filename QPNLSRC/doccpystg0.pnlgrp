@@ -1,0 +1,222 @@
+:pnlgrp submsgf='*LIBL/PSCON'.
+.************************************************************************
+.*  Help for command DOCCPYSTG
+.************************************************************************
+:help name='DOCCPYSTG'.
+DocManager Copy Optical Data Utility - Help
+:p.The Copy Storage Utility (DOCCPYSTG) command allows the duplication of
+DocManager storage data from one device to another. A detailed report is
+generated listing all copied files, error and informational messages.
+:p.:hp2.Restrictions::ehp2.
+:ul.
+:li.
+Only data referenced within the DocManager product is available for duplication.
+:li.
+Source and target volumes must be defined in DocManager.
+:li.
+Optical devices must be accessible through the QOPT or IFS file systems. Some
+devices such as LAN attached optical will not be functional if data cannot be
+specified in a hierarchically, i.e., /QOPT/VOLUMENAME/FILENAME.
+:li.
+It is recommended to restrict or limit access to the target volume while this
+utility is active. This includes and is not limited to archiving and read
+access.
+:eul.
+:ehelp.
+.*******************************************
+.*   Help for parameter FOLDER
+.*******************************************
+:help name='DOCCPYSTG/FOLDER'.
+&msg(ALD0006). (FOLDER) - Help
+:xh3.&msg(ALD0006). (FOLDER)
+:p.Limit the selection criteria to the DocManager folder specified.
+:p.:hp2.Single values:ehp2.
+:parml.
+:pt.:pk def.*ALL:epk.
+:pd.
+All folders are selected.
+:eparml.
+:p.:hp2.Qualifier 1: &msg(ALD0006).:ehp2.
+:parml.
+:pt.:pv.name:epv.
+:pd.
+Specify the name of the folder containing optical data to be copied.
+:eparml.
+:p.:hp2.Qualifier 2: &msg(CMD1013).:ehp2.
+:parml.
+:pt.:pv.name:epv.
+:pd.
+Specify the name of the library containing the folder to be used in the
+selection criteria. *LIBL is NOT a valid option.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter DOCTYPE
+.*******************************************
+:help name='DOCCPYSTG/DOCTYPE'.
+&msg(CMD1801). (DOCTYPE) - Help
+:xh3.&msg(CMD1801). (DOCTYPE)
+:p.Specifies the document type to be selected for the copy operation.
+:parml.
+:pt.:pk def.*ALL:epk.
+:pd.
+All document types will be selected.
+:pt.:pv.character-value:epv.
+:pd.
+Specify the document type.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter FROMDATE
+.*******************************************
+:help name='DOCCPYSTG/FROMDATE'.
+&msg(CMD1734). (FROMDATE) - Help
+:xh3.&msg(CMD1734). (FROMDATE)
+:p.Specifies the from create/capture date.
+:parml.
+:pt.:pv.character-value:epv.
+:pd.
+Specify the from date in *ISO format without delimeters. (YYYYMMDD)
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter TODATE
+.*******************************************
+:help name='DOCCPYSTG/TODATE'.
+&msg(CMD1735). (TODATE) - Help
+:xh3.&msg(CMD1735). (TODATE)
+:p.Specifies the to create/capture date.
+:parml.
+:pt.:pv.character-value:epv.
+:pd.
+Specify the to date in *ISO format no delimeters. (YYYYMMDD)
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter TOVOLUME
+.*******************************************
+:help name='DOCCPYSTG/TOVOLUME'.
+&msg(CMD1072). (TOVOLUME) - Help
+:xh3.&msg(CMD1072). (TOVOLUME)
+:p.Specifies the target volume the storage data will be transferred to.
+:parml.
+:pt.:pv.character-value:epv.
+:pd.
+Specify the target volume. This must be defined to the DocManager storage
+system. From the DocManager main menu, options 4, 3, 2.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter MAXFILES
+.*******************************************
+:help name='DOCCPYSTG/MAXFILES'.
+&msg(P004146). (MAXFILES) - Help
+:xh3.&msg(P004146). (MAXFILES)
+:p.Specifies the maximum number of files to be allowed in a given subdirectory
+on the target volume. Some storage devices perform more slowly when a large
+number of files are in a directory.
+:parml.
+:pt.:pk def.*NOMAX:epk.
+:pd.
+No limitation is placed on the number of files allowed.
+:pt.:pv.integer:epv.
+:pd.
+Specify the number of files allowed to be copied to target directories.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter JOBD
+.*******************************************
+:help name='DOCCPYSTG/JOBD'.
+&msg(CMD1147). (JOBD) - Help
+:xh3.&msg(CMD1147). (JOBD)
+:p.Specifies the job description to use for the submitted job.
+:p.:hp2.Single values:ehp2.
+:parml.
+:pt.:pk def.SPYGLSBCR:epk.
+:pd.
+DocManager default job description.
+:eparml.
+:p.:hp2.Qualifier 1: &msg(CMD1147).:ehp2.
+:parml.
+:pt.:pv.name:epv.
+:pd.
+Specify the name of job description.
+:eparml.
+:p.:hp2.Qualifier 2: &msg(CMD1013).:ehp2.
+:parml.
+:pt.:pv.name:epv.
+:pd.
+Specify the name of library containing the job description.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter STARTSTOP
+.*******************************************
+:help name='DOCCPYSTG/STARTSTOP'.
+Start or stop the application (STARTSTOP) - Help
+:xh3.Start or stop the application (STARTSTOP)
+:p.Specifies the start/stop option for the utility. Enter *START (default)
+to start the utlity and *STOP to end the job in a controlled manner.
+:parml.
+:pt.:pk def.*START:epk.
+:pd.
+This is the default option to start the application.
+:pt.:pk.*STOP:epk.
+:pd.
+Using this option stops the active submitted process.
+:eparml.
+:ehelp.
+.**************************************************
+.*
+.* Examples for DOCCPYSTG
+.*
+.**************************************************
+:help name='DOCCPYSTG/COMMAND/EXAMPLES'.
+Examples for DOCCPYSTG - Help
+:xh3.Examples for DOCCPYSTG
+:p.:hp2.Example 1: Simple Command Example:ehp2.
+:xmp.
+DOCCPYSTG TOVOLUME(TARGETVOLUME)
+:exmp.
+:p.This command will copy all optical data in the DocManager product to the
+specified volume.
+.*
+:p.:hp2.Example 2: More Complex Command Example:ehp2.
+:xmp.
+DOCCPYSTG FOLDER(SOMELIB/SOMEFOLDER)
+          TOVOLUME(TARGETVOLUME)
+:exmp.
+:p.This command will copy only optical DocManager data from the specified
+folder.
+:ehelp.
+.**************************************************
+.*
+.* Error messages for DOCCPYSTG
+.*
+.**************************************************
+:help name='DOCCPYSTG/ERROR/MESSAGES'.
+&msg(CPX0005,QCPFMSG). DOCCPYSTG - Help
+:xh3.&msg(CPX0005,QCPFMSG). DOCCPYSTG
+:p.:hp3.*ESCAPE &msg(CPX0006,QCPFMSG).:ehp3.
+.************************************************************************
+.* List the *ESCAPE, *STATUS, and *NOTIFY messages signalled from the command.
+.* The following are generic messages defined in message file QCPFMSG.
+.* Modify this list to match the list of error messages for the command.
+.************************************************************************
+:DL COMPACT.
+:DT.CFL0025
+:DD.&MSG(CFL0025,PSCON,*LIBL,nosub).
+:DT.ERR1037
+:DD.&MSG(ERR1037,PSCON,*LIBL,nosub).
+:DT.ACT0100
+:DD.&MSG(ACT0100,PSCON,*LIBL,nosub).
+:DT.ACT0101
+:DD.&MSG(ACT0101,PSCON,*LIBL,nosub).
+:DT.ERR1410
+:DD.&MSG(ERR1410,PSCON,*LIBL,nosub).
+:DT.ACT0026
+:DD.&MSG(ACT0026,PSCON,*LIBL,nosub).
+:EDL.
+:ehelp.
+:epnlgrp.

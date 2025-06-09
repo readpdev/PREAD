@@ -1,0 +1,36 @@
+      *%METADATA                                                       *
+      * %TEXT IFS Monitor Definition                                   *
+      *%EMETADATA                                                      *
+     A**************************************************************
+     A**    MIFSMON                                               **
+     A**                                                          **
+     A**    SPY IFS - MONITOR DEFINITION                          **
+     A**                                                          **
+     A**    KEY : IENAM                                           **
+     A**                                                          **
+     A**************************************************************
+4979 *  Init   Description
+4979 *  EPG    Add switch that will determine if jounraling needs
+4979 *         to be initialized for preexisting IFS files.
+4979 *------------------------------------------------------------
+     A                                      UNIQUE
+     A                                      CCSID(65535)
+     A          R IFSEXTF                   TEXT('SpyView IFS Monitor Def.')
+     A            IEDEF         10          COLHDG('Definition' 'Name')
+     A            IEEXT         12          COLHDG('File' 'Extension')
+     A            IEACT          1          COLHDG('Active' 'Y/N')
+     A            IEARC          1          COLHDG('Archive' 'Y/N')
+     A            IEDLT          1          COLHDG('Delete' 'Y/N')
+     A            IEMPTH       256          COLHDG('Move' 'IFS Path')
+     A            IEKEY          1          COLHDG('Key from' 'Filename' 'Y/N')
+     A            IEKSEP        10          COLHDG('Key' 'Separator')
+     A            IEKEND        10          COLHDG('End' 'Key' 'Delimiter')
+     A            IETYP         10          COLHDG('Report' 'Type')
+     A            IEIPGM        10          COLHDG('Index' 'Program')
+     A            IEIPGL        10          COLHDG('Index' 'Program' 'Library')
+     A            IEAPGM        10          COLHDG('Finish' 'Program')
+     A            IEAPGL        10          COLHDG('Finish' 'Program' 'Library')
+     A            IEINIT         1          COLHDG('Init' 'Journal' 'Files')
+     A*
+     A          K IEDEF
+     A          K IEEXT

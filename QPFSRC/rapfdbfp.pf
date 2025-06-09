@@ -1,0 +1,21 @@
+      *%METADATA                                                       *
+      * %TEXT APF/Advanced SCS Page Table                              *
+      *%EMETADATA                                                      *
+      * Physical file... RAPFDBFP - APF Page Table
+      *                  One file per SpyFolder  File name = AP........
+      *                  7/95
+     A                                      UNIQUE
+     A          R APGDBF
+     A            APGREP        10          COLHDG('Report' 'Name')
+      *                                            "SPY......."
+     A            APGSEQ         9B 0       COLHDG('Seq' 'Number')
+     A            APGTYP         1          COLHDG('APF Type')
+      *                         '1' = Binary APGTBL
+      *                         ' ' = Packed APGTBL
+
+     A            APGTBL       378          COLHDG('APF Data')
+
+     A          K APGREP
+     A          K APGSEQ
+
+      *  COPY TO RAPFDBGP TO COMPILE MAG1070

@@ -1,0 +1,699 @@
+/*                                                                            */
+/* 05-15-09 PLR Add support for Tivoli Storage Manager. J65                   */
+/*                                                                            */
+/* Tivoli Storage Manager Module. Part of SPYSTGIO service program.           */
+
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <ctype.h>
+
+#include <qmhrtvm.h>
+#include <qszrtvpr.h>
+#include <qp0ztrc.h>
+#include <qwcrdtaa.h>
+#include <qbnrspgm.h>
+#include <qusec.h>
+
+#include "dsmapips.h"
+#include "dsmapitd.h"
+#include "dsmapifp.h"
+#include "dsmrc.h"
+#include "release.h"
+#include "mgcrypto.h"
+
+#define CLIENT_NOT_INSTALLED  -2
+#define ERROR_DELETING_SRVPGM -3
+#define ERROR_RTV_DTAARA      -4
+#define SRVPGM_NOT_FOUND      -5
+#define ERROR_RTV_SRVPGM      -6
+#define ERROR_COPYING_SRVPGM  -7
+#define INSTALL_COMPLETE "90"
+#define TSM_VOL_ADD            1
+#define TSM_VOL_UPD            2
+#define OK                     0
+#define DOC_MGR_MAX_BUF        31744
+
+static char lastMessage[DSM_MAX_RC_MSG_LENGTH];
+static void setLastError(dsUint32_t handle, int errorCode);
+static void trimr(char *aString);
+static void lcase(char *aString);
+static int getFileSpaceData(dsUint32_t handle, char *volume,
+  qryRespFSData *fsResp);
+int tsmCheckInstall(void);
+
+typedef _Packed struct
+{
+  Qmh_Rtvm_RTVM0100_t hdr;
+  char message[100];
+} rtvMsg_t;
+
+typedef _Packed struct
+{
+  unsigned long long capacity;
+  unsigned long long occupancy;
+} freeSpace_t;
+
+int tsmConnect(dsUint32_t *handleP, char *deviceName)
+{
+  dsmInitExIn_t  initIn;
+  dsmInitExOut_t initOut;
+  dsmApiVersionEx apiApplVer;
+  dsmApiVersionEx apiLibVer;
+  char decryptedPassword[40], options[256];
+  Qus_EC_t error;
+
+  char dirDelimiter = '\0';
+  char *encryptKey = NULL, *confFile = NULL, *owner = NULL, *userName = NULL;
+  char *userNamePswd = NULL;
+  dsBool_t encrypt = bFalse;
+  dsBool_t useUnicode = bFalse;
+  int rc = 0;
+
+  /* Setup SQL for retrieving authorization config for device */
+  exec sql set option closqlcsr=*endmod,commit=*none;
+  exec sql include sqlca;
+  exec sql begin declare section;
+    char hostName[40];
+    long port;
+    char node[40];
+    char password[40];
+    char sqlDeviceName[10];
+  exec sql end declare section;
+
+  /* See if product is loaded to the system */
+  if (tsmCheckInstall())
+    return CLIENT_NOT_INSTALLED;
+
+  trimr(deviceName);
+  strcpy(sqlDeviceName, deviceName);
+  exec sql select trim(T ' ' from sasvr), int(saport), trim(T ' ' from sauid),
+    sapwd into :hostName, :port, :node, :password from mstgaut
+    where sadev = :sqlDeviceName;
+
+  /* Decrypt password from storage authorization file */
+  memset(&decryptedPassword, ' ', sizeof(decryptedPassword));
+  decryptedPassword[sizeof(decryptedPassword)] = '\0';
+  memset(&error, 0, sizeof(error));
+  error.Bytes_Provided = sizeof(error);
+  DOCCRYPTO(DOC_OP_DECRYPT, decryptedPassword, password);
+  decryptedPassword[strcspn(decryptedPassword, " ")] = '\0';
+
+  /* Get application version information */
+  memset(&apiApplVer,0x00,sizeof(dsmApiVersionEx));
+  dsmQueryApiVersionEx(&apiApplVer);
+
+  memset(&initIn, 0, sizeof(dsmInitExIn_t));
+  memset(&initOut, 0, sizeof(dsmInitExOut_t));
+
+  /* Initialize structures for connection. */
+  initIn.stVersion           = dsmInitExInVersion;
+  initIn.apiVersionExP       = &apiApplVer;
+  initIn.clientNodeNameP     = node;
+  initIn.clientOwnerNameP    = owner;
+  initIn.clientPasswordP     = decryptedPassword;
+  initIn.applicationTypeP    = "i5/OS";
+  initIn.configfile          = confFile;
+  sprintf(options, "-tcpserveraddress=%s -tcpport=%i", hostName, port);
+  initIn.options             = options;
+  initIn.userNameP           = userName;
+  initIn.userPasswordP       = userNamePswd;
+  initIn.dirDelimiter        = dirDelimiter;
+  initIn.useUnicode          = useUnicode;
+  initIn.bEncryptKeyEnabled  = encrypt;
+  initIn.encryptionPasswordP = encryptKey;
+  initIn.useTsmBuffers       = bFalse;
+  initIn.numTsmBuffers       = 0;
+
+  initOut.stVersion = dsmInitExOutVersion;
+
+  rc = dsmInitEx(handleP, &initIn, &initOut);
+
+  if (rc)
+  {
+    dsmTerminate(*handleP);
+    setLastError(*handleP, rc);
+  }
+
+  return rc;
+}
+
+void tsmTerminate(dsUint32_t handle)
+{
+  int rc;
+  rc = dsmTerminate(handle);
+  return;
+}
+
+static void setLastError(dsUint32_t handle, int errorCode)
+{
+  dsInt16_t rc;
+  int i = 0;
+  rtvMsg_t rtvMsg;
+  Qus_EC_t error;
+
+  memset(lastMessage, 0, sizeof(lastMessage));
+
+  /* Exception messages outside of TSM */
+  switch (errorCode)
+  {
+    case ERROR_RTV_DTAARA:
+      memcpy(&lastMessage, "Error retrieving data area SYSDFT", 33);
+      break;
+    case SRVPGM_NOT_FOUND:
+      memcpy(&lastMessage, "Service program not found in program library", 44);
+      break;
+    case ERROR_RTV_SRVPGM:
+      memcpy(&lastMessage,
+        "Error retrieving service program attributes in program library", 62);
+      break;
+    case ERROR_DELETING_SRVPGM:
+      memcpy(&lastMessage,
+        "Error deleting service program from program library", 51);
+      break;
+    case ERROR_COPYING_SRVPGM:
+      memcpy(&lastMessage,
+        "Error copying service program from QANSAPI to program library", 61);
+      break;
+    case CLIENT_NOT_INSTALLED:
+      memset(&error, 0, sizeof(error));
+      error.Bytes_Provided = sizeof(error);
+      QMHRTVM(&rtvMsg, sizeof(rtvMsg), "RTVM0100", "ERR0095",
+        "PSCON     *LIBL     ", " ", 0, "*NO       ", "*NO       ", &error);
+      memcpy(&lastMessage, &rtvMsg.message, rtvMsg.hdr.Length_Message_Returned);
+      break;
+    default:
+      /* TSM message handler */
+      rc = dsmRCMsg(handle, errorCode, lastMessage);
+      break;
+  }
+
+  while(lastMessage[i] != 0) /* Replace invalid chars with ebcdic blanks */
+  {
+    if (lastMessage[i] < 0x40)
+      lastMessage[i] = ' ';
+    i++;
+  }
+
+  return;
+}
+
+char *tsmGetLastError(void)
+{
+  return lastMessage;
+}
+
+int tsmFree(char *deviceName, char *volume, freeSpace_t *freeSpace)
+{
+  dsInt16_t rc;
+  qryRespFSData qRespFSData, fsResp;
+  int i;
+  dsUint32_t handle = 0;
+
+  if (rc = tsmConnect(&handle, deviceName))
+    return rc;
+
+  trimr(volume);
+  trimr(deviceName);
+
+  rc = getFileSpaceData(handle, volume, &fsResp);
+
+  if (!rc)
+  {
+    memcpy(&freeSpace->capacity, &fsResp.capacity, sizeof(freeSpace->capacity));
+    memcpy(&freeSpace->occupancy, &fsResp.occupancy, sizeof(freeSpace->occupancy));
+  }
+
+  tsmTerminate(handle);
+
+  return rc;
+}
+
+static void trimr(char *aString)
+{
+  int i;
+  i = strlen(aString) - 1;
+  while (i > 0 && aString[i] == ' ')
+    aString[i--] = 0;
+  return;
+}
+
+static void lcase(char *aString)
+{
+  int i = 0;
+  while (aString[i] != 0)
+    aString[i] = tolower(aString[i++]);
+  return;
+}
+
+/* Verify that the client software is installed on the system */
+int tsmCheckInstall(void)
+{
+  Qsz_Product_Info_Rec_t prodInfRec;
+  Qsz_PRDR0100_t  prodDataRtn;
+  Qbn_SPGI0100_t srvPgmInf;
+  Qus_EC_t error;
+  dsUint32_t dummyHandle;
+  typedef _Packed struct dataRtn
+  {
+    Qwc_Rdtaa_Data_Returned_t inf;
+    char data[100];
+  } dataRtn_t;
+  dataRtn_t sysDft;
+  char pgmLib[11];
+  char aCmd[128];
+  char qualSrvPgm[20];
+
+  memset(&prodInfRec, ' ', sizeof(prodInfRec));
+  memcpy(&prodInfRec.Product_Id, "5733197", 7);
+  memcpy(&prodInfRec.Release_Level, "*ONLY", 5);
+  memcpy(&prodInfRec.Product_Option, "0000", 4);
+  memcpy(&prodInfRec.Load_Id, "*CODE", 5);
+  memset(&error, 0, sizeof(error));
+  error.Bytes_Provided = sizeof(error);
+  QSZRTVPR(&prodDataRtn, sizeof(prodDataRtn), "PRDR0100", &prodInfRec, &error);
+  if (error.Bytes_Available > 0 ||
+    (memcmp(&prodDataRtn.Symbolic_Load_State, "*INSTALLED", 10) ||
+    memcmp(&prodDataRtn.Load_State, INSTALL_COMPLETE, 2)))
+  {
+    Qp0zLprintf("DocMgr: QSZRTVPR API Load_State=%2.2s\n",
+      prodDataRtn.Load_State);
+    setLastError(dummyHandle, CLIENT_NOT_INSTALLED);
+    return CLIENT_NOT_INSTALLED;
+  }
+  /* Delete the dummy version of QANSAPI if in the program library and then   */
+  /* copy the installed product version from QANSAPI library to program lib.  */
+  memset(&sysDft, sizeof(sysDft), 0);
+  QWCRDTAA(&sysDft, sizeof(sysDft), "SYSDFT    *LIBL     ", 296, 10, &error);
+  if (error.Bytes_Available > 0)
+  {
+    setLastError(dummyHandle, ERROR_RTV_DTAARA);
+    return ERROR_RTV_DTAARA;
+  }
+  memcpy(&pgmLib, &sysDft.data, sizeof(pgmLib));
+  pgmLib[sizeof(pgmLib)-1] = 0;
+  trimr(pgmLib);
+  sprintf(aCmd, "chkobj %s/qansapi *srvpgm", pgmLib);
+  if (system(aCmd))
+  {
+    setLastError(dummyHandle, SRVPGM_NOT_FOUND);
+    return SRVPGM_NOT_FOUND;
+  }
+  memcpy(&qualSrvPgm, "QANSAPI   *LIBL     ", sizeof(qualSrvPgm));
+  memset(&srvPgmInf, 0, sizeof(srvPgmInf));
+  QBNRSPGM(&srvPgmInf, sizeof(srvPgmInf), "SPGI0100", qualSrvPgm, &error);
+  if (error.Bytes_Available > 0)
+  {
+    setLastError(dummyHandle, ERROR_RTV_SRVPGM);
+    return ERROR_RTV_SRVPGM;
+  }
+  if (srvPgmInf.Cur_Export_Sig[0] == 0) /* No signature = stubbed version */
+  {
+    sprintf(aCmd, "dltsrvpgm %s/qansapi", pgmLib);
+    if (system(aCmd))
+    {
+      setLastError(dummyHandle, ERROR_DELETING_SRVPGM);
+      return ERROR_DELETING_SRVPGM;
+    }
+    sprintf(aCmd, "crtdupobj qansapi qansapi *srvpgm %s", pgmLib);
+    if (system(aCmd))
+    {
+      setLastError(dummyHandle, ERROR_COPYING_SRVPGM);
+      return ERROR_COPYING_SRVPGM;
+    }
+  }
+  return OK;
+}
+
+/* Add a volume (TSM filespace) to the TSM server. */
+int tsmVolumeAdd(dsUint32_t handle, char *volume, unsigned long long capacity)
+{
+
+  regFSData regFilespace;
+  dsmFSUpd updFilespace;
+  qryRespFSData fsResp;
+  dsInt16_t rc = 0;
+  unsigned long long wrkLong;
+
+  trimr(volume);
+
+  memset(&regFilespace, 0, sizeof(regFSData));
+  regFilespace.fsName = (char *)malloc(100);
+  regFilespace.fsType = (char *)malloc(100);
+  strcpy(regFilespace.fsName,volume);
+  strcpy(regFilespace.fsType,"DOCMGRAPI");
+  regFilespace.capacity.lo = 0;
+  regFilespace.capacity.hi = 0;
+  memcpy(&regFilespace.capacity, &capacity, sizeof(capacity));
+  regFilespace.occupancy.lo = 0;
+  regFilespace.occupancy.hi = 0;
+  regFilespace.stVersion = regFSDataVersion;
+  if ((rc = dsmRegisterFS(handle, &regFilespace)))
+    setLastError(handle, rc);
+  free(regFilespace.fsName);
+  free(regFilespace.fsType);
+
+  return rc;
+}
+
+/* Update a volume (TSM filespace) on the TSM server. */
+int tsmVolumeUpd(dsUint32_t handle, char *volume,
+  unsigned long long capacity, unsigned long long bytesUsed)
+{
+
+  dsmFSUpd updFilespace;
+  qryRespFSData fsResp;
+  dsInt16_t rc = 0;
+  unsigned long long wrkLong;
+
+  trimr(volume);
+
+  if (!(rc = getFileSpaceData(handle, volume, &fsResp)))
+  {
+    memset(&updFilespace, 0, sizeof(dsmFSUpd));
+    updFilespace.stVersion = dsmFSUpdVersion;
+    if (bytesUsed)
+    {
+      memcpy(&wrkLong, &fsResp.occupancy, sizeof(wrkLong));
+      wrkLong += bytesUsed;
+      memcpy(&updFilespace.occupancy, &wrkLong,
+        sizeof(updFilespace.occupancy));
+      rc = dsmUpdateFS(handle, volume, &updFilespace, DSM_FSUPD_OCCUPANCY);
+    }
+    memcpy(&wrkLong, &fsResp.capacity, sizeof(wrkLong));
+    if (capacity && capacity != wrkLong)
+    {
+      memcpy(&updFilespace.capacity, &capacity,
+        sizeof(updFilespace.capacity));
+      rc = dsmUpdateFS(handle, volume, &updFilespace, DSM_FSUPD_CAPACITY);
+    }
+  }
+
+  if (rc)
+    setLastError(handle, rc);
+
+  return rc;
+}
+
+/* Get file space information (volume) */
+static int getFileSpaceData(dsUint32_t handle, char *volume,
+  qryRespFSData *fsResp)
+{
+  dsInt16_t rc = 0;
+  char *fs;
+  qryFSData qFSData;
+  qryRespFSData qRespFSData;
+  DataBlk qData;
+
+  fs = (char*)malloc(DSM_MAX_FSNAME_LENGTH + 1);
+  qFSData.stVersion = qryFSDataVersion;
+  qFSData.fsName = volume;
+  qRespFSData.stVersion = qryRespFSDataVersion;
+
+  if ((rc = dsmBeginQuery(handle, qtFilespace, (dsmQueryBuff *)&qFSData)))
+    setLastError(handle, rc);
+
+  if (!rc)
+  {
+    qData.stVersion = DataBlkVersion;
+    qData.bufferLen = sizeof(qryRespFSData);
+    qData.bufferPtr = (char *)&qRespFSData;
+    rc = dsmGetNextQObj(handle, &qData);
+    if (rc == DSM_RC_MORE_DATA) /* Don't need everything...skip more data */
+      rc = DSM_RC_OK;
+    else
+      setLastError(handle, rc);
+  }
+
+  dsmEndQuery(handle);
+
+  if (!rc)
+    memcpy(fsResp, qData.bufferPtr, sizeof(*fsResp));
+
+  if (fs)
+    free(fs);
+
+  return rc;
+}
+
+int tsmBeginWrite(dsUint32_t handle, char *fileSpace, char *pathIn)
+{
+  ApiSessInfo dsmSessInfo;
+  dsmObjName objName;
+  mcBindKey mcBindKey;
+  int rc = DSM_RC_OK;
+  sndArchiveData archData;
+  ObjAttr objAttrArea;
+  char *fileName;
+
+  memset(&dsmSessInfo,0x00,sizeof(ApiSessInfo));
+  dsmSessInfo.stVersion = ApiSessInfoVersion;
+  if ((rc = dsmQuerySessInfo(handle, &dsmSessInfo)))
+  {
+    setLastError(handle, rc);
+    return rc;
+  }
+
+  if (!rc)
+    rc = dsmBeginTxn(handle);
+
+  if (!rc)
+  {
+    memset(&objName, 0, sizeof(objName));
+    trimr(fileSpace);
+    strcpy(objName.fs, fileSpace);
+    fileName = strrchr(pathIn, '/');
+    strcpy(objName.ll,fileName);
+    *fileName = 0;
+    strcpy(objName.hl,pathIn);
+    objName.objType = DSM_OBJ_FILE;
+    memset(&mcBindKey, 0, sizeof(mcBindKey));
+    strcpy(mcBindKey.mcName, dsmSessInfo.dfltMCName);
+    mcBindKey.stVersion = mcBindKeyVersion;
+    rc = dsmBindMC(handle, &objName, stArchive, &mcBindKey);
+  }
+
+  if (!rc)
+  {
+    memset(&archData, 0, sizeof(archData));
+    archData.stVersion = sndArchiveDataVersion;
+    strcpy(objAttrArea.owner,"");
+    objAttrArea.sizeEstimate.hi = 0;
+    objAttrArea.sizeEstimate.lo = DOC_MGR_MAX_BUF;
+    objAttrArea.objCompressed = bFalse;
+    objAttrArea.objInfoLength = 10;
+    objAttrArea.objInfo = (char *)malloc(objAttrArea.objInfoLength + 1);
+    strcpy(objAttrArea.objInfo,"DOCMGRDTA");
+    objAttrArea.stVersion = ObjAttrVersion;
+    objAttrArea.mcNameP = dsmSessInfo.dfltMCName;
+
+    rc = dsmSendObj(handle, stArchive, &archData, &objName,
+      &objAttrArea, NULL);
+
+    free(objAttrArea.objInfo);
+  }
+
+  if (rc)
+    setLastError(handle, rc);
+
+  return rc;
+}
+
+int tsmWrite(dsUint32_t handle, char *buffer, int bufLen,
+  unsigned int *bytesWritten)
+{
+  int rc = DSM_RC_OK;
+  DataBlk dataBlkArea;
+
+  dataBlkArea.bufferPtr = (char *)malloc(bufLen);
+  dataBlkArea.stVersion = DataBlkVersion;
+  dataBlkArea.bufferLen = bufLen;
+  memcpy(dataBlkArea.bufferPtr, buffer, bufLen);
+
+  *bytesWritten = 0;
+  rc = dsmSendData(handle, &dataBlkArea);
+
+  free(dataBlkArea.bufferPtr);
+
+  if (rc)
+    setLastError(handle, rc);
+  else
+    *bytesWritten = dataBlkArea.numBytes;
+
+  return rc;
+}
+
+int tsmEndWrite(dsUint32_t handle, int errorStatus)
+{
+  int rc = DSM_RC_OK;
+  dsUint16_t reason;
+
+  rc = dsmEndSendObj(handle);
+
+  if (!rc)
+  {
+    if (errorStatus == DSM_RC_OK)
+      dsmEndTxn(handle, DSM_VOTE_COMMIT, &reason);
+    else
+      dsmEndTxn(handle, DSM_VOTE_ABORT, &reason);
+  }
+
+  if (rc)
+    setLastError(handle, rc);
+
+  return rc;
+}
+
+int tsmBeginRead(dsUint32_t handle, char *fileSpace, char *pathIn,
+  unsigned long long offSet)
+{
+  ApiSessInfo dsmSessInfo;
+  dsmObjName objName;
+  mcBindKey mcBindKey;
+  dsmQueryType queryType;
+  qryRespBackupData qbDataArea;
+  qryArchiveData queryBuffer;
+  DataBlk qDataBlkArea;
+  dsmGetList dsmObjList;
+  PartialObjData partialObj;
+  char *fileName;
+
+  int rc = DSM_RC_OK;
+
+  memset(&dsmSessInfo,0x00,sizeof(ApiSessInfo));
+  dsmSessInfo.stVersion = ApiSessInfoVersion;
+  if ((rc = dsmQuerySessInfo(handle, &dsmSessInfo)))
+  {
+    setLastError(handle, rc);
+    return rc;
+  }
+
+  if (!rc)
+  {
+    memset(&objName, 0, sizeof(objName));
+    trimr(fileSpace);
+    strcpy(objName.fs, fileSpace);
+    fileName = strrchr(pathIn, '/');
+    strcpy(objName.ll,fileName);
+    *fileName = 0;
+    strcpy(objName.hl,pathIn);
+    objName.objType = DSM_OBJ_FILE;
+    memset(&mcBindKey, 0, sizeof(mcBindKey));
+    strcpy(mcBindKey.mcName, dsmSessInfo.dfltMCName);
+    mcBindKey.stVersion = mcBindKeyVersion;
+    rc = dsmBindMC(handle, &objName, stArchive, &mcBindKey);
+  }
+
+  if (!rc)
+  {
+    queryType = qtArchive;
+
+    qbDataArea.stVersion = qryRespArchiveDataVersion;
+    qDataBlkArea.stVersion = DataBlkVersion;
+    qDataBlkArea.bufferPtr = (char *)&qbDataArea;
+    qDataBlkArea.bufferLen = sizeof(qryRespArchiveData);
+
+    memset(&queryBuffer, 0, sizeof(queryBuffer));
+
+    queryBuffer.objName = (dsmObjName *)malloc(sizeof(dsmObjName));
+    queryBuffer.owner = (char *)malloc(100);
+
+    strcpy(queryBuffer.objName->fs, objName.fs);
+    strcpy(queryBuffer.objName->hl, objName.hl);
+    strcpy(queryBuffer.objName->ll, objName.ll);
+    queryBuffer.objName->objType = objName.objType;
+    strcpy(queryBuffer.owner, "");
+    queryBuffer.stVersion = qryArchiveDataVersion;
+
+    queryBuffer.insDateLowerBound.year = DATE_MINUS_INFINITE;
+    queryBuffer.insDateUpperBound.year = DATE_PLUS_INFINITE;
+    queryBuffer.expDateLowerBound.year = DATE_MINUS_INFINITE;
+    queryBuffer.expDateUpperBound.year = DATE_PLUS_INFINITE;
+
+    if (rc = dsmBeginQuery(handle,queryType, (void *)&queryBuffer ))
+      dsmEndQuery(handle);
+  }
+
+  if (!rc)
+  {
+    while ((rc = dsmGetNextQObj(handle, &qDataBlkArea)) == DSM_RC_MORE_DATA);
+    rc = dsmEndQuery(handle);
+  }
+
+  if (!rc)
+  {
+    memset(&dsmObjList, 0, sizeof(dsmGetList));
+    dsmObjList.stVersion = dsmGetListPORVersion;
+    dsmObjList.numObjId = 1;
+    dsmObjList.objId = (ObjID *)malloc(sizeof(ObjID) * dsmObjList.numObjId);
+    dsmObjList.objId[0].hi = qbDataArea.objId.hi;
+    dsmObjList.objId[0].lo = qbDataArea.objId.lo;
+
+    memset(&partialObj, 0, sizeof(PartialObjData));
+    partialObj.stVersion = PartialObjDataVersion;
+    memcpy(&partialObj.partialObjOffset, &offSet, sizeof(offSet));
+    dsmObjList.partialObjData = &partialObj;
+
+    if (rc = dsmBeginGetData(handle,bTrue,gtArchive,&dsmObjList))
+      dsmEndGetData(handle);
+  }
+
+  if (!rc)
+  {
+    rc = dsmGetObj(handle, &(dsmObjList.objId[0]), NULL);
+    if (rc == DSM_RC_MORE_DATA)
+      rc = DSM_RC_OK;
+    else
+      dsmEndGetObj(handle);
+  }
+
+  if (rc)
+    setLastError(handle, rc);
+
+  return rc;
+}
+
+int tsmRead(dsUint32_t handle, char *buffer, int bufLen,
+  unsigned int *bytesRead)
+{
+  getBufferDataIn_t   getBufferDataIn;
+  getBufferDataOut_t  getBufferDataOut;
+  DataBlk getBlk;
+  int rc = DSM_RC_OK;
+
+  memset(&getBufferDataIn, 0, sizeof(getBufferDataIn_t));
+  memset(&getBufferDataOut, 0, sizeof(getBufferDataOut_t));
+
+  getBufferDataIn.stVersion = getBufferDataOutVersion;
+  getBufferDataIn.dsmHandle = handle;
+
+  getBlk.bufferPtr = (char *)malloc(bufLen);
+  memset(getBlk.bufferPtr,0x00,sizeof(getBlk.bufferPtr));
+  getBlk.bufferLen = bufLen;
+  getBlk.stVersion = DataBlkVersion;
+
+  rc = dsmGetData(handle, &getBlk);
+  if (rc == DSM_RC_FINISHED || rc == DSM_RC_MORE_DATA)
+  {
+    memcpy(buffer, getBlk.bufferPtr, getBlk.numBytes);
+    *bytesRead = getBlk.numBytes;
+    rc = DSM_RC_OK;
+  }
+  else
+    setLastError(handle, rc);
+
+  return rc;
+}
+
+int tsmEndRead(dsUint32_t handle)
+{
+  int rc = DSM_RC_OK;
+
+  dsmEndGetObj(handle);
+  dsmEndGetData(handle);
+
+  return rc;
+}

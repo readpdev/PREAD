@@ -1,0 +1,34 @@
+      *%METADATA                                                       *
+      * %TEXT Reorg Status Log                                         *
+      *%EMETADATA                                                      *
+      * CRTOPT FRCRATIO(1)
+      **********
+      * MORGLOG  Reorg Status Log File
+      **********
+     A                                      CCSID(65535)
+     A          R ORGLOG
+     A            RELGDT         9B 0       COLHDG('Reorg' 'Date')
+     A                                      EDTWRD('     /  /  ')
+     A            RELGTM         9B 0       COLHDG('Reorg' 'Time')
+     A                                      EDTWRD('     :  :  ')
+     A            RELGFD        10A         COLHDG('Folder')
+     A            RELGLB        10A         COLHDG('Folder' 'Library')
+     A            RELGF         10A         COLHDG('File')
+     A            RELGJ         10A         COLHDG('Job')
+     A            RELGUS        10A         COLHDG('User' 'Name')
+     A            RELGJN         6A         COLHDG('Job' 'Number')
+     A            RELGFN         9B 0       COLHDG('File' 'Number')
+     A            RELGRI        10A         COLHDG('Report' 'Index')
+     A            RELGER         2  0       COLHDG('Reorg' 'Error')
+     A            RELGST         2A         COLHDG('Reorg' 'Status')
+      *                                      'SF'=Open Folder
+      *                                      'VR'=Report Location Valid
+      *                                      'IR'=Report Location INVLD
+      *                                      'DR'=Report Data Copied
+      *                                      'DF'=Folder Data Copied
+      *                                      'UR'=UPD RPT Directory Rec
+      *                                      'UF'=UPD FLD Directory Rec
+      *                                      'RF'=Release Folder no UPD
+      *
+     A          K RELGDT
+     A          K RELGTM

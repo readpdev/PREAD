@@ -1,0 +1,114 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Process-Transaction                           *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A                                      UNIQUE
+     A          R WVTRAF                    TEXT('Process Transaction')
+      *
+      **************************************************************
+      *
+     A            FCPRO         10          COLHDG('Process')
+     A            FCTRA          3  0       COLHDG('Transaction')
+     A                                      EDTCDE(Z)
+     A            FCSORT         5  0       COLHDG('Sort Key')
+     A                                      EDTCDE(Z)
+     A            FCTYPE         3  0       COLHDG('Action' 'Type')
+     A                                      EDTCDE(Z)
+      *  1=Send Process
+      *  2=Change Process
+      *  3=Detour
+      *  4=Delete
+      *  5=Work with Objects
+      *  7=Return
+      *  9=Shedule
+      * 10=View Details
+      * 11=View Statistiks
+      * 12=Work with notes
+      * 20=Create a New Process
+      * 21=Add Note
+      * 22=System Command
+      * 23=Attach new Object
+      * 24=Bring up menu (Maximum 7 Items and Header)
+      * 25=Goto Sequence Number
+      *
+     A            FCTXT         25          COLHDG('Text')
+     A            FCCHG          1          COLHDG('Allow' 'Changes')
+     A            FCADDO         1          COLHDG('Add' 'Object')
+      *  Type -> Send Process
+     A            FCRPRO        10          COLHDG('Result' 'Process')
+     A            FCRTRA         3  0       COLHDG('Result' 'Transaction')
+     A                                      EDTCDE(Z)
+     A            FCRPRJ        10          COLHDG('Result' 'Project')
+     A            FCTSID        10          COLHDG('Target' 'Subscriber')
+     A            FCSWD          7          COLHDG('Use' 'Weekdays')
+     A            FCDAYS         3  0       COLHDG('Days' 'Scedule')
+     A                                      EDTCDE(Z)
+     A            FCHOUR         2  0       COLHDG('Hours' 'Scedule')
+     A                                      EDTCDE(Z)
+     A            FCMIN          2  0       COLHDG('Minutes' 'Scedule')
+     A                                      EDTCDE(Z)
+     A            FCFDD          2  0       COLHDG('Fix' 'Day')
+     A                                      EDTCDE(Z)
+     A            FCFMM          2  0       COLHDG('Fix' 'Month')
+     A                                      EDTCDE(Z)
+     A            FCFYY          4  0       COLHDG('Fix' 'Year')
+     A                                      EDTCDE(Z)
+     A            FCFTI          4  0       COLHDG('Fix' 'Time')
+     A                                      EDTWRD('  :  ')
+     A            FCMSGQ        10          COLHDG('Message' 'Queue')
+     A            FCMQLB        10          COLHDG('Queue' 'Lib')
+     A            FCRTN          1          COLHDG('Return' 'Wait')
+     A            FCREF         25          COLHDG('Reference')
+      *  Type -> SYS CMD
+     A            FCCMD        200          COLHDG('Command')
+      *  Type -> Return
+     A            FCSND          1          COLHDG('Send' 'Message')
+      *  Type -> Menu
+      *
+     A            FCMPR1        10          COLHDG('Menu 1' 'Process')
+     A            FCMTR1         3  0       COLHDG('Menu 1' 'Transaction')
+     A                                      EDTCDE(Z)
+     A            FCMSQ1         5  0       COLHDG('Menu 1' 'Sequence')
+     A                                      EDTCDE(Z)
+      *
+     A            FCMPR2        10          COLHDG('Menu 2' 'Process')
+     A            FCMTR2         3  0       COLHDG('Menu 2' 'Transaction')
+     A                                      EDTCDE(Z)
+     A            FCMSQ2         5  0       COLHDG('Menu 2' 'Sequence')
+     A                                      EDTCDE(Z)
+      *
+     A            FCMPR3        10          COLHDG('Menu 3' 'Process')
+     A            FCMTR3         3  0       COLHDG('Menu 3' 'Transaction')
+     A                                      EDTCDE(Z)
+     A            FCMSQ3         5  0       COLHDG('Menu 3' 'Sequence')
+     A                                      EDTCDE(Z)
+      *
+     A            FCMPR4        10          COLHDG('Menu 4' 'Process')
+     A            FCMTR4         3  0       COLHDG('Menu 4' 'Transaction')
+     A                                      EDTCDE(Z)
+     A            FCMSQ4         5  0       COLHDG('Menu 4' 'Sequence')
+     A                                      EDTCDE(Z)
+      *
+     A            FCMPR5        10          COLHDG('Menu 5' 'Process')
+     A            FCMTR5         3  0       COLHDG('Menu 5' 'Transaction')
+     A                                      EDTCDE(Z)
+     A            FCMSQ5         5  0       COLHDG('Menu 5' 'Sequence')
+     A                                      EDTCDE(Z)
+      *
+     A            FCMPR6        10          COLHDG('Menu 6' 'Process')
+     A            FCMTR6         3  0       COLHDG('Menu 6' 'Transaction')
+     A                                      EDTCDE(Z)
+     A            FCMSQ6         5  0       COLHDG('Menu 6' 'Sequence')
+     A                                      EDTCDE(Z)
+      *
+     A            FCMPR7        10          COLHDG('Menu 7' 'Process')
+     A            FCMTR7         3  0       COLHDG('Menu 7' 'Transaction')
+     A                                      EDTCDE(Z)
+     A            FCMSQ7         5  0       COLHDG('Menu 7' 'Sequence')
+     A                                      EDTCDE(Z)
+      *  Type -> Attach Object
+     A            FCOTYP        10          COLHDG('Object' 'Type')
+      *
+     A          K FCPRO
+     A          K FCTRA
+     A          K FCSORT

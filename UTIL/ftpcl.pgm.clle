@@ -1,0 +1,53 @@
+             PGM        PARM(&INPUTMBR &OUTPUTMBR)
+
+             DCL        VAR(&INPUTMBR) TYPE(*CHAR) LEN(30)
+             DCL        VAR(&OUTPUTMBR) TYPE(*CHAR) LEN(30)
+
+             DCL        VAR(&SITE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&INPLIB) TYPE(*CHAR) LEN(30)
+             DCL        VAR(&INPFIL) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&INPMBR) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OUTLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OUTFIL) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OUTMBR) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&USER) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(100)
+             DCL        VAR(&TYPE) TYPE(*CHAR) LEN(1)
+
+             MONMSG     MSGID(CFP0000) EXEC(GOTO CMDLBL(ERROR))
+
+             RTVJOBA    USER(&USER) TYPE(&TYPE)
+             IF         COND(&TYPE *EQ '1') THEN(DO)
+             SBMJOB     CMD(CALL PGM(&USER/FTPCL) PARM(&INPUTMBR +
+                          &OUTPUTMBR)) JOBD(FTPJOBD)
+             GOTO       CMDLBL(QUIT)
+             ENDDO
+
+             CHGVAR     VAR(&INPMBR) VALUE(%SST(&INPUTMBR 1 10))
+             CHGVAR     VAR(&INPFIL) VALUE(%SST(&INPUTMBR 11 10))
+             CHGVAR     VAR(&INPLIB) VALUE(%SST(&INPUTMBR 21 10))
+
+             CHGVAR     VAR(&OUTMBR) VALUE(%SST(&OUTPUTMBR 1 10))
+             CHGVAR     VAR(&OUTFIL) VALUE(%SST(&OUTPUTMBR 11 10))
+             CHGVAR     VAR(&OUTLIB) VALUE(%SST(&OUTPUTMBR 21 10))
+
+             RMVM       FILE(&OUTLIB/&OUTFIL) MBR(&OUTMBR)
+             MONMSG     MSGID(CPF0000)
+             OVRDBF     FILE(INPUT) TOFILE(&INPLIB/&INPFIL) +
+                          MBR(&INPMBR)
+             OVRDBF     FILE(OUTPUT) TOFILE(&OUTLIB/&OUTFIL) +
+                          MBR(&OUTMBR)
+             FTP        RMTSYS(&SITE)
+             DLTOVR     FILE(INPUT)
+             DLTOVR     FILE(OUTPUT)
+
+ DONE:       SNDMSG     MSG('Ftp job completed normally.') TOUSR(&USER)
+             GOTO       CMDLBL(QUIT)
+
+ ERROR:      CHGVAR     VAR(&MSG) VALUE('Error processing FTPJOB. +
+                          See output member:' || &OUTLIB |< '/' |< +
+                          &OUTFIL || 'MBR(' |< &OUTMBR |< ')')
+             SNDMSG     MSG(&MSG) TOUSR(&USER)
+
+QUIT:        ENDPGM

@@ -1,0 +1,41 @@
+      /*%METADATA                                                     */
+      /* %TEXT Add Directives to Source Members                       */
+      /*%EMETADATA                                                    */
+             PGM
+
+             DCLF       FILE(PREAD/DSPFD)
+             DCL        VAR(&EOF) TYPE(*LGL)
+             DCL        VAR(&MBRD) TYPE(*CHAR) LEN(50)
+
+             CALLSUBR   SUBR(READ)
+             DOUNTIL    COND(&EOF)
+               ADDPFM     FILE(prcvtclp/qcllesrc) MBR(WRKRPGMBR) +
+                          SRCTYPE(RPGLE)
+               CPYF       FROMFILE(PREAD/QRPGLESRC) +
+                          TOFILE(prcvtclp/qcllesrc) +
+                          FROMMBR(SLASHDIRCT) TOMBR(WRKRPGMBR) +
+                          MBROPT(*ADD) CRTFILE(*NO) FMTOPT(*MAP *DROP)
+               CPYF       FROMFILE(prcvtclp/qcllesrc) +
+                          TOFILE(prcvtclp/qcllesrc) +
+                          FROMMBR(&MLNAME) TOMBR(WRKRPGMBR) +
+                          MBROPT(*ADD) CRTFILE(*NO) FMTOPT(*MAP *DROP)
+               RTVMBRD    FILE(prcvtclp/qcllesrc) MBR(&MLNAME) +
+                          TEXT(&MBRD)
+               RMVM       FILE(prcvtclp/qcllesrc) MBR(&MLNAME)
+               RNMM       FILE(prcvtclp/qcllesrc) MBR(WRKRPGMBR) +
+                          NEWMBR(&MLNAME)
+               CHGPFM     FILE(prcvtclp/qcllesrc) MBR(&MLNAME) +
+                          TEXT(&MBRD)
+               CALLSUBR   SUBR(READ)
+             ENDDO
+
+/******************************************************************/
+             SUBR       SUBR(READ)
+
+             RCVF
+             MONMSG     MSGID(CPF0000) EXEC(CHGVAR VAR(&EOF) +
+                          VALUE('1'))
+
+             ENDSUBR
+
+ ENDPGM:     ENDPGM

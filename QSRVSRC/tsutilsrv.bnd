@@ -1,0 +1,22 @@
+STRPGMEXP PGMLVL(*CURRENT) SIGNATURE(X'000000000A2CF17A867E570FE42CF036')
+/********************************************************************/
+/*   *SRVPGM      TSUTILSRV    BPEXPSRC     04/25/25  16:55:35      */
+/********************************************************************/
+  EXPORT SYMBOL("CHKFOLDER")
+  EXPORT SYMBOL("GETOBJTYP")
+  EXPORT SYMBOL("LOCKEXPORT")
+  EXPORT SYMBOL("RTVSYSVAL")
+  EXPORT SYMBOL("VALIDATEKEY")
+  EXPORT SYMBOL("WRITELOG")
+ENDPGMEXP
+STRPGMEXP PGMLVL(*CURRENT) SIGNATURE(X'000000000A2CF17A867E570FE42CF036')
+/********************************************************************/
+/*   *SRVPGM      TSUTILSRV    BPEXPSRC     04/25/25  16:55:43      */
+/********************************************************************/
+  EXPORT SYMBOL("CHKFOLDER")
+  EXPORT SYMBOL("GETOBJTYP")
+  EXPORT SYMBOL("LOCKEXPORT")
+  EXPORT SYMBOL("RTVSYSVAL")
+  EXPORT SYMBOL("VALIDATEKEY")
+  EXPORT SYMBOL("WRITELOG")
+ENDPGMEXP

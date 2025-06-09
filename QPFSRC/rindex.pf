@@ -1,0 +1,85 @@
+      *%METADATA                                                       *
+      * %TEXT Report Index Table                                       *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * File... RINDEX  Report Index Table
+      *
+      * For each Big5-index field name, describe where and how to
+      * find the index data on the report
+      *
+      *  3-03-97 JJF    Use Index Type(IICMD)=5 for report splitter.
+      *  5-05-96 FIDDY  Add fields for ALINKDEF
+      *  6-21-93        Add DBFIL
+      *  2-15-93 Ed     New file
+      ****************************************************************
+     A                                      REF(MAGFLDR)
+     A          R INDEXRC
+
+K1   A            IRNAM     R               REFFLD(RNAM)
+K2   A            IJNAM     R               REFFLD(JNAM)
+K3   A            IPNAM     R               REFFLD(PNAM)
+K4   A            IUNAM     R               REFFLD(UNAM)
+K5   A            IUDAT     R               REFFLD(UDAT)
+K6   A            IINAM     R               REFFLD(RINDX)
+      *                                     e.g.: @LOANNO, @ACCTNO
+
+     A            IDESC     R               REFFLD(IDESC)
+      *                         30          TEXT('Report Index Desc')
+     A            IPLN#     R               REFFLD(PLN#)
+      *                          3  0       TEXT('Page Line No. for Key')
+     A            ISCOL     R               REFFLD(SCOL)
+      *                          3  0       TEXT('Starting Column')
+     A            IKLEN     R               REFFLD(KLEN)
+      *                          3  0       TEXT('Key Length')
+     A            IINDA     R               REFFLD(INDA)
+      *                          1          TEXT('Index all Lines y/n')
+     A            IICMD          2  0       COLHDG('Index' 'Type')
+      * 0=Std 1=SpyLink 2=Distr 3=CrtDt 4=CfgFld 5=RptSplitter
+
+     A            IDBFIL    R               REFFLD(DBFIL)
+      *                                     TEXT('DB file for Index')
+     A            IPRMPT    R               REFFLD(PRMPT)
+      *                         30          TEXT('Link Prompt name')
+     A            IPMTL     R               REFFLD(PMTL)
+      *                          3  0       TEXT('Prompt Length')
+     A            IPMTSL    R               REFFLD(PMTSL)
+      *                          3  0       TEXT('Prompt Start Line')
+     A            IPMTEL    R               REFFLD(PMTEL)
+      *                          3  0       TEXT('Prompt End Line')
+     A            IPMTSC    R               REFFLD(PMTSC)
+      *                          3  0       TEXT('Prompt Start Col.')
+     A            IPMTEC    R               REFFLD(PMTEC)
+      *                          3  0       TEXT('Prompt End Col.')
+     A            IPMTRL    R               REFFLD(PMTRL)
+      *                          3  0       TEXT('Prompt Relative Line to Link')
+     A            IPMTRC    R               REFFLD(PMTRC)
+      *                          3  0       TEXT('Prompt Relative Col. to Link')
+
+     A            IFIN           1          COLHDG('Required Input')
+     A            IALFA          1          COLHDG('A=Alpha N=Numeric')
+     A            ILENGT         2  0       COLHDG('Length')
+     A            IDECPO         1  0       COLHDG('Decimal Pos.')
+     A            IDECCH         1          COLHDG('Decimal Character')
+     A            ITHOUS         1          COLHDG('Thousand Separator')
+     A            IMINUS         1          COLHDG('Minus  L/R/O')
+     A            IZEROS         1          COLHDG('Display Zero Value')
+      *                              Y/N
+     A            ILZERO         1          COLHDG('Leading Zeros')
+      *                              substitution char for left zeroes
+     A            ISZERO         1          COLHDG('Single Zero Y/N')
+     A            IEWORD        40          COLHDG('Edit-Word')
+     A            IEWLEN         2  0       COLHDG('Edit-Word Length')
+     A            ILOC           1          COLHDG('Lower Case Y/N')
+     A            IPGM          10          COLHDG('Program')
+
+     A          K IRNAM
+     A          K IJNAM
+     A          K IPNAM
+     A          K IUNAM
+     A          K IUDAT
+     A          K IINAM
+
+      * Logicals: 1. Big 5 + Index Name  (same as physical)
+      *           2. Big 5 + Index Description

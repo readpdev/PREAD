@@ -1,0 +1,59 @@
+      *%METADATA                                                       *
+      * %TEXT Display Object References                                *
+      *%EMETADATA                                                      *
+     A*%%TS  SD  20060828  102420  PREAD       REL-V5R4M0  5722-WDS
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A          R SFL01                     SFL
+     A*%%TS  SD  20060828  102420  PREAD       REL-V5R4M0  5722-WDS
+     A            WHOTYP        10A  O  7 17
+     A            WHSNAM        11A  O  7 30
+     A            WHPNAM        10A  O  7 43
+     A            REFOBJTYP     10   O  7 55
+     A          R CTL01                     SFLCTL(SFL01)
+     A*%%TS  SD  20060828  102420  PREAD       REL-V5R4M0  5722-WDS
+     A                                      SFLSIZ(0016)
+     A                                      SFLPAG(0015)
+     A                                      CF03(03 'Exit')
+     A                                      CF12(12 'Cancel')
+     A                                      CF21(21 'CommandLine')
+     A                                      OVERLAY
+     A  25                                  SFLDSP
+     A                                      SFLDSPCTL
+     A  26                                  SFLDLT
+     A N99                                  SFLEND
+     A            RRN1           4S 0H      SFLRCDNBR
+     A                                  1 28'Display Object References'
+     A                                      DSPATR(HI)
+     A                                  1 61'*Building List'
+     A                                      COLOR(RED)
+     A                                      DSPATR(BL)
+     A N31                                  DSPATR(ND)
+     A                                  3  9'Reference Library:'
+     A            REFLIB        10A  B  3 28CHANGE(41)
+     A                                  3 40'Object Name:'
+     A            OBJECT        20A  B  3 53CHANGE(42)
+     A                                  5 30'Source File'
+     A                                      DSPATR(HI)
+     A                                  6 17'Object Type'
+     A                                      DSPATR(HI)
+     A                                  6 30'Name'
+     A                                      DSPATR(HI)
+     A                                  5 43'Referring'
+     A                                      DSPATR(HI)
+     A                                  6 43'Program'
+     A                                      DSPATR(HI)
+     A                                  5 55'Referring'
+     A                                      DSPATR(HI)
+     A                                  6 55'Type'
+     A                                      DSPATR(HI)
+     A          R FKY01
+     A*%%TS  SD  20060828  100542  PREAD       REL-V5R4M0  5722-WDS
+     A  77                                  OVERLAY
+     A                                 23  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 23 11'F12=Cancel'
+     A                                      COLOR(BLU)
+     A                                 23 23'F21=CommandLine'
+     A                                      COLOR(BLU)

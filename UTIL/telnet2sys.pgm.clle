@@ -1,0 +1,14 @@
+      /*%METADATA                                                     */
+      /* %TEXT Telnet to System                                       */
+      /*%EMETADATA                                                    */
+PGM (&SYSTEM &PASSWORD &ENCRYPT)
+
+DCL &SYSTEM *CHAR 10
+DCL &PASSWORD *CHAR 25
+DCL &ENCRYPT *CHAR 11
+
+             TELNET     RMTSYS(&SYSTEM) RMTUSER(*CURRENT) +
+                          RMTPWD(&PASSWORD) RMTPWDENC(&ENCRYPT)
+             MONMSG     MSGID(CPF87DC) EXEC(TELNET RMTSYS(&SYSTEM))
+
+ENDPGM

@@ -1,0 +1,36 @@
+      *%METADATA                                                       *
+      * %TEXT Audit Log                                                *
+      *%EMETADATA                                                      *
+      *
+/5635 * 01-22-03 PLR AUDIT LOGGING.
+      *
+                                            CCSID(65535)
+                R MLAUDLOGF
+                  ALDATTIM        Z         COLHDG('Entry' 'Timestamp')
+                                            TEXT('Entry Timestamp')
+                  ALENTID       15P 0       COLHDG('Entry' 'ID')
+                                            TEXT('Entry ID')
+                  ALUSERID      20          COLHDG('User ID')
+                                            TEXT('User ID')
+                  ALNODEID     256          VARLEN(15)
+                                            COLHDG('Client' 'Node ID')
+                                            TEXT('Client Node ID')
+                  ALOPCD         5P 0       COLHDG('Op' 'Code')
+                                            TEXT('Operation Code')
+                  ALOBJID       10          COLHDG('Object' 'ID')
+                                            TEXT('Object ID')
+                  ALIMGSEQ      10P 0       COLHDG('Image' 'Seq')
+                                            TEXT('Image Sequence Number')
+                  ALLNKSEQ      10P 0       COLHDG('Link' 'Seq')
+                                            TEXT('Link Sequence Number')
+                  ALNOTNBR       9B 0       COLHDG('Note' 'Nbr')
+                                            TEXT('Note Number')
+                  ALPAGNBR      10P 0       COLHDG('Page' 'Nbr')
+                                            TEXT('Page Number')
+                  ALREVID       10P 0       COLHDG('Rev ID')
+                                            TEXT('Revision ID')
+                  ALSTATUS       3P 0       COLHDG('Status')
+                                            TEXT('Status')
+                  ALENTCMT   31739          VARLEN
+                                            COLHDG('Entry' 'Comment')
+                                            TEXT('Entry Comment')

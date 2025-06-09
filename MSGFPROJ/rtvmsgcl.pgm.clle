@@ -1,0 +1,20 @@
+      /*%METADATA                                                     */
+      /* %TEXT Retrieve message descriptions                          */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&MSGID &MSGF &MSGFLIB &MSG1 &MSG2 &MSGLEN &NOTINMSGF)
+
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSGF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGFLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSG1) TYPE(*CHAR) LEN(132)
+             DCL        VAR(&MSG2) TYPE(*CHAR) LEN(3000)
+             DCL        VAR(&MSGLEN) TYPE(*DEC) LEN(5 0)
+             DCL        VAR(&NOTINMSGF) TYPE(*CHAR) LEN(1) VALUE(' ')
+
+             RTVMSG     MSGID(&MSGID) MSGF(&MSGFLIB/&MSGF) +
+                          MSG(&MSG1) MSGLEN(&MSGLEN) SECLVL(&MSG2)
+             MONMSG     MSGID(CPF2419 CPF0001) EXEC(CHGVAR +
+                          VAR(&NOTINMSGF) VALUE('1'))
+             RETURN
+
+             ENDPGM

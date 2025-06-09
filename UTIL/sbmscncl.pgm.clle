@@ -1,0 +1,13 @@
+      /*%METADATA                                                     */
+      /* %TEXT Submit source scan                                     */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&SRCLIB &SCANTEXT &JOBNAME)
+
+             DCL        VAR(&SRCLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SCANTEXT) TYPE(*CHAR) LEN(50)
+             DCL        VAR(&JOBNAME) TYPE(*CHAR) LEN(10)
+
+             SBMJOB     CMD(SCNSRC SRCFILE(&SRCLIB/*ALL) +
+                          SRCMBR(*ALL) FIND((&SCANTEXT))) JOB(&JOBNAME)
+
+             ENDPGM

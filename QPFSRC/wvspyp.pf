@@ -1,0 +1,48 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - SpyLink Distribution                          *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A                                      UNIQUE
+     A          R WVSPYF                    TEXT('SpyLink Distribute')
+      *
+      **************************************************************
+      *
+     A            FLRTYP        10          COLHDG('Report' 'Type')
+     A            FLSEGM        10          COLHDG('Segment')
+     A            FLBNDL        10          COLHDG('Bundle')
+     A            FLSTYP        10          COLHDG('SpyView' 'Type')
+     A            FLSID         10          COLHDG('Subscriber ID')
+     A            FLPRJ         10          COLHDG('Project')
+     A            FLCEPR         1          COLHDG('Create' 'each' 'Process')
+     A            FLMSGQ        10          COLHDG('MSGQ')
+     A            FLMSLB        10          COLHDG('MSGQ' 'Library')
+     A            FLEPGM        10          COLHDG('Exit' 'Program')
+     A            FLPGLB        10          COLHDG('Exit' 'Program' 'Library')
+     A            FLPRO         10          COLHDG('Process')
+     A            FLTRA          3  0       COLHDG('Transaction')
+     A                                      EDTCDE(Z)
+     A            FLTXT         25          COLHDG('Mail' 'Description')
+     A            FLREF         25          COLHDG('Mail' 'Reference')
+     A            FLDESC        30          COLHDG('Object' 'Description')
+     A            FLDAYS         3  0       COLHDG('Schedule' 'Days')
+     A                                      EDTCDE(Z)
+     A            FLHOUR         2  0       COLHDG('Schedule' 'Hours')
+     A                                      EDTCDE(Z)
+     A            FLMIN          2  0       COLHDG('Schedule' 'Minutes')
+     A                                      EDTCDE(Z)
+     A            FLFDD          2  0       COLHDG('Fix' 'Day')
+     A                                      EDTCDE(Z)
+     A            FLFMM          2  0       COLHDG('Fix' 'Month')
+     A                                      EDTCDE(Z)
+     A            FLFYY          4  0       COLHDG('Fix' 'Year')
+     A                                      EDTCDE(Z)
+     A            FLFTI          4  0       COLHDG('Fix' 'Time')
+     A                                      EDTWRD('  :  ')
+     A            FLSWD          7          COLHDG('Use' 'Weekdays')
+      *
+     A          K FLPRO
+     A          K FLSID
+     A          K FLSTYP
+     A          K FLRTYP
+     A          K FLSEGM
+     A          K FLBNDL

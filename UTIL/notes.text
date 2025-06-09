@@ -1,0 +1,17 @@
+         exec sql fetch c1 into :optrnm,:optseq,:fromVol,:optlib,:optfdr,
+           :optfil, :repind, :rpttyp, :ADSF, :idbnum, :iddoct, :iddcpt;
+
+copyCtl         pr            10i 0
+ opcode                        1    const
+ objid                        10    const options(*nopass)
+ objfile                      10    const options(*nopass)
+ objvol                       12    const options(*nopass)
+ objSts                        1    const options(*nopass)
+ objMsg                       80    const options(*nopass)
+
+  copyCtl(CC_ADD:optrnm:optfil:optvol);
+
+
+RCFCFC
+
+

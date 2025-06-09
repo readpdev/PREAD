@@ -1,0 +1,16 @@
+     A*%%TS  SD  20161117  094342  PREAD       REL-V7R2M0  5770-WDS
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3                  -
+     A                                             27 132 *DS4)
+     A                                      INDARA
+     A                                      CF03(03)
+     A          R WINDOW01
+     A*%%TS  SD  20161117  094342  PREAD       REL-V7R2M0  5770-WDS
+     A                                      INVITE
+     A                                      FRCDTA
+     A                                      OVERLAY
+     A  *DS3                                WINDOW(2 2 2 10 *NOMSGLIN)
+     A  *DS4                                WINDOW(2 2 2 10 *NOMSGLIN *NORSTCSR)
+     A            OUT_DATE        L  O  1  1
+     A            OUT_TIME        T  O  2  2
+     A*%%GP SCREEN1    01

@@ -1,0 +1,53 @@
+      *%METADATA                                                       *
+      * %TEXT Report Database Keys                                     *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... RDBKEY   - Report Index Keys              *
+      *                    04/30/96 - Fiddy Bruegge                  *
+      ****************************************************************
+     A                                      UNIQUE
+     A                                      REF(MAGFLDR)
+     A          R DBKEYRC
+     A            KRNAM     R               REFFLD(RNAM)
+     A            KJNAM     R               REFFLD(JNAM)
+     A            KPNAM     R               REFFLD(PNAM)
+     A            KUNAM     R               REFFLD(UNAM)
+     A            KUDAT     R               REFFLD(UDAT)
+      *
+     A            KVAL           1  0       COLHDG('Valid Check=1')
+     A                                      EDTCDE(Z)
+     A            KSEQ           3  0       COLHDG('Seq#')
+     A                                      EDTCDE(Z)
+
+     A            KPGM           1          COLHDG('P=Pgm' 'D=Database')
+     A            KOR            1          COLHDG('O=OR' 'A=AND')
+
+     A            KOBJ          10          COLHDG('Object')
+     A            KLIB          10          COLHDG('Library')
+     A            KMBR          10          COLHDG('DB Member')
+
+     A            KEYV1         20          COLHDG('Keyvalue 1')
+     A            KEYV2         20          COLHDG('Keyvalue 2')
+     A            KEYV3         20          COLHDG('Keyvalue 3')
+     A            KEYV4         20          COLHDG('Keyvalue 4')
+     A            KEYV5         20          COLHDG('Keyvalue 5')
+     A            KEYV6         20          COLHDG('Keyvalue 6')
+     A            KEYV7         20          COLHDG('Keyvalue 7')
+     A            KFLD1         10          COLHDG('Fieldname' 'for IDX1')
+     A            KFLD2         10          COLHDG('Fieldname' 'for IDX2')
+     A            KFLD3         10          COLHDG('Fieldname' 'for IDX3')
+     A            KFLD4         10          COLHDG('Fieldname' 'for IDX4')
+     A            KFLD5         10          COLHDG('Fieldname' 'for IDX5')
+     A            KFLD6         10          COLHDG('Fieldname' 'for IDX6')
+     A            KFLD7         10          COLHDG('Fieldname' 'for IDX7')
+      *
+     A          K KRNAM
+     A          K KJNAM
+     A          K KPNAM
+     A          K KUNAM
+     A          K KUDAT
+     A          K KVAL
+     A          K KSEQ
+     A          K KFLD1

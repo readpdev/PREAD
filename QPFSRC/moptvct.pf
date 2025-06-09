@@ -1,0 +1,26 @@
+      *%METADATA                                                       *
+      * %TEXT Multivolume Optical Support Control Table                *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *
+      * File..... MOPTVCT  Optical Volume Control Table
+      *
+      *                    Defines what volumes are in a multi-vol set.
+      *                      OPVTID is a set name
+      *                      OPVTVL is a volume in the set
+      *
+      * *************************************
+      *  MAKE A COPY OF MOPTVCT1 TO MOPTUPD1
+      * *************************************
+      * 10-05-93 DM New file
+     A                                      UNIQUE
+     A          R OPVCTR
+K1   A            OPVTID        12          COLHDG('Volume' 'Ctl ID')
+K2   A            OPVTSQ         5  0       COLHDG('Seq' 'Nbr')
+     A            OPVTVL        12          COLHDG('Opt' 'Vol')
+     A            OPVTDV        15          COLHDG('Server' 'Drive' 'Map')
+     A            OPVMDT         9B 0       COLHDG('Threshold' 'Reached' 'Date')
+     A            OPVMTM         9B 0       COLHDG('Threshold' 'Reached' 'Time')
+
+     A          K OPVTID
+     A          K OPVTSQ

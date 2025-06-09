@@ -1,0 +1,19 @@
+      *%METADATA                                                       *
+      * %TEXT System Userbased Security File                           *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... MUSRBAS - System UserBased Security file  *
+     A* Date created......  2/02/95                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R MUSR
+     A            MUJOB         26A         TEXT('System Job ID ')
+     A                                      COLHDG('System Job ID')
+     A            MUJBID        16A         TEXT('System Internal Id')
+     A                                      COLHDG('System Internal ID')
+4  K A          K MUJOB

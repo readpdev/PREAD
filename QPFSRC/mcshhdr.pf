@@ -1,0 +1,26 @@
+      *%METADATA                                                       *
+      * %TEXT Image Cache Directory Header                             *
+      *%EMETADATA                                                      *
+      **********
+      * MCSHHDR  Image Cache directory header file
+      **********
+
+      * One record per image.  Indicates the date it
+      * was brought into cache, current location (Cfile),
+      * the last used date, the date to remove it from cache, or the
+      * number of days not used to remove it from cache.
+      *
+      *  5-24-99 Dm  New
+     A                                      UNIQUE
+     A                                      CCSID(65535)
+     A          R CSHHDR
+
+     A            CHPFIL        10A         COLHDG('Phys.File')
+      *                            "CFile" - Cnnnnnnnnn
+
+     A            CHDTCS         9B 0       COLHDG('Date' 'Cached')
+     A            CHDTUS         9B 0       COLHDG('Date' 'Last' 'Used')
+     A            CHDTEX         9B 0       COLHDG('Date' 'To' 'Expire')
+     A            CHDYEX         9  0       COLHDG('Days' 'To' 'Expire')
+
+     A          K CHPFIL

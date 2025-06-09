@@ -1,0 +1,55 @@
+
+     d rcvPgmMsg       pr                  extpgm('QMHRCVPM')
+     d  rcvr                               likeds(rcvr)
+     d  rcvrLen                       9b 0 const
+     d  format                        8    const
+     d  callStack                    10    const
+     d  callCount                     9b 0
+     d  msgType                      10    const
+     d  msgKey                        4    const
+     d  waitTime                      9b 0 const
+     d  msgAction                    10    const
+     d  error                              likeds(qusec)
+
+     d sCount          s              9b 0
+
+      /copy qsysinc/qrpglesrc,qusec
+     d msgdta                        80
+
+     D rcvr            DS
+     D  QMHBRTN01              1      4B 0
+     D  QMHBAVL02              5      8B 0
+     D  QMHMS05                9     12B 0
+     D  QMHMI03               13     19
+     D  QMHMT04               20     21
+     D  QMHMK03               22     25
+     D  QMHERVED1             26     32
+     D  QMHSIDCS0             33     36B 0
+     D  QMHCSIDR0             37     40B 0
+     D  QMHDRTN00             41     44B 0
+     D  QMHDAVL00             45     48B 0
+     d  rMsgDta                      52
+
+     d                sds
+     d pgmq              *proc
+
+     c     *entry        plist
+     c                   parm                    stmt           1024
+
+     c/exec sql
+     c+ execute immediate :stmt
+     c/end-exec
+
+      /free
+       if sqlcod < 0;
+         clear rcvr;
+         clear qusec;
+         qusbprv = %size(qusec);
+         for sCount = 0 to 3;
+         rcvPgmMsg(rcvr:%size(rcvr):'RCVM0100':'*':sCount:'*LAST':' ':0:
+           '*REMOVE':qusec);
+         dsply rMsgDta;
+         endfor;
+       endif;
+       *inlr = '1';
+      /end-free

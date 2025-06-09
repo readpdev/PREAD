@@ -1,0 +1,4 @@
+             PGM
+             CRTPGM     PGM(SPYSVDBT) MODULE(SPYSVDBT SPYSVDB) +
+                          BNDDIR(QC2LE)
+             ENDPGM

@@ -1,0 +1,178 @@
+      /*%METADATA                                                     */
+      /* %TEXT List large spool files                                 */
+      /*%EMETADATA                                                    */
+/* Compile with binding directory qc2le */
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<errno.h>
+exec sql include sqlca;
+
+#include<quscrtus.h>
+#include<qusptrus.h>
+#include<qusdltus.h>
+#include<qusec.h>
+#include<qusgen.h>
+#include<recio.h>
+#include<quslspl.h>
+#include<qusrspla.h>
+#include<qwccvtdt.h>
+
+Qus_EC_t Error;
+FILE *fp;
+char UserSpaceName[20] = "LSTLRGSPLFQTEMP     ";
+Qus_SPLA0200_t SplfAttr;
+
+int printError(char *errMsg);
+void mainMenu(void);
+void clrscrn(void);
+int createFile(void);
+void doSql(char *option);
+
+int main(void)
+{
+  char option;
+  while (option != 'q' && option != 'Q')
+  {
+    memset(&option, ' ', 1);
+    Error.Bytes_Provided = sizeof(Error);
+    Error.Bytes_Available = 0;
+    mainMenu();
+    scanf("%c", &option);
+    getchar();
+    if (option != 'q' && option != 'Q' && option != '4')
+    {
+      if (createFile()) return 1;
+      doSql(&option);
+    }
+  }
+  return 0;
+}
+
+int printError(char *errMsg)
+{
+  if (Error.Bytes_Available) {
+    printf("%s. MsgID: %.7s\n", errMsg, Error.Exception_Id);
+    fclose(fp);
+    QUSDLTUS(UserSpaceName, &Error);
+    return 1;
+  }
+  return 0;
+}
+
+void mainMenu(void)
+{
+  clrscrn();
+  printf("              Display System Spool Files\n");
+  printf("              --------------------------\n\n");
+  printf("              1) Size Descending\n");
+  printf("              2) User by Size Descending\n");
+  printf("              3) Total Pages Descending\n");
+  printf("              4) Set Minimum Spool Size\n");
+  printf("              Q) Quit\n\n");
+  printf("              Option: ");
+  return;
+}
+
+void clrscrn(void)
+{
+  int i = 0;
+  for (;i < 24;i++)
+    printf("\n");
+  return;
+}
+
+int createFile(void)
+{
+  char UserSpaceName[20] = "LSTLRGSPLFQTEMP     ";
+  char ExtAttr[10] = "          ";
+  int InitSize = 1024, i, splfSize;
+  char InitVal = 0x00;
+  char PubAuth[10] = "*ALL      ";
+  char Description[50] = "Search for text.";
+  char *SpacePtr;
+  Qus_Generic_Header_0100_t *GenericHeader;
+  Qus_SPLF_H_t *ListHeader;
+  Qus_SPLF0100_t *ListData;
+  char UserName[10] = "*ALL      ";
+  char QualOutq[20] = "*ALL                ";
+  char FormType[10] = "*ALL      ";
+  char UserData[10] = "*ALL      ";
+  char QualJob[26] = "*INT                      ";
+  char Splfname[10] = "*INT      ";
+  typedef struct
+  {
+    char yyyy[4];
+    char mm[2];
+    char dd[2];
+  } yyyymmdd_t;
+  yyyymmdd_t yyyymmdd;
+  char wrkdate[10];
+  char frDtFmt[10] = "*YMD      ";
+  char toDtFmt[10] = "*YYMD     ";
+
+  /* create user space for field definitions. */
+  QUSCRTUS(UserSpaceName, ExtAttr, InitSize, &InitVal, PubAuth, Description,
+           "*YES      ", &Error);
+  if (printError("Error creating user space"))
+    return 1;
+
+  /* create list of all spooled files on system to user space */
+  QUSLSPL(UserSpaceName, "SPLF0100", UserName, QualOutq, FormType, UserData,
+    &Error);
+  if (printError("Error listing spool files to user space")) return 1;
+
+  /* Retrieve pointer to user space. */
+  QUSPTRUS(UserSpaceName, &SpacePtr, &Error);
+  if (printError("Error retrieving pointer to user space"))
+    return 1;
+
+  /* Generic Header Section */
+  GenericHeader = (Qus_Generic_Header_0100_t *)SpacePtr;
+
+  /* Get file header information for record length & number of entries */
+  ListHeader=(Qus_SPLF_H_t *)(SpacePtr + GenericHeader->Offset_Header_Section);
+  ListData = (Qus_SPLF0100_t *)(SpacePtr + GenericHeader->Offset_List_Data);
+
+  /* Create file in qtemp */
+  if ((fp = fopen("QTEMP/LRGSPLF", "wb, lrecl=3784")) == NULL)
+  {
+    perror("Error creating file");
+    return 1;
+  }
+
+  /* Walk the list of spool files */
+  for (i = 0; i < GenericHeader->Number_List_Entries; i++)
+  {
+    /* retrieve the spool file attributes by internal id */
+    QUSRSPLA(&SplfAttr, sizeof(Qus_SPLA0200_t), "SPLA0200", QualJob,
+      ListData->Int_Job_ID, ListData->Int_Splf_ID, Splfname, 0, &Error);
+    if (printError("Error retrieving splf attributes")) return 1;
+    if ((fwrite(&SplfAttr, sizeof(Qus_SPLA0200_t), 1, fp)) <= 0)
+    {
+      perror("Error writing to file. Errno");
+      return 1;
+    }
+    ListData++;
+  }
+  fclose(fp);
+  QUSDLTUS(UserSpaceName, &Error);
+  return 0;
+}
+
+void doSql(char *option)
+{
+  exec sql begin declare section;
+    char sfa[3784];
+  exec sql end declare section;
+  exec sql declare c1 cursor for select lrgsplf from qtemp/lrgsplf;
+  exec sql open c1;
+  while (sqlca.sqlcode == 0)
+  {
+    exec sql fetch c1 into :sfa;
+    memcpy(&SplfAttr, (Qus_SPLA0200_t *)&sfa, sizeof(Qus_SPLA0200_t));
+    printf("%.10s\n",SplfAttr.Splf_Name);
+  }
+  exec sql close c1;
+  return;
+}

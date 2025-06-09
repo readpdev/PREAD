@@ -1,0 +1,40 @@
+      *%METADATA                                                       *
+      * %TEXT Report Distribution History                              *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * Physical file..... RDSTHST - Report Distribution History
+      * Date created...... 04/12/94
+      *
+      * Logicals: 1. RptType Bundle Date Time DelDate
+      *           2. RptType Segment     BundledDate
+      *           3. RptVers BundleType  Segment
+      *           4. Bundle  RptType     Seg  Date  Time  Rep
+      *           5. RptType Segment     Bundle Date Time DelDate
+      *
+      ****************************************************************
+     A          R DSTHST
+   K1             DHREP         10          COLHDG('Report' 'Version' 'ID')
+   K2             DHSEG         10          COLHDG('Report' 'Segment' 'ID')
+     A            DHREPT        10          COLHDG('Report' 'Type' 'ID')
+     A            DHTYPE         1          COLHDG('Report' 'Bundle' 'Type')
+   K3             DHBNDL        10          COLHDG('Bundle' 'I.D.')
+     A            DHPDT          9B 0       COLHDG('Last' 'Printed' 'Date')
+      *                                       or    Last faxed
+     A            DHPTM          9B 0       COLHDG('Last' 'Printed' 'Time')
+     A            DHCDT          9B 0       COLHDG('Captured' 'Date')
+     A            DHCTM          9B 0       COLHDG('Captured' 'Time')
+     A            DHBDT          9B 0       COLHDG('Bundled' 'Date')
+     A            DHBTM          9B 0       COLHDG('Bundled' 'Time')
+     A            DHVDT          9B 0       COLHDG('Last' 'Viewed' 'Date')
+     A            DHVTM          9B 0       COLHDG('Last' 'Viewed' 'Time')
+     A            DHDDT          9B 0       COLHDG('Deleted' 'Date')
+     A            DHDTM          9B 0       COLHDG('Deleted' 'Time')
+     A            DHTPGS         9B 0       COLHDG('Number' 'of' 'Pages')
+     A            DHBPG          9B 0       COLHDG('Segment' 'Starting' 'Page')
+     A            DHEPG          9B 0       COLHDG('Segment' 'Ending' 'Page')
+
+     A          K DHREP
+     A          K DHSEG
+     A          K DHBNDL

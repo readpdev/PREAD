@@ -1,0 +1,9 @@
+    A          R PROMPTWDW
+     A*%%TS  SD  20250124  112509  PREAD       REL-V7R3M0  5770-WDS
+     A                                      OVERLAY
+     A                                      WINDOW(10 18 3 44)
+     A                                      WDWBORDER((*DSPATR RI) (*CHAR '    -
+     A                                          '))
+     A            PROMPTOPT      1A  B  2 44VALUES('Y' 'N')
+     A                                      DFTVAL('N')
+     A            PROMPTDSC     40A  O  2  1

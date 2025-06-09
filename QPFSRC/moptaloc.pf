@@ -1,0 +1,30 @@
+      *%METADATA                                                       *
+      * %TEXT Optical Volume Allocation Table                          *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      * File..... MOPTALOC  Optical Volume Allocation table
+      *
+      *                     Reserves space on a volume during a job.
+      *                       OPALOC is the number of bytes reserved.
+      *
+/9271 * 10-13-04 PLR THE FIELD MOPALOC WAS ONLY 9P. THIS FILE IS
+      *              TO KEEP TRACK OF REQUESTED ALLOCATION SIZES FOR MORE THAN
+      *              ONE ARCHIVE JOB RUNNING AT A TIME, I.E., ARCHIVE MONITOR
+      *              JOBS. IF ALLOCATIONS > 999MB ARE REQUESTED THEY WILL BE
+      *              TRUNCATED AT THE HI-END. THIS WILL CAUSE A CONDITION THAT
+      *              WOULD OVERSTATE THE ACTUAL SPACE AVAILABLE ON A DISK.
+/3321 * 02-02-01 KAC REMOVE OPT DRIVE (OBSOLETE AS OF 6.0.6)
+      *  2-14-94 DM  New file
+      ****************************************************************
+     A                                      UNIQUE
+     A          R OPALOR
+K1   A            OPALVL        12          COLHDG('Volume')
+K3   A            OPAJOB        10          COLHDG('Job' 'Name')
+K4   A            OPAUSR        10          COLHDG('Job' 'User')
+K5   A            OPAJNO         6          COLHDG('Job' 'Number')
+/9271A            OPALOC        15  0       COLHDG('Bytes' 'Alloc')
+
+     A          K OPALVL
+     A          K OPAJOB
+     A          K OPAUSR
+     A          K OPAJNO

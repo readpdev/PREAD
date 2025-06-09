@@ -1,0 +1,5 @@
+                R TESTREC
+                  KEYFLD1       10
+                  DBCSFLD       10O
+                K KEYFLD1
+                K DBCSFLD

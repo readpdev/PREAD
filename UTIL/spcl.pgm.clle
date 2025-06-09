@@ -1,0 +1,9 @@
+      /*%METADATA                                                     */
+      /* %TEXT Work with User SPLF's                                  */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&USER)
+             DCL        VAR(&USER) TYPE(*CHAR) LEN(10)
+             IF         COND(&USER *EQ ' ') THEN(CHGVAR VAR(&USER) +
+                          VALUE(*CURRENT))
+             WRKSPLF    SELECT(&USER)
+             ENDPGM

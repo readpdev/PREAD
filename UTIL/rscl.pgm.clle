@@ -1,0 +1,24 @@
+             PGM        PARM(&SQL)
+
+             DCL        VAR(&SQL) TYPE(*CHAR) LEN(256)
+
+             DCL        VAR(&USER) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&CMD) TYPE(*CHAR) LEN(256)
+
+             RTVJOBA    USER(&USER)
+
+             CHGVAR     VAR(&CMD) VALUE('echo ' || '''' || &SQL |< '''' || ' > /tmp/' || &USER |< '.qry')
+             QSH        CMD(&CMD)
+
+             CHGVAR     VAR(&CMD) VALUE('db2 ' || '"' || &SQL |< '" >>/tmp/' || &USER |< '.qry')
+             QSH        CMD(&CMD)
+
+             CHGVAR     VAR(&CMD) VALUE('/tmp/' || &USER |< '.qry')
+             DSPF       STMF(&CMD)
+
+             CHGVAR     VAR(&CMD) VALUE('/tmp/' || &user |< '.qry')
+             RMVLNK     OBJLNK(&CMD)
+
+             RETURN
+
+             ENDPGM

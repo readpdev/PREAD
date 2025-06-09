@@ -1,0 +1,56 @@
+      /*%METADATA                                                     */
+      /* %TEXT Copy from Prod to Test license data.                   */
+      /*%EMETADATA                                                    */
+/*                                                                            */
+/* 01-13-17 PLR Added notes file.                                             */
+/* 04-14-15 PLR Created. Copies data from production for testing purposes.    */
+/*              T6253J.                                                       */
+/*                                                                            */
+             PGM        PARM(&PRODLIB &TESTLIB)
+
+             DCL        VAR(&PRODLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TESTLIB) TYPE(*CHAR) LEN(10)
+
+             MONMSG     MSGID(CPF0000) EXEC(GOTO ERRORMSG)
+
+             CPYF       FROMFILE(&PRODLIB/SPYKEYNOT) +
+                          TOFILE(&TESTLIB/SPYKEYNOT) +
+                          MBROPT(*REPLACE) FMTOPT(*MAP *DROP)
+             MONMSG     MSGID(CPF0000)
+
+             CPYF       FROMFILE(&PRODLIB/SPYKEYHIS) +
+                          TOFILE(&TESTLIB/SPYKEYHIS) +
+                          MBROPT(*REPLACE) FMTOPT(*MAP *DROP)
+
+             CPYF       FROMFILE(&PRODLIB/SPYKEYLIC) +
+                          TOFILE(&TESTLIB/SPYKEYLIC) +
+                          MBROPT(*REPLACE) FMTOPT(*MAP *DROP)
+
+             CPYF       FROMFILE(&PRODLIB/SPYKEYMST) +
+                          TOFILE(&TESTLIB/SPYKEYMST) +
+                          MBROPT(*REPLACE) FMTOPT(*MAP *DROP)
+
+             CPYF       FROMFILE(&PRODLIB/SPYKEYPFM) +
+                          TOFILE(&TESTLIB/SPYKEYPFM) +
+                          MBROPT(*REPLACE) FMTOPT(*MAP *DROP)
+
+             CPYF       FROMFILE(&PRODLIB/SPYKEYTIF) +
+                          TOFILE(&TESTLIB/SPYKEYTIF) +
+                          MBROPT(*REPLACE) FMTOPT(*MAP *DROP)
+
+             CPYF       FROMFILE(&PRODLIB/SPYKEYVER) +
+                          TOFILE(&TESTLIB/SPYKEYVER) +
+                          MBROPT(*REPLACE) FMTOPT(*MAP *DROP)
+
+             CPYF       FROMFILE(&PRODLIB/SPYKEYPRD) +
+                          TOFILE(&TESTLIB/SPYKEYPRD) +
+                          MBROPT(*REPLACE) FMTOPT(*MAP *DROP)
+
+             SNDPGMMSG  MSG('Copy complete.') TOPGMQ(*EXT)
+             GOTO       CMDLBL(ENDPGM)
+
+ERRORMSG:    SNDPGMMSG  MSGID(CPF9898) MSGF(QCPFMSG) MSGDTA('Error +
+                          occurred while copying data. See +
+                          joblog.') TOPGMQ(*EXT) MSGTYPE(*STATUS)
+
+ENDPGM:      ENDPGM

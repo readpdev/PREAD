@@ -1,0 +1,47 @@
+pgm
+
+             DCLF       FILE(SPYDIR)
+             DCL        VAR(&IN880DTA) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&IN920DTA) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&IN880OBJ) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&IN920OBJ) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(80)
+             DCL        VAR(&JOB) TYPE(*CHAR) LEN(10)
+
+             OVRDBF     FILE(SPYDIR) MBR(SPYOBJDIR)
+
+             RTVJOBA    JOB(&JOB)
+
+ LOOP:       RCVF
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ENDPGM))
+
+             CHGVAR     VAR(&IN880DTA) VALUE('1')
+             CHGVAR     VAR(&IN880OBJ) VALUE('1')
+             CHKOBJ     OBJ(DOC880DTA/&OBJECT) OBJTYPE(&TYPE)
+             MONMSG     MSGID(CPF9801) EXEC(CHGVAR VAR(&IN880DTA) +
+                          VALUE('0'))
+             CHKOBJ     OBJ(DOC880OBJ/&OBJECT) OBJTYPE(&TYPE)
+             MONMSG     MSGID(CPF9801) EXEC(CHGVAR VAR(&IN880OBJ) +
+                          VALUE('0'))
+
+             CHGVAR     VAR(&IN920DTA) VALUE('1')
+             CHGVAR     VAR(&IN920OBJ) VALUE('1')
+             CHKOBJ     OBJ(DOC920DTA/&OBJECT) OBJTYPE(&TYPE)
+             MONMSG     MSGID(CPF9801) EXEC(CHGVAR VAR(&IN920DTA) +
+                          VALUE('0'))
+             CHKOBJ     OBJ(DOC920OBJ/&OBJECT) OBJTYPE(&TYPE)
+             MONMSG     MSGID(CPF9801) EXEC(CHGVAR VAR(&IN920OBJ) +
+                          VALUE('0'))
+
+             IF         COND(&IN880DTA *NE &IN920DTA *OR &IN880OBJ +
+                          *NE &IN920OBJ) THEN(DO)
+             CHGVAR     VAR(&MSG) VALUE(&OBJECT || &TYPE)
+             SNDBRKMSG  MSG(&MSG) TOMSGQ(&JOB) MSGTYPE(*INQ) +
+                          RPYMSGQ(&JOB)
+             ENDDO
+
+             GOTO       CMDLBL(LOOP)
+
+ ENDPGM:     DLTOVR     FILE(SPYDIR)
+
+             ENDPGM

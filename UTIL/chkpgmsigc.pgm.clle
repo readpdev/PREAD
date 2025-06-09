@@ -1,0 +1,10 @@
+      /*%METADATA                                                     */
+      /* %TEXT Check for Service Program Signature Violations         */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&LIBRARY)
+
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(10)
+
+             CALL       PGM(CHKPGMSIGR) PARM(&LIBRARY)
+
+             ENDPGM

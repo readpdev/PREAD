@@ -1,0 +1,28 @@
+      /*%METADATA                                                     */
+      /* %TEXT Display a Library's PGMs/SRVPGMs Authority             */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&LIBRARY)
+
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(10)
+             DCLF       FILE(QADSPOBJ)
+
+             DLTF       FILE(QTEMP/OBJD)
+             MONMSG     MSGID(CPF0000)
+             DLTF       FILE(QTEMP/OBJAUT)
+             MONMSG     MSGID(CPF0000)
+
+             DSPOBJD    OBJ(&LIBRARY/*ALL) OBJTYPE(*PGM *SRVPGM) +
+                          DETAIL(*BASIC) OUTPUT(*OUTFILE) +
+                          OUTFILE(QTEMP/OBJD)
+
+             OVRDBF     FILE(QADSPOBJ) TOFILE(QTEMP/OBJD)
+
+readfile:    RCVF
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(EOF))
+             DSPOBJAUT  OBJ(&LIBRARY/&ODOBNM) OBJTYPE(&ODOBTP) +
+                          OUTPUT(*OUTFILE) OUTFILE(QTEMP/OBJAUT) +
+                          OUTMBR(*FIRST *ADD) AUTTYPE(*OBJECT)
+             GOTO       CMDLBL(READFILE)
+eof:
+
+             ENDPGM

@@ -1,0 +1,32 @@
+      *%METADATA                                                       *
+      * %TEXT Document Revision Table                                  *
+      *%EMETADATA                                                      *
+      **********
+      * MCREVDIR  Content Revisions
+      **********
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R CONTREV
+     A            CRREVID        9B 0       COLHDG('Revision' 'ID')
+     A            CRBNUM        10A         COLHDG('Batch' 'Number')
+     A            CRBSEQ         9B 0       COLHDG('Relative' 'Record')
+     A            CRREVNO        9B 0       COLHDG('Revision' 'Number')
+     A            CRPARID        9B 0       COLHDG('Parent' 'Rev' 'ID')
+     A            CRBRAID        9B 0       COLHDG('Branch' 'Rev' 'ID')
+     A            CRROOTID       9B 0       COLHDG('Root' 'Rev' 'ID')
+     A            CRWRKIP        1A         COLHDG('Work In' 'Progress')
+      *                          values: '0' = Not in progress
+      *                                  '1' = Work in progress.
+     A            CRHEADF        1A         COLHDG('Head' 'Rev' 'Flag')
+      *                          values: '0' = Not the head revision
+      *                                  '1' = This is the head revision
+     A            CRANNOF        1A         COLHDG('Annot' 'Flag')
+      *                          values: '0' = No Annotations exist
+      *                                  '1' = Annotations exist
+     A            CRBREVC        9B 0       COLHDG('Branch' 'Revision' 'Count')
+     A            CRCIUSER      10A         COLHDG('Check-In' 'User' 'ID')
+     A            CRCIDATE       9B 0       COLHDG('Check-In' 'Date')
+     A            CRCITIME       9B 0       COLHDG('Check-In' 'Time')
+     A            CRCINODEID    32          COLHDG('Check_In Node ID')
+     A            CRDOTNOT     200          COLHDG('Dot Notation')
+     A          K CRREVID

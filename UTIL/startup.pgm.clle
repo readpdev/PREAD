@@ -1,0 +1,46 @@
+             PGM
+
+             DCL        VAR(&PCT_USED) TYPE(*CHAR) LEN(2)
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(80)
+             DCL        VAR(&USER) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&LASTDATE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&CURDATE) TYPE(*CHAR) LEN(10)
+             DCLF       FILE(PREAD/STARTUPD)
+
+             MONMSG     MSGID(CPF0000)
+
+             RTVJOBA    USER(&USER)
+
+             CHGMSGQ    MSGQ(*USRPRF) PGM(PREAD/MONMSG)
+             CHGMSGQ    MSGQ(*WRKSTN) PGM(PREAD/MONMSG)
+
+             CHGUSRPRF  USRPRF(&USER) DLVRY(*BREAK)
+
+             CHKOBJ     OBJ(&USER) OBJTYPE(*LIB)
+             MONMSG     MSGID(CPF9801) EXEC(CRTLIB LIB(&USER))
+             ADDLIBLE   LIB(&USER)
+             MONMSG     MSGID(CPF0000)
+
+             CHKOBJ     OBJ(&USER/STARTUPDTA) OBJTYPE(*DTAARA)
+             MONMSG     MSGID(CPF9801) EXEC(CRTDTAARA +
+                          DTAARA(&USER/STARTUPDTA) TYPE(*CHAR) +
+                          LEN(1024))
+             RTVDTAARA  DTAARA(&USER/STARTUPDTA (1 6)) +
+                          RTNVAR(&LASTDATE)
+             RTVJOBA    DATE(&CURDATE)
+             IF         COND(&CURDATE *NE &LASTDATE) THEN(DO)
+             CHGDTAARA  DTAARA(&USER/STARTUPDTA (1 6)) VALUE(&CURDATE)
+             CALL       PGM(PREAD/RTVSYSSTS) PARM(&PCT_USED)
+             CHGVAR     VAR(&MSG) VALUE('System ASP at' |> +
+                          &PCT_USED |< '%.')
+             SNDPGMMSG  MSG(&MSG) TOMSGQ(&USER)
+             ENDDO
+
+ NOEXIT:     CALL       PGM(QCMD)
+             CHGVAR     VAR(&EXIT) VALUE('N')
+             SNDRCVF    RCDFMT(EXIT)
+             IF         COND(&EXIT *EQ 'Y') THEN(SIGNOFF)
+             ELSE
+             GOTO       CMDLBL(NOEXIT)
+
+             ENDPGM

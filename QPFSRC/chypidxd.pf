@@ -1,0 +1,29 @@
+      *%METADATA                                                       *
+      * %TEXT Omni-Index Descriptions                                  *
+      *%EMETADATA                                                      *
+      **************----------------------------
+      * C Hyp Idx D   OmniLink Index Description
+      **************----------------------------
+     A                                      UNIQUE
+     A          R CHYPIDX                   TEXT('OmniIndex description')
+
+     A            CHNAM         10          COLHDG('OmniLink name')
+     A            CINAM         10          COLHDG('Index name')
+
+     A            CDESC         30          COLHDG('Index description')
+     A            CSORT          5  0       COLHDG('Sort key')
+     A                                      EDTCDE(Z)
+      *           Note: CSORT is used as only a 1 position field.
+
+     A            CFIN           1          COLHDG('Force' 'input')
+     A            CART           1          COLHDG('Type' 'A/N')
+     A            CLAN           2  0       COLHDG('Length')
+     A            CDEZ           1  0       COLHDG('Dec' 'pos')
+     A            CVOR           1          COLHDG('Adjust L/R/O')
+     A            CWRD          40          COLHDG('Edit word')
+     A            CWRL           2  0       COLHDG('Edit word' 'length')
+     A            CLOC           1          COLHDG('LC' 'Y/N')
+     A            CPGM          10          COLHDG('F4 program')
+      *
+     A          K CHNAM
+     A          K CINAM

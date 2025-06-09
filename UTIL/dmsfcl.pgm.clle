@@ -1,0 +1,6 @@
+      /*%METADATA                                                     */
+      /* %TEXT Delete my spool files                                  */
+      /*%EMETADATA                                                    */
+             PGM
+             DLTSPLF   FILE(*SELECT)
+             ENDPGM

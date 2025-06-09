@@ -1,0 +1,5 @@
+             PGM        PARM(&LIBS)
+             DCL        VAR(&LIBS) TYPE(*CHAR) LEN(52)
+             DCL        VAR(&ENTRIES) TYPE(*DEC) LEN(4)
+             CHGVAR     VAR(&ENTRIES) VALUE(%BIN(&LIBS 1 2))
+             ENDPGM

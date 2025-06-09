@@ -1,0 +1,77 @@
+      /*%METADATA                                                     */
+      /* %TEXT Create MRPTDIR DDM files.                              */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&LCLDTALIB &TGTSYS &TGTLIB)
+
+             DCL        VAR(&LCLDTALIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TGTSYS) TYPE(*CHAR) LEN(25)
+             DCL        VAR(&TGTLIB) TYPE(*CHAR) LEN(10)
+
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR) +
+                          RMTFILE(&TGTLIB/MRPTDIR) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR1) +
+                          RMTFILE(&TGTLIB/MRPTDIR1) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR2) +
+                          RMTFILE(&TGTLIB/MRPTDIR2) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR3) +
+                          RMTFILE(&TGTLIB/MRPTDIR3) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR4) +
+                          RMTFILE(&TGTLIB/MRPTDIR4) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR5) +
+                          RMTFILE(&TGTLIB/MRPTDIR5) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR6) +
+                          RMTFILE(&TGTLIB/MRPTDIR6) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR7) +
+                          RMTFILE(&TGTLIB/MRPTDIR7) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR8) +
+                          RMTFILE(&TGTLIB/MRPTDIR8) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDIR9) +
+                          RMTFILE(&TGTLIB/MRPTDIR9) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI10) +
+                          RMTFILE(&TGTLIB/MRPTDI10) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI11) +
+                          RMTFILE(&TGTLIB/MRPTDI11) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI12) +
+                          RMTFILE(&TGTLIB/MRPTDI12) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI13) +
+                          RMTFILE(&TGTLIB/MRPTDI13) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI14) +
+                          RMTFILE(&TGTLIB/MRPTDI14) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI15) +
+                          RMTFILE(&TGTLIB/MRPTDI15) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI16) +
+                          RMTFILE(&TGTLIB/MRPTDI16) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI17) +
+                          RMTFILE(&TGTLIB/MRPTDI17) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI18) +
+                          RMTFILE(&TGTLIB/MRPTDI18) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI19) +
+                          RMTFILE(&TGTLIB/MRPTDI19) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI20) +
+                          RMTFILE(&TGTLIB/MRPTDI20) +
+                          RMTLOCNAME(&TGTSYS *IP)
+             CRTDDMF    FILE(&LCLDTALIB/MRPTDI21) +
+                          RMTFILE(&TGTLIB/MRPTDI21) +
+                          RMTLOCNAME(&TGTSYS *IP)
+
+             ENDPGM

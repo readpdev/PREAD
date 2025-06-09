@@ -1,0 +1,12 @@
+      /*%METADATA                                                     */
+      /* %TEXT Work user submitted job                                */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&USER)
+
+             DCL        VAR(&USER) TYPE(*CHAR) LEN(10)
+
+             IF         COND(&USER *EQ ' ') THEN(RTVJOBA USER(&USER))
+
+             WRKUSRJOB  USER(&USER) STATUS(*JOBQ)
+
+             ENDPGM

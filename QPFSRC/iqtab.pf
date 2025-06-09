@@ -1,0 +1,33 @@
+      *%METADATA                                                       *
+      * %TEXT Image  Queue Table                                       *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... IQTAB - Magellan Image Queue Table File   *
+      * Date created...... 10/11/95  JJF                             *
+      *                                                              *
+/3321 * 02-02-01 KAC REMOVE OPT DRIVE (OBSOLETE AS OF 6.0.6)
+      ****************************************************************
+     A                                      UNIQUE
+     A          R IQTABR
+      *
+     A            IQDOCT        10A         COLHDG('Document' 'Type')
+     A            IQPCB         10A         COLHDG('PC Batch' 'Identifier')
+     A            IQFLD         10A         COLHDG('Folder')
+     A            IQFLIB        10A         COLHDG('Folder' 'Library')
+     A*********** IQLPFL        10A         COLHDG('Last Phys' 'file')
+     A            IQFSIZ         5  0       COLHDG('File' 'Size(MB)')
+     A                                      EDTCDE(Z)
+     A            IQBSIZ         5  0       COLHDG('Batch' 'Size(MB)')
+     A                                      EDTCDE(Z)
+     A            IQSFIL         1A         COLHDG('1 Batch' 'per File?')
+     A                                      VALUES('Y' 'N')
+     A            IQOPT          1A         COLHDG('Opti' 'cal?')
+     A                                      VALUES('Y' 'N')
+     A            IQOVL         12A         COLHDG('Optical' 'Volume')
+     A            IQUPGM        10A         COLHDG('User Exit' 'Program')
+     A            IQULIB        10A         COLHDG('User Exit' 'Library')
+     A            IQDESC        30A         COLHDG('Description')
+     A          K IQDOCT
+     A          K IQPCB

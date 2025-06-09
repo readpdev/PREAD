@@ -1,0 +1,10 @@
+             PGM
+
+             ADDLIBLE   LIB(SKV91IT23)
+             ADDLIBLE   LIB(SKD91IT23)
+
+             RLSJOBQ    JOBQ(SPYGLSARC)
+
+             STRMON
+
+             ENDPGM

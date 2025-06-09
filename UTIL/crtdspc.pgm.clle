@@ -1,0 +1,26 @@
+             PGM
+
+             DCL        VAR(&RRNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RJNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RPNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RUNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RUDAT) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&OPTSEQ) TYPE(*DEC) LEN(5 0) VALUE(0)
+             DCL        VAR(&RTNCDE) TYPE(*CHAR) LEN(7)
+
+             DCL        VAR(&LOOP) TYPE(*LGL) VALUE('1')
+
+             DCLF       FILE(RLNKDEF)
+
+             DOWHILE    COND(&LOOP)
+
+             RCVF
+             MONMSG     MSGID(CPF0864) EXEC(LEAVE)
+
+             CALL       PGM(CRTDSP) PARM(&LRNAM &LJNAM &LPNAM +
+                          &LUNAM &LUDAT &RDSPF &OPTSEQ &RTNCDE)
+
+             ENDDO
+
+             ENDPGM

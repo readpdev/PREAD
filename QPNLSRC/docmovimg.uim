@@ -1,0 +1,161 @@
+:pnlgrp submsgf='*LIBL/PSCON'.
+.************************************************************************
+.*  Help for command DOCMOVIMG
+.************************************************************************
+:help name='DOCMOVIMG'.
+Move/Consolidate Image Files - Help
+:p.Allows for the movement/consolidation of online DocManager image data.
+Image file capacity is referenced from the image queue table (IQTAB). The
+image queue configuration can be accessed from menu options 2, 1, 5.
+New image files will be created in the same library as the source image
+files.
+:ehelp.
+.*******************************************
+.*   Help for parameter DOCCLASS
+.*******************************************
+:help name='DOCMOVIMG/DOCCLASS'.
+&msg(P004178). (DOCCLASS) - Help
+:xh3.&msg(P004178). (DOCCLASS)
+:p.The name of the document class containing image data to be moved.
+.* Describe the function provided by the parameter.
+:p.This is a required parameter.
+:parml.
+:pt.:pk.*ALL:epk.
+:pd.
+All image document classes are included in the process.
+.* Describe the function provided by the pre-defined parameter value.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter DATBGN
+.*******************************************
+:help name='DOCMOVIMG/DATBGN'.
+&msg(STG0248). (DATBGN) - Help
+:xh3.&msg(STG0248). (DATBGN)
+:p.The beginning image capture date range.
+.* Describe the function provided by the parameter.
+:parml.
+:pt.:pk def.*FIRST:epk.
+:pd.
+The first available date is used when this value is specified.
+.* Describe the function provided by the pre-defined parameter value.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter DATEND
+.*******************************************
+:help name='DOCMOVIMG/DATEND'.
+&msg(STG0249). (DATEND) - Help
+:xh3.&msg(STG0249). (DATEND)
+:p.The ending image capture date range.
+.* Describe the function provided by the parameter.
+:parml.
+:pt.:pk def.*LAST:epk.
+:pd.
+The last available date is used when this value is specified.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter JOBD
+.*******************************************
+:help name='DOCMOVIMG/JOBD'.
+&msg(CMD1147). (JOBD) - Help
+:xh3.&msg(CMD1147). (JOBD)
+:p.The job description to be used for the submitted job.
+.* Describe the function provided by the parameter.
+:p.:hp2.Single values:ehp2.
+:parml.
+:pt.:pk.*NONE:epk.
+:pd.
+The job will run interactively if this value is specified. The default
+job description is SPYGLSARC.
+:eparml.
+:ehelp.
+.*******************************************
+.*   Help for parameter OPERATION
+.*******************************************
+:help name='DOCMOVIMG/OPERATION'.
+Start, stop or reset the application (OPERATION) - Help
+:xh3.Start, stop or reset the application (OPERATION)
+:p.Allows the user to start, stop or reset the application.
+.* Describe the function provided by the parameter.
+:parml.
+:pt.:pk def.*START:epk.
+:pd.
+Start the application. This is the default.
+.* Describe the function provided by the pre-defined parameter value.
+:pt.:pk.*STOP:epk.
+:pd.
+Stop the application. All other parameters are ignored. The document class is
+still required, however.
+:pt.:pk.*RESET:epk.
+:pd.
+This allows the user to reset the application for the specified parameters.
+Warning! Batches matching the criteria that have already been moved will
+be moved again at the next *START.
+:eparml.
+:ehelp.
+.**************************************************
+.*
+.* Examples for DOCMOVIMG
+.*
+.**************************************************
+:help name='DOCMOVIMG/COMMAND/EXAMPLES'.
+Examples for DOCMOVIMG - Help
+:xh3.Examples for DOCMOVIMG
+:p.:hp2.Example 1: Simple Command Example:ehp2.
+:xmp.
+DOCMOVIMG  KWD1(PARMVAL1)
+:exmp.
+:p.This command <...>
+.* Describe a simple invocation of the command.
+.*
+:p.:hp2.Example 2: More Complex Command Example:ehp2.
+:xmp.
+DOCMOVIMG   KWD1(PARMVAL1)  KWD2(PARMVAL2)
+            KWD3(PARMVAL3)
+:exmp.
+:p.This command <...>
+.* Describe a more complex invocation of the command.
+:ehelp.
+.**************************************************
+.*
+.* Error messages for DOCMOVIMG
+.*
+.**************************************************
+:help name='DOCMOVIMG/ERROR/MESSAGES'.
+&msg(CPX0005,QCPFMSG). DOCMOVIMG - Help
+:xh3.&msg(CPX0005,QCPFMSG). DOCMOVIMG
+:p.:hp3.*ESCAPE &msg(CPX0006,QCPFMSG).:ehp3.
+.************************************************************************
+.* List the *ESCAPE, *STATUS, and *NOTIFY messages signalled from the command.
+.* The following are generic messages defined in message file QCPFMSG.
+.* Modify this list to match the list of error messages for the command.
+.************************************************************************
+:DL COMPACT.
+:DT.CPF9801
+:DD.&MSG(CPF9801,QCPFMSG,*LIBL,nosub).
+:DT.CPF9802
+:DD.&MSG(CPF9802,QCPFMSG,*LIBL,nosub).
+:DT.CPF9803
+:DD.&MSG(CPF9803,QCPFMSG,*LIBL,nosub).
+:DT.CPF9807
+:DD.&MSG(CPF9807,QCPFMSG,*LIBL,nosub).
+:DT.CPF9808
+:DD.&MSG(CPF9808,QCPFMSG,*LIBL,nosub).
+:DT.CPF9810
+:DD.&MSG(CPF9810,QCPFMSG,*LIBL,nosub).
+:DT.CPF9811
+:DD.&MSG(CPF9811,QCPFMSG,*LIBL,nosub).
+:DT.CPF9812
+:DD.&MSG(CPF9812,QCPFMSG,*LIBL,nosub).
+:DT.CPF9820
+:DD.&MSG(CPF9820,QCPFMSG,*LIBL,nosub).
+:DT.CPF9830
+:DD.&MSG(CPF9830,QCPFMSG,*LIBL,nosub).
+:DT.CPF9899
+:DD.&MSG(CPF9899,QCPFMSG,*LIBL,nosub).
+:EDL.
+:ehelp.
+:epnlgrp.
+

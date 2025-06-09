@@ -1,0 +1,83 @@
+      /*%METADATA                                                     */
+      /* %TEXT Send system status to central computer.                */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&SNDTOSYS)
+
+             DCL        VAR(&SNDTOSYS) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&LOCSYS) TYPE(*CHAR) LEN(8)
+             DCL        VAR(&STSFILPTH) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&QSHCMD) TYPE(*CHAR) LEN(100)
+             DCL        VAR(&JOBTYPE) TYPE(*CHAR) LEN(1)
+
+             RTVJOBA    TYPE(&JOBTYPE)
+
+/* CREATE QFILESVR.400 DIRECTORY FOR TARGET SYSTEM */
+             CHGVAR     VAR(&QSHCMD) VALUE('/QFILESVR.400/' |< +
+                          &SNDTOSYS)
+             MKDIR      DIR(&QSHCMD)
+             MONMSG     MSGID(CPF0000)
+
+/* FETCH THE SYSTEM NAME. SET STATUS FILE PATH. */
+             RTVNETA    SYSNAME(&LOCSYS)
+             CHGVAR     VAR(&STSFILPTH) VALUE('/' |< &LOCSYS |< +
+                          '.TXT')
+
+/* CREATE TEMP OUTQ IF IT DOESN'T EXIST */
+             CHKOBJ     OBJ(QGPL/SYSSTATUS) OBJTYPE(*OUTQ)
+             MONMSG     MSGID(CPF9801) EXEC(CRTOUTQ +
+                          OUTQ(QGPL/SYSSTATUS))
+
+/* CLEAR THE OUTQ JUST IN CASE IT ALREADY EXISTS */
+             CLROUTQ    OUTQ(QGPL/SYSSTATUS)
+
+/* CHANGE THE DEFAULT OUTQ FOR THIS JOB TO TEMP OUTQ */
+             CHGJOB     OUTQ(QGPL/SYSSTATUS)
+
+/* PRINT SYSTEM STATUS */
+             DSPSYSSTS  OUTPUT(*PRINT)
+
+/* PRINT ANY SYSTEM PROBLEMS */
+             DSPPRB     OUTPUT(*PRINT)
+
+/* PRINT QSYSOPR MESSAGES AND THEN CLEAR BUT KEEP UNASWERED */
+             DSPMSG     MSGQ(QSYSOPR) OUTPUT(*PRINT)
+             CLRMSGQ    MSGQ(QSYSOPR) CLEAR(*KEEPUNANS)
+
+/* DELETE AND CREATE STATUS FILE ON IFS. SET CCSID TO 1252. */
+             CHGVAR     VAR(&QSHCMD) VALUE('rm ' |> &STSFILPTH)
+             QSH        CMD(&QSHCMD)
+             CHGVAR     VAR(&QSHCMD) VALUE('touch -C 1252' |> +
+                          &stsfilpth)
+             QSH        CMD(&QSHCMD)
+
+/* COPY SPOOLED FILES TO IFS */
+             DLTF       FILE(QTEMP/SYSSTS)
+             MONMSG     MSGID(CPF0000)
+             CRTPF      FILE(QTEMP/SYSSTS) RCDLEN(198)
+             CPYSPLF    FILE(QPDSPSTS) TOFILE(QTEMP/SYSSTS) +
+                          MBROPT(*ADD)
+             CPYSPLF    FILE(QSXPRTL) TOFILE(QTEMP/SYSSTS) MBROPT(*ADD)
+             CPYSPLF    FILE(QPDSPMSG) TOFILE(QTEMP/SYSSTS) +
+                          MBROPT(*ADD)
+             CPYTOSTMF  +
+                          FROMMBR('/qsys.lib/qtemp.lib/syssts.file/sy+
+                          ssts.mbr') TOSTMF(&STSFILPTH) STMFOPT(*ADD)
+             DLTF       FILE(QTEMP/SYSSTS)
+             MONMSG     MSGID(CPF0000)
+
+/* Copy IFS status file to central server */
+             CHGVAR     VAR(&QSHCMD) VALUE('cp' |> &STSFILPTH |> +
+                          '/qfilesvr.400/' |< &SNDTOSYS)
+             QSH        CMD(&QSHCMD)
+
+/* CLEAR AND DELETE TEMP OUTQ */
+             CLROUTQ    OUTQ(QGPL/SYSSTATUS)
+             CHGJOB     OUTQ(*USRPRF)
+             DLTOUTQ    OUTQ(QGPL/SYSSTATUS)
+
+/* DELETE THE IFS FILE */
+             CHGVAR     VAR(&QSHCMD) VALUE('rm ' |> &STSFILPTH)
+             QSH        CMD(&QSHCMD)
+
+ENDPGM:      ENDPGM

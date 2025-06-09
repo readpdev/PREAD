@@ -1,0 +1,142 @@
+      /*%METADATA                                                     */
+      /* %TEXT Send system status.                                    */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&EMAILADDR)
+
+             DCL        VAR(&EMAILADDR) TYPE(*CHAR) LEN(30)
+
+             DCL        VAR(&LOCSYS) TYPE(*CHAR) LEN(8)
+             DCL        VAR(&STSFILPTH) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&QSHCMD) TYPE(*CHAR) LEN(100)
+             DCL        VAR(&SUBJECT) TYPE(*CHAR) LEN(30)
+             DCL        VAR(&SYSNAMESA) TYPE(*CHAR) LEN(40) +
+                          VALUE('DEVI5   DEVSYSI1LSAIS02 LSAIS03')
+         /*  DCL        VAR(&SYSNAMEPP) TYPE(*PTR) ADDRESS(&SYSNAMESA) */
+         /*  DCL        VAR(&SYSNAMEP) TYPE(*PTR) ADDRESS(&SYSNAMESA) */
+         /*  DCL        VAR(&SYSNAME) TYPE(*CHAR) STG(*BASED) + */
+         /*               LEN(8) BASPTR(&SYSNAMEP) */
+             DCL        VAR(&SYSNAME) TYPE(*CHAR) LEN(8)
+             DCL        VAR(&MAXSYS) TYPE(*INT) VALUE(4)
+             DCL        VAR(&ELEM) TYPE(*INT)
+             DCL        VAR(&JOBTYPE) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&STARTPOS) TYPE(*INT)
+
+             MONMSG     MSGID(QSH0002 QSH0005)
+
+             RTVJOBA    TYPE(&JOBTYPE)
+
+/* FETCH THE SYSTEM NAME. SET STATUS FILE PATH. */
+             RTVNETA    SYSNAME(&LOCSYS)
+             CHGVAR     VAR(&STSFILPTH) VALUE('/' |< &LOCSYS |< +
+                          '.TXT')
+
+/* CREATE TEMP OUTQ IF IT DOESN'T EXIST */
+             CHKOBJ     OBJ(QGPL/SYSSTATUS) OBJTYPE(*OUTQ)
+             MONMSG     MSGID(CPF9801) EXEC(CRTOUTQ +
+                          OUTQ(QGPL/SYSSTATUS))
+
+/* CLEAR THE OUTQ JUST IN CASE IT ALREADY EXISTS */
+             CLROUTQ    OUTQ(QGPL/SYSSTATUS)
+
+/* CHANGE THE DEFAULT OUTQ FOR THIS JOB TO TEMP OUTQ */
+             CHGJOB     OUTQ(QGPL/SYSSTATUS)
+
+/* PRINT SYSTEM STATUS */
+             DSPSYSSTS  OUTPUT(*PRINT)
+
+/* PRINT ANY SYSTEM PROBLEMS */
+             DSPPRB     OUTPUT(*PRINT)
+
+/* PRINT QSYSOPR MESSAGES AND THEN CLEAR BUT KEEP UNASWERED */
+             DSPMSG     MSGQ(QSYSOPR) OUTPUT(*PRINT)
+             CLRMSGQ    MSGQ(QSYSOPR) CLEAR(*KEEPUNANS)
+
+/* DELETE AND CREATE STATUS FILE ON IFS. SET CCSID TO 1252. */
+             CHGVAR     VAR(&QSHCMD) VALUE('rm ' |> &STSFILPTH)
+             QSH        CMD(&QSHCMD)
+             CHGVAR     VAR(&QSHCMD) VALUE('touch -C 1252' |> +
+                          &stsfilpth)
+             QSH        CMD(&QSHCMD)
+
+/* COPY SPOOLED FILES TO IFS FOR LOCAL SYSTEM*/
+             DLTF       FILE(QTEMP/SYSSTS)
+             MONMSG     MSGID(CPF0000)
+             CRTPF      FILE(QTEMP/SYSSTS) RCDLEN(198)
+             CPYSPLF    FILE(QPDSPSTS) TOFILE(QTEMP/SYSSTS) +
+                          MBROPT(*ADD)
+             CPYSPLF    FILE(QSXPRTL) TOFILE(QTEMP/SYSSTS) MBROPT(*ADD)
+             CPYSPLF    FILE(QPDSPMSG) TOFILE(QTEMP/SYSSTS) +
+                          MBROPT(*ADD)
+             CPYTOSTMF  +
+                          FROMMBR('/qsys.lib/qtemp.lib/syssts.file/sy+
+                          ssts.mbr') TOSTMF(&STSFILPTH) STMFOPT(*ADD)
+             DLTF       FILE(QTEMP/SYSSTS)
+             MONMSG     MSGID(CPF0000)
+
+/* LIST BACKUP FILES FROM AUSSTORE03 AND SYSTEM STATUS INFORMATION */
+/* FOR ALL SYSTEMS */
+
+             QSH        CMD('rm /SYSSTSALL.txt')
+
+/* Mount the NFS file system backup directory */
+             MKDIR      DIR('/NFSBackup')
+             MONMSG     MSGID(CPF0000)
+
+             MOUNT      TYPE(*NFS) +
+                          MFS('ausstore03:/vol/Gauss_Backup') +
+                          MNTOVRDIR('/NFSBackup')
+
+             DOFOR      VAR(&ELEM) FROM(0) TO(&MAXSYS-1)
+
+             CHGVAR     VAR(&STARTPOS) VALUE(&ELEM * 8 + 1)
+             CHGVAR     VAR(&SYSNAME) VALUE(%SST(&SYSNAMEA &STARTPOS +
+                          8))
+
+             CHGVAR     VAR(&QSHCMD) VALUE('echo \\r\\nBackup files +
+                          on AUSSTORE03/vol/Gauss_Backup for' |> +
+                          &SYSNAME |> '\\r\\n >>' |> '/SYSSTSALL.txt')
+             QSH        CMD(&QSHCMD)
+
+/* LIST BACKUP FILES */
+             CHGVAR     VAR(&QSHCMD) VALUE('ls -l /NFSBackup/' |< +
+                          &SYSNAME |> '| awk ''{printf("%10s %s %s +
+                          %s %s\r\n"), $5,$6,$7,$8,$9}'' >>' |> +
+                          '/SYSSTSALL.txt')
+             QSH        CMD(&QSHCMD)
+
+/* MERGE IN EXTERNAL SYSTEM STATUS FILES */
+             CHGVAR     VAR(&QSHCMD) VALUE('cat /' |< &SYSNAME |< +
+                          '.txt' |> '| awk ''{printf("%s\r\n"), +
+                          $0}'' >>' |> '/SYSSTSALL.txt')
+             QSH        CMD(&QSHCMD)
+
+             CHGVAR     VAR(&QSHCMD) VALUE('rm /' |< &SYSNAME |< '.txt')
+             QSH        CMD(&QSHCMD)
+
+             ENDDO
+
+/* Unmount NFSBackup and remove directory */
+             UNMOUNT    TYPE(*NFS) MNTOVRDIR('/NFSBackup')
+             RMDIR      DIR('/NFSBackup')
+
+/* EMAIL THE STATUS FILE */
+             RTVNETA    SYSNAME(&SYSNAME)
+             CHGVAR     VAR(&SUBJECT) VALUE('All IBM i System Statuses')
+             SNDSMTPEMM RCP((&EMAILADDR)) SUBJECT(&SUBJECT) +
+                          NOTE('See attachment.') +
+                          ATTACH(('/SYSSTSALL.txt' *OCTET *TXT))
+             MONMSG     MSGID(TCP5305 TCP5092) EXEC(SNDSMTPEMM +
+                          RCP((&EMAILADDR)) SUBJECT('Error sending +
+                          system status.') NOTE('There was an error +
+                          sending the system statuses.'))
+
+/* CLEAR AND DELETE TEMP OUTQ */
+             CLROUTQ    OUTQ(QGPL/SYSSTATUS)
+             DLTOUTQ    OUTQ(QGPL/SYSSTATUS)
+             IF         COND(&JOBTYPE *EQ '1') THEN(CHGJOB +
+                          OUTQ(*USRPRF))
+
+/* DELETE THE IFS FILE */
+             QSH        CMD('rm /SYSSTSALL.txt')
+
+ENDPGM:      ENDPGM

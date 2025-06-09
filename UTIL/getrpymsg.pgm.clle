@@ -1,0 +1,24 @@
+      /*%METADATA                                                     */
+      /* %TEXT Get reply message                                      */
+      /*%EMETADATA                                                    */
+             PGM
+
+             DCL        VAR(&KEYVAR) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&RPY) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(40) +
+                          VALUE('PRTESTLIB PRTESTLIB PRTESTLIB PRTESTLIB')
+
+ RTYPGMLIB:  RNMOBJ     OBJ(PRTESTLIB) OBJTYPE(*LIB) NEWOBJ(PRTESTLIB2)
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+
+             SNDPGMMSG  MSGID(CPA2C6A) MSGF(QCPFMSG) +
+                          MSGDTA(&LIBRARY) TOPGMQ(*EXT) +
+                          MSGTYPE(*INQ) KEYVAR(&KEYVAR)
+
+             RCVMSG     MSGQ(*PGMQ) MSGTYPE(*RPY) KEYVAR(&KEYVAR) +
+                          MSG(&RPY)
+             IF         COND(&RPY *EQ 'R') THEN(GOTO CMDLBL(RTYPGMLIB))
+
+             ENDDO
+
+             ENDPGM

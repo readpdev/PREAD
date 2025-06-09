@@ -1,0 +1,26 @@
+      *%METADATA                                                       *
+      * %TEXT OmniLink Reports template                                *
+      *%EMETADATA                                                      *
+      **************-----------------------------
+      * B Hyp Rpt D   OmniLink Report Description
+      **************-----------------------------
+      *  Names reports that belong to an OmniLink name (BHNAM).
+      *
+     A                                      UNIQUE
+     A          R BHYPRPT                   TEXT('OmniLink Reports')
+     A            BRNAM         10          COLHDG('Report')
+     A            BJNAM         10          COLHDG('Job')
+     A            BPNAM         10          COLHDG('Program')
+     A            BUNAM         10          COLHDG('User')
+     A            BUDAT         10          COLHDG('User data')
+     A            BHNAM         10          COLHDG('OmniLink name')
+      *
+     A            BDFT           1          COLHDG('Default' 'report Y/N')
+      *
+      *                  Keyed by BHNAM + Big5
+     C          K BHNAM
+     C          K BRNAM
+     C          K BJNAM
+     C          K BPNAM
+     C          K BUNAM
+     C          K BUDAT

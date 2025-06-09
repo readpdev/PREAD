@@ -1,0 +1,23 @@
+Usage:
+
+Have customer run the following command to create object comparison file.
+
+DSPOBJD OBJ(CUSTPGMLIB/*ALL)
+        OBJTYPE(*ALL)
+        DETAIL(*SERVICE)
+        OUTPUT(*OUTFILE)
+        OUTFILE(SOMELIB/SOMEFILE)
+
+Use the same command with *ADD option on the base and delta release
+libraries into a separate file. May need to change file names if
+necessary.
+
+Copy and paste the following statement into the sql interface and run.
+
+select a.odobnm, a.odlbnm, a.odobtp, a.odcdat, b.odobnm as
+ih_obj,b.odlbnm as ih_lib, b.odobtp as ih_typ, b.odcdat as
+ih_crtdat from dspobjd a left join dod b on b.odobnm = a.odobnm and
+b.odobtp = a.odobtp where date(left(b.odcdat,2)
+||'/'||substr(b.odcdat, 3,2)||'/'||right(b.odcdat,2)) >
+date(left(a.odcdat,2)
+||'/'||substr(a.odcdat,3,2)||'/'||right(a.odcdat,2))

@@ -1,0 +1,31 @@
+      /*%METADATA                                                     */
+      /* %TEXT Clear the SQL Plan Cache                               */
+      /*%EMETADATA                                                    */
+             PGM
+
+             DLTF       FILE(QTEMP/INPUT)
+             MONMSG     MSGID(CPF0000)
+             CRTPF      FILE(QTEMP/INPUT) RCDLEN(10)
+
+             /* this will clear the plan cache */
+             RUNSQL     SQL('INSERT INTO QTEMP/INPUT VALUES(''C'')') +
+                          COMMIT(*NONE)
+
+             /* this confirms yes to clear */
+             RUNSQL     SQL('INSERT INTO QTEMP/INPUT VALUES(''Y'')') +
+                          COMMIT(*NONE)
+
+             /* this confirms to exit the utility */
+             RUNSQL     SQL('INSERT INTO QTEMP/INPUT VALUES(''E'')') +
+                          COMMIT(*NONE)
+
+             OVRDBF     FILE(QINLINE) TOFILE(QTEMP/INPUT) +
+                          OVRSCOPE(*JOB)
+
+             CALL       PGM(QSYS/QQQOOOCACH)
+
+             DLTOVR     FILE(QINLINE) LVL(*JOB)
+
+             DLTF       FILE(QTEMP/INPUT)
+
+             ENDPGM

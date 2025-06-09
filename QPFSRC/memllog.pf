@@ -1,0 +1,31 @@
+      *%METADATA                                                       *
+      * %TEXT Mail log file                                            *
+      *%EMETADATA                                                      *
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R EMLLOGF                   TEXT('Email Log File')
+     A            ELACC         10          COLHDG('Account ID')
+     A            ELSMID        40          COLHDG('Server MailID')
+     A            ELMID         17          COLHDG('MailID')
+     A            ELRCV          1          COLHDG('Received')
+     A            ELDLT          1          COLHDG('Deleted')
+     A            ELCVT          1          COLHDG('Converted')
+     A            ELARC          1          COLHDG('Archived')
+     A            ELRTY         10          COLHDG('Report Type')
+     A            ELVLD          1          COLHDG('Valid')
+     A            ELCDAT         8  0       COLHDG('Captured' 'Date')
+     A                                      EDTWRD('    .  .  ')
+     A            ELCTIM         6  0       COLHDG('Captured' 'Time')
+     A                                      EDTWRD('  :  :  ')
+     A            ELREQ         10          COLHDG('Request Type')
+     A            ELSNDR        80          COLHDG('Sender')
+     A            ELRCVR        80          COLHDG('Receiver')
+     A            ELOBJ         10          COLHDG('Requested' 'Object' 'Name')
+     A            ELTYP         10          COLHDG('Requested' 'Object' 'Type')
+     A            ELLIB         10          COLHDG('Requested' 'Object' 'Lib')
+     A            ELMSG          7          COLHDG('Error' 'Message' )
+      * Key Fields
+     A          K ELACC
+     A          K ELSMID
+     A          K ELCDAT
+     A          K ELCTIM

@@ -1,0 +1,52 @@
+      *%METADATA                                                       *
+      * %TEXT Report Override Table                                    *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... RQOVER - Report Queue Override            *
+      * Date created......  2/13/93                                  *
+      *                                                              *
+      * 6-21-93 ADDED FIELDS  OPT   &   OPVOL                        *
+/3321 * 02-02-01 KAC REMOVE OPT DRIVE (OBSOLETE AS OF 6.0.6)
+      ****************************************************************
+     A                                      UNIQUE
+     A                                      REF(MAGFLDR)
+     A          R OVERRC
+     A            ORNAM     R               REFFLD(RNAM)
+     A            OJNAM     R               REFFLD(JNAM)
+     A            OUNAM     R               REFFLD(UNAM)
+     A            OPROG     R               REFFLD(PROG)
+     A            OPLIB     R               REFFLD(LIBR)
+     A            OOUTQ     R               REFFLD(OUTQ)
+     A            OLIBR     R               REFFLD(LIBR)
+     A            OUDAT     R               REFFLD(UDAT)
+     A            OFIL#          9A         COLHDG('File' 'Number')
+     A            OFRMTY        10A         COLHDG('Form' 'Type')
+     A            OFOLD     R               REFFLD(FOLD)
+     A            OFLIB     R               REFFLD(FLIB)
+     A            ODESC     R               REFFLD(ODESC)
+     A            ODAFT     R               REFFLD(DAFT)
+     A            OHOLD     R               REFFLD(HOLD)
+     A            OPHOLD    R               REFFLD(PHOLD)
+     A            OMQ       R               REFFLD(MQ)
+     A            OMQLIB    R               REFFLD(MQLIB)
+     A            OUPRG     R               REFFLD(UPRG)
+     A            OULIB     R               REFFLD(ULIB)
+     A            OAIND     R               REFFLD(AIND)
+     A            OINDX     R               REFFLD(INDX)
+     A            ORMSV     R               REFFLD(RMSV)
+     A            ORELF     R               REFFLD(RELF)
+     A            OOPT      R               REFFLD(OPT)
+     A            OOPVOL    R               REFFLD(OPVOL)
+     A            OPACK     R               REFFLD(QPACK)
+     A          K ORNAM
+     A          K OJNAM
+     A          K OUNAM
+     A          K OPROG
+     A          K OPLIB
+     A          K OOUTQ
+     A          K OLIBR
+     A          K OUDAT
+     A          K OFIL#
+     A          K OFRMTY

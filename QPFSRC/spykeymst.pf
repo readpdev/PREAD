@@ -1,0 +1,34 @@
+      *%METADATA                                                       *
+      * %TEXT Spy Key Code Master File                                 *
+      *%EMETADATA                                                      *
+      *
+      * KEY CODE MASTER FILE.
+      *
+J6569 * 01-13-17 PLR Added the following fields: System Type (Prod,Test),
+      *              Location.
+J1299 * 06-08-09 PLR Add program library. Works with LPAR to prevent unlicensed
+      *              access to mulitple loads of DocMgr.
+T6896 * 05-02-08 PLR Added LPAR field.
+/1497 * 08-21-00 PLR CREATED.
+      *
+      * COMPILE WITH WAITRCD(1) FOR RECORD LOCK CHECKING.
+      *
+                                            UNIQUE
+                R SKMREC
+                  SKMNAM        40          COLHDG('COMPANY NAME')
+                  SKMSID        12          COLHDG('SYSTEM ID')
+                  SKMPFM         5          COLHDG('PLATFORM')
+                  SKMIS#         4  0       COLHDG('INSTALLATION' 'SEQUENCE #')
+                  SKMVER         4S 0       COLHDG('SOFTWARE' 'VERSION')
+                  SKMMDL         4          COLHDG('AS400' 'MODEL')
+                  SKMFTR         4          COLHDG('AS400' 'FEATURE')
+                  SKMDMO         8S 0       COLHDG('AS400 OLD' 'VER DEMO DATE')
+                  SKMKCD        16          COLHDG('KEY CODE')
+                  SKMCST         1          COLHDG('CUSTOMER' 'RECORD')
+T6896             SKMLPR         3S 0       COLHDG('LPAR' 'NUMBER')
+J1299             SKMLIB        10          COLHDG('PROGRAM' 'LIBRARY')
+J6569             SKMTYP        10          COLHDG('SYSTEM' 'TYPE')
+J6569             SKMLOC        40          COLHDG('LOCATION')
+                K SKMSID
+                K SKMPFM
+                K SKMIS#

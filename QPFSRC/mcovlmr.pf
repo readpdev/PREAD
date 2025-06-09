@@ -1,0 +1,18 @@
+      *%METADATA                                                       *
+      * %TEXT Overlay margins                                          *
+      *%EMETADATA                                                      *
+      **********
+      * MCOVLMR   Overlay Margins
+      **********
+     A                                      CCSID(65535)
+     A                                      UNIQUE
+     A          R OVLMRG
+     A            OMRTYPID      10A         COLHDG('Report' 'Type' 'ID')
+     A            OMOVLNAM      10A         COLHDG('Overlay' 'Name')
+     A            OMMARLEFT     12          COLHDG('Left' 'Margin')
+     A            OMMARRIGHT    12          COLHDG('Right' 'Margin')
+     A            OMMARTOP      12          COLHDG('Top' 'Margin')
+     A            OMMARBOT      12          COLHDG('Bottom' 'Margin')
+      *
+     A          K OMRTYPID
+     A          K OMOVLNAM

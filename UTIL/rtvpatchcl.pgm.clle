@@ -1,0 +1,29 @@
+      /*%METADATA                                                     */
+      /* %TEXT Retrieve Patch from Network                            */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&PATCHID &VERSION &SAVF &SAVFLIB)
+
+             DCL        VAR(&PATCHID) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&VERSION) TYPE(*CHAR) LEN(3)
+             DCL        VAR(&SAVF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SAVFLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&COMMAND) TYPE(*CHAR) LEN(256)
+
+             CHGVAR     VAR(&COMMAND) +
+                          VALUE('cp /qntc/otirv-software/products/Gaus+
+                          sVIP/CE_Patches/')
+             CHGVAR     VAR(&COMMAND) VALUE(&COMMAND |< &VERSION |< +
+                          '/DMS_AS400/VIP' |< &PATCHID |< '/T' |< +
+                          &PATCHID |< 'J /qsys.lib/' |< &SAVFLIB |< +
+                          '.lib/' |< &SAVF |< '.file')
+
+             CRTSAVF    FILE(&SAVFLIB/&SAVF)
+             MONMSG     MSGID(CPF0000)
+
+             CLRSAVF    FILE(&SAVFLIB/&SAVF)
+
+             QSH        CMD(&COMMAND)
+
+             RETURN
+
+             ENDPGM

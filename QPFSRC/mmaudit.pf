@@ -1,0 +1,22 @@
+      *%METADATA                                                       *
+      * %TEXT Revision Control Audit Table                             *
+      *%EMETADATA                                                      *
+      *********
+      * MMAUDIT  REVISION CONTROL AUDIT LOG.
+      *********
+
+/3765 * 05-22-01 PLR
+
+     A          R ALREC
+     A            AL_BATCH#     10          COLHDG('Batch')
+     A            AL_RRN         9B 0       COLHDG('RRN')
+     A            AL_TYPE        9B 0       COLHDG('Operation' 'Type')
+     A            AL_COUNT       9B 0       COLHDG('Item' 'Count')
+     A            AL_DATE        9B 0       COLHDG('Date')
+     A            AL_TIME        9B 0       COLHDG('Time')
+     A            AL_NODEID     32A         COLHDG('Node' 'ID')
+     A            AL_USRID      10A         COLHDG('User' 'ID')
+     A            AL_STATUS      9B 0       COLHDG('Status' '1=Pass, 0=Fail')
+     A            AL_DESC      255A         COLHDG('Misc. Description')
+     A            AL_REVID       9B 0       COLHDG('Revision' 'ID')
+

@@ -1,0 +1,37 @@
+      *%METADATA                                                       *
+      * %TEXT Report Distribution Subscribers                          *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... RSUBSCR - Report Distribution Subscribers *
+      * Date created...... 04/12/94                                  *
+      *                                                              *
+      ****************************************************************
+     A                                      UNIQUE
+     A          R SUBSCR
+     A            SUBSID        10          COLHDG('Subscriber' 'ID')
+     A            SNAME         40          COLHDG('Subscriber Name')
+     A            STITLE        40          COLHDG('Subscriber Title')
+     A            SUSER         10          COLHDG('User' 'Name')
+     A            SCMPNY        40          COLHDG('Company Name')
+     A            SDIVIS        40          COLHDG('Division Name')
+     A            SDEPT         40          COLHDG('Department Name')
+     A            SADDR1        40          COLHDG('Address Line 1')
+     A            SADDR2        40          COLHDG('Address Line 2')
+     A            SADDR3        40          COLHDG('Address Line 3')
+     A            SPHONE        16          COLHDG('Phone Number')
+     A            SPHEXT         6          COLHDG('Phone' 'Extension')
+     A            SFAX          16          COLHDG('Fax' 'Number')
+     A            SFXEXT         6          COLHDG('Fax' 'Extension')
+     A            SPRTID        10          COLHDG('Default' 'Printer ID')
+     A            SOUTQ         10          COLHDG('Default' 'Out' 'Queue')
+     A            SOUTQL        10          COLHDG('Default' 'OutQ' 'Library')
+     A            SMSGQ         10          COLHDG('Default' 'Msg' 'Queue')
+     A            SMSGQL        10          COLHDG('Default' 'MsgQ' 'Library')
+     A            SSTAT          1          COLHDG('Subscriber' 'Status')
+     A            SEADDR       128          COLHDG('Email Addr/' 'Path')
+     A          K SUBSID
+
+      * Logicals: RSUBSCR1   SUBSID  (same as PF)
+      *           RSUBSCR2   SUSER

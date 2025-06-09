@@ -1,0 +1,22 @@
+      *%METADATA                                                       *
+      * %TEXT Web Security - Application Logon Screens                 *
+      *%EMETADATA                                                      *
+      *********--------
+      * WBSCRP  WEB Security - Application Signon Screens
+      *********--------
+
+     A                                      UNIQUE
+     A          R WBSCRF                    TEXT('WEB Application Signog')
+      *           ******
+      *
+     A            WBAPP         10          COLHDG('Application')
+     A            WBVID         10          COLHDG('Value ID')
+     A            WBPMT         20          COLHDG('Field' 'Prompt')
+     A            WBLEN          3  0       COLHDG('Field' 'Length')
+     A                                      EDTCDE(Z)
+     A            WBDSP          1          COLHDG('Display' 'Y/N')
+     A            WBLC           1          COLHDG('Lower' 'Case' 'Y/N')
+
+     A          K WBAPP
+     A          K WBVID
+

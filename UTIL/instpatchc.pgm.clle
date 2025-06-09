@@ -1,0 +1,177 @@
+      /*%METADATA                                                     */
+      /* %TEXT Install Patch                                          */
+      /*%EMETADATA                                                    */
+ /*                                                                           */
+ /* 03-11-11 PLR Added *MENU object types.                                    */
+ /* 12-16-10 PLR Added *PNLGRP object types.                                  */
+ /* 11-01-07 PLR Monitor for crtdupobj error when new objects are being added.*/
+ /*              Added command (*CMD) object type for deletion.               */
+ /* 01-30-07 PLR Add ability to process special install instructions.         */
+ /* 07-22-05 PLR Created. Installs patches built by CRTPATCH command.         */
+ /*                                                                           */
+             PGM        PARM(&PGMLIB &PATCHLIB &BACKOUT)
+
+             DCL        VAR(&PATCHLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PGMLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&BACKOUT) TYPE(*CHAR) LEN(1)
+
+             DCL        VAR(&SYSDFTOWN) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PATCHBU) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&WORKSTN) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBTYPE) TYPE(*CHAR) LEN(1)
+             DCLF       FILE(PATCHOBJ)
+
+             MONMSG     MSGID(CPF0602)
+
+             RTVJOBA    JOB(&WORKSTN) TYPE(&JOBTYPE)
+             ADDLIBLE   LIB(&PATCHLIB)
+             MONMSG     MSGID(CPF0000)
+
+             IF         COND(&JOBTYPE *EQ '0') THEN(GOTO CMDLBL(QUIT))
+
+             RTVDTAARA  DTAARA(&PGMLIB/SYSDFT (286 10)) RTNVAR(&SYSDFTOWN)
+
+/* An install and then a backout was already performed...STOP!*/
+             CHGVAR     VAR(&PATCHBU) VALUE('B' || %SST(&PATCHLIB 2 9))
+             CHKOBJ     OBJ(&PGMLIB/&PATCHBU) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(GOTO CMDLBL(CHKBCKFLG))
+             SNDBRKMSG  MSG('A previous attempt was made to apply this +
+                          patch. Please call Technical Services for +
+                          additional assistance.') TOMSGQ(&WORKSTN)
+             RCVMSG     MSGQ(&WORKSTN) MSGTYPE(*LAST)
+             GOTO       CMDLBL(QUIT)
+
+ CHKBCKFLG:  IF         COND(&BACKOUT *EQ 'Y') THEN(GOTO CMDLBL(BACKOUT))
+
+/************** INSTALL SECTION ***************/
+             CHKOBJ     OBJ(&PATCHLIB/BACKOUT) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(GOTO CMDLBL(NEXT))
+             SNDBRKMSG  MSG('If attempting to revert the patch, change the +
+                          Backout option to ''Y'' and try the request +
+                          again.') TOMSGQ(&WORKSTN)
+             RCVMSG     MSGQ(&WORKSTN) MSGTYPE(*LAST)
+             GOTO       CMDLBL(QUIT)
+ NEXT:       DCPOBJ     OBJ(&PATCHLIB/*ALL) OBJTYPE(*ALL)
+             CRTSAVF    FILE(&PATCHLIB/BACKOUT)
+             CLRLIB     LIB(QTEMP)
+             SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA('Copying +
+                          current objects and applying patched objects.') +
+                          TOPGMQ(*EXT) MSGTYPE(*STATUS)
+             CHGVAR     VAR(&PATCHBU) VALUE('I' || %SST(&PATCHLIB 2 9))
+ LOOP1:      RCVF
+             MONMSG     MSGID(CPF0864) EXEC(GOTO CMDLBL(ENDLOOP1))
+             IF         COND(&PO_OBJTYP *EQ '*FILE') THEN(DO)
+                CRTDUPOBJ  OBJ(&PO_OBJNAM) FROMLIB(&PGMLIB) OBJTYPE(*ALL) +
+                             TOLIB(QTEMP) DATA(*YES)
+                MONMSG     MSGID(CPF0000)
+             ENDDO
+             ELSE       CMD(DO)
+                CRTDUPOBJ  OBJ(&PO_OBJNAM) FROMLIB(&PGMLIB) OBJTYPE(*ALL) +
+                             TOLIB(QTEMP)
+                MONMSG     MSGID(CPF0000)
+             ENDDO
+             IF         COND(&PO_OBJTYP *EQ *FILE) THEN(DO)
+                DLTF       FILE(&PGMLIB/&PO_OBJNAM)
+                MONMSG     MSGID(CPF0000)
+             ENDDO
+             IF         COND(&PO_OBJTYP *EQ *MSGF) THEN(DO)
+                DLTMSGF    MSGF(&PGMLIB/&PO_OBJNAM)
+                MONMSG     MSGID(CPF0000)
+             ENDDO
+             IF         COND(&PO_OBJTYP *EQ *PGM) THEN(DO)
+                DLTPGM     PGM(&PGMLIB/&PO_OBJNAM)
+                MONMSG     MSGID(CPF0000)
+             ENDDO
+             IF         COND(&PO_OBJTYP *EQ *SRVPGM) THEN(DO)
+                DLTSRVPGM  SRVPGM(&PGMLIB/&PO_OBJNAM)
+                MONMSG     MSGID(CPF0000)
+             ENDDO
+             IF         COND(&PO_OBJTYP *EQ *CMD) THEN(DO)
+                DLTCMD     CMD(&PGMLIB/&PO_OBJNAM)
+                MONMSG     MSGID(CPF0000)
+             ENDDO
+             IF         COND(&PO_OBJTYP *EQ *PNLGRP) THEN(DO)
+                DLTPNLGRP  PNLGRP(&PGMLIB/&PO_OBJNAM)
+                MONMSG     MSGID(CPF0000)
+             ENDDO
+             IF         COND(&PO_OBJTYP *EQ *MENU) THEN(DO)
+                DLTMNU     MENU(&PGMLIB/&PO_OBJNAM)
+                MONMSG     MSGID(CPF0000)
+             ENDDO
+             MOVOBJ     OBJ(&PATCHLIB/&PO_OBJNAM) OBJTYPE(&PO_OBJTYP) +
+                          TOLIB(&PGMLIB)
+             IF         COND(&PO_OBJOWN *EQ '*SYSENV') THEN(CHGVAR +
+                          VAR(&PO_OBJOWN) VALUE(&SYSDFTOWN))
+             CHGOBJOWN  OBJ(&PGMLIB/&PO_OBJNAM) OBJTYPE(&PO_OBJTYP) +
+                          NEWOWN(&PO_OBJOWN)
+             SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA('Ownership +
+                          changed for ' || &PGMLIB |< '/' |< &PO_OBJNAM |< +
+                          ' to ' || &PO_OBJOWN) TOPGMQ(*EXT) +
+                          MSGTYPE(*STATUS)
+             GRTOBJAUT  OBJ(&PGMLIB/&PO_OBJNAM) OBJTYPE(&PO_OBJTYP) +
+                          USER(*PUBLIC) REPLACE(*YES)
+             GOTO       CMDLBL(LOOP1)
+ ENDLOOP1:   CHKOBJ     OBJ(&PATCHLIB/SPCLINST) OBJTYPE(*PGM)
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(FINISH))
+             SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA('Running +
+                          special install instructions') TOPGMQ(*EXT) +
+                          MSGTYPE(*STATUS)
+             CALL       PGM(&PATCHLIB/SPCLINST) PARM(&PGMLIB &PATCHLIB)
+             SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA('Special +
+                          install instructions complete') TOPGMQ(*EXT) +
+                          MSGTYPE(*STATUS)
+ FINISH:     SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA('Saving +
+                          original objects for backout.') TOPGMQ(*EXT) +
+                          MSGTYPE(*STATUS)
+             SAVOBJ     OBJ(*ALL) LIB(QTEMP) DEV(*SAVF) +
+                          SAVF(&PATCHLIB/BACKOUT) OMITOBJ((QTEMP/CPPFDLOB +
+                          *FILE))
+             MONMSG     MSGID(CPF3770)
+             CLRLIB     LIB(QTEMP)
+             SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA('Patch library +
+                          with backout saved to program library.') +
+                          TOPGMQ(*EXT) MSGTYPE(*STATUS)
+             DLTF       FILE(&PGMLIB/&PATCHBU)
+             MONMSG     MSGID(CPF0000)
+             CRTSAVF    FILE(&PGMLIB/&PATCHBU)
+             DSPJOBLOG  OUTPUT(*OUTFILE) OUTFILE(&PATCHLIB/INSTALLLOG)
+             SAVLIB     LIB(&PATCHLIB) DEV(*SAVF) SAVF(&PGMLIB/&PATCHBU)
+             SNDPGMMSG  MSG('Patch installed.')
+             GOTO       CMDLBL(QUIT)
+
+/****** BACKOUT SECTION **************/
+ BACKOUT:    SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA('Restoring +
+                          saved objects.') TOPGMQ(*EXT) MSGTYPE(*STATUS)
+             RSTOBJ     OBJ(*ALL) SAVLIB(QTEMP) DEV(*SAVF) +
+                          SAVF(&PATCHLIB/BACKOUT) MBROPT(*ALL) +
+                          ALWOBJDIF(*ALL) RSTLIB(&PGMLIB)
+             MONMSG     MSGID(CPF3773)
+             CHGVAR     VAR(&PATCHBU) VALUE('B' || %SST(&PATCHLIB 2 9))
+ LOOP2:      RCVF
+             MONMSG     MSGID(CPF0864) EXEC(GOTO CMDLBL(ENDLOOP2))
+             IF         COND(&PO_OBJOWN *EQ '*SYSENV') THEN(CHGVAR +
+                          VAR(&PO_OBJOWN) VALUE(&SYSDFTOWN))
+             CHGOBJOWN  OBJ(&PGMLIB/&PO_OBJNAM) OBJTYPE(&PO_OBJTYP) +
+                          NEWOWN(&PO_OBJOWN)
+             SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA('Ownership +
+                          changed for' || &PGMLIB |< '/' |< &PO_OBJNAM || +
+                          'to' || &PO_OBJOWN) TOPGMQ(*EXT) MSGTYPE(*STATUS)
+             GRTOBJAUT  OBJ(&PGMLIB/&PO_OBJNAM) OBJTYPE(&PO_OBJTYP) +
+                          USER(*PUBLIC) REPLACE(*YES)
+             GOTO       CMDLBL(LOOP2)
+ ENDLOOP2:   DSPJOBLOG  OUTPUT(*OUTFILE) OUTFILE(&PATCHLIB/BACKOUTLOG) +
+                          OUTMBR(*FIRST *ADD)
+             SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA('Logging and +
+                          backing up reverted patch.') TOPGMQ(*EXT) +
+                          MSGTYPE(*STATUS)
+             DLTF       FILE(&PGMLIB/&PATCHBU)
+             MONMSG     MSGID(CPF0000)
+             CRTSAVF    FILE(&PGMLIB/&PATCHBU)
+             SAVLIB     LIB(&PATCHLIB) DEV(*SAVF) SAVF(&PGMLIB/&PATCHBU)
+             SNDPGMMSG  MSG('Backout of Patch Complete')
+             GOTO       CMDLBL(QUIT)
+
+ QUIT:       RMVLIBLE   LIB(&PATCHLIB)
+             MONMSG     MSGID(CPF0000)
+
+             ENDPGM

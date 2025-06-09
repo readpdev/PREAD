@@ -1,0 +1,32 @@
+      *%METADATA                                                       *
+      * %TEXT SpyView Access Path Database                             *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... SPYACCP - SpyView Access Path File        *
+      * Date created...... 3/11/93                                   *
+      *                                                              *
+      ********-------------------------------------------------------*
+     A                                      UNIQUE
+     A                                      CCSID(65535)
+     A          R SPYACCF
+     A            APFILE        10A         COLHDG('File' 'Name')
+     A            APVIEW        10A         COLHDG('View')
+     A            APPATH        10A         COLHDG('Path' 'Name')
+     A            APTYPE         3  0       COLHDG('Record' 'Type')
+     A                                      EDTCDE(Z)
+     A            APSEQ          3  0       COLHDG('Sequence' 'Number')
+     A                                      EDTCDE(Z)
+     A            APMAG          1A         COLHDG('Magellan' 'Owned')
+     A*   Record Type:
+     A*   0=Description
+     A*   1=Key Fields
+     A*   2=Selection
+     A            APTEXT      1024          COLHDG('Description')
+     A
+     A          K APFILE
+     A          K APVIEW
+     A          K APPATH
+     A          K APTYPE
+     A          K APSEQ

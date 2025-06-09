@@ -1,0 +1,37 @@
+      *%METADATA                                                       *
+      * %TEXT Bundle Printing Determination Temp File A                *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... MAG610A - Bundle Printing Determination   *
+     A* Date created...... 11/13/95                    Temp File A   *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A          R RC610A
+     A            #BPRIO         2A         COLHDG('Bundle' 'Priority')
+     A            #BUNDL        10A         COLHDG('Bundle' 'I.D')
+     A            #SUBSC        10A         COLHDG('Subscriber')
+     A            #REPT         10A         COLHDG('Report' 'Type' 'Id')
+     A            #SPRIO         2A         COLHDG('Segment' 'Priority')
+     A            #SEGMT        10A         COLHDG('Segment' 'I.D')
+     A            #SUBSL        10A         COLHDG('Subscriber' 'List' 'Id')
+     A            #BNDDS        40A         COLHDG('Bundle' 'Desc')
+     A            #SNAME        40A         COLHDG('Subscriber Name')
+     A            #AVLPR         1A         COLHDG('Available' 'To Print')
+     A            #NODE         17A         COLHDG('Node' 'ID')
+     A            #SECPW        10A         COLHDG('Bundle' 'Password')
+     A            #TFRTY         1A         COLHDG('Transfer' 'Type')
+     A            #BEADR       128A         COLHDG('Bnd' 'Email Adr' 'HFS Path')
+     A            #APRT          1A         COLHDG('Auto-' 'Print' 'Indicator')
+     A            #EMALI         1A         COLHDG('Email' 'Indicator')
+     A            #SEADR       128A         COLHDG('Subcr' 'Email Addr' 'Path')
+     A          K #BPRIO
+     A          K #BUNDL
+     A          K #REPT
+     A          K #SPRIO
+     A          K #SEGMT
+     A          K #SUBSC

@@ -1,0 +1,9 @@
+      /*%METADATA                                                     */
+      /* %TEXT Restore debug library for 8.5.x                        */
+      /*%EMETADATA                                                    */
+             PGM
+
+             RSTLIB     SAVLIB(DOC850DBG) DEV(*SAVF) +
+                          SAVF(PREAD/DOC850DBG)
+
+             ENDPGM

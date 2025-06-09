@@ -1,0 +1,76 @@
+      /*%METADATA                                                     */
+      /* %TEXT Add SpyView Text Note                                  */
+      /*%EMETADATA                                                    */
+/*                                                                            */
+/* 07-15-02 PLR CHANGED TO SEND BACK MORE COMPLETE MESSAGES FROM RPG PROGRAM. */
+/*              /6772                                                         */
+/*                                                                            */
+             PGM        PARM(&TXTFILEID &DOCIDENT &TIFPG +
+                          &TXTNOTE &CALLINGCMD)
+             DCL        VAR(&TXTFILEID) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&DOCIDENT) TYPE(*CHAR) LEN(9)
+             DCL        VAR(&TIFPG) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&PG_OR_RRN) TYPE(*CHAR) LEN(9)
+             DCL        VAR(&IMGPAGE) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&CALLINGCMD) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RECS) TYPE(*CHAR) LEN(2)
+             DCL        VAR(&RECS#) TYPE(*CHAR) LEN(9)
+             DCL        VAR(&TXTNOTE) TYPE(*CHAR) LEN(7602)
+             DCL        VAR(&SDT) TYPE(*CHAR) LEN(7680)
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(80)
+             DCL        VAR(&ITXT) TYPE(*CHAR) LEN(50)
+             DCL        VAR(&SPYLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&CHANGE) TYPE(*CHAR) LEN(1)
+
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(GOTO CMDLBL(ERROR))
+                                                   /* Where Spyglass */
+                                                   /* is located     */
+             RTVOBJD    OBJ(STRDOCMGR) OBJTYPE(*CMD) TEXT(&ITXT)
+             MONMSG     MSGID(CPF0000 MCH0000)
+             RCVMSG     MSGTYPE(*LAST)
+             CHGVAR     VAR(&SPYLIB) VALUE(%SST(&ITXT 41 10))
+             IF         COND(&SPYLIB *NE ' ') THEN(DO)
+             ADDLIBLE   LIB(&SPYLIB)
+             MONMSG     MSGID(CPF2118) EXEC(GOTO CMDLBL(ERROR))
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(GOTO +
+                          CMDLBL(NOCHANGE))
+             CHGVAR     VAR(&CHANGE) VALUE('Y')
+ NOCHANGE:   RCVMSG     MSGTYPE(*LAST)
+             ENDDO
+             CALL       MAG1031  (ADDSPYNOT ' ')
+             CALL       MAG103A
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(DO)
+             CALL       MAG1031  (ADDSPYNOT Q)
+             MONMSG     MSGID(CPF0000 MCH0000)
+             GOTO       ERROR
+             ENDDO
+
+             CHGVAR     VAR(&RECS) VALUE(%SST(&TXTNOTE 1 2))
+             CHGVAR     VAR(&RECS#) VALUE(%BIN(&RECS))
+             CHGVAR     VAR(&SDT) VALUE(%SST(&TXTNOTE 3 7600))
+
+             IF         COND(&CALLINGCMD *EQ 'ADDDOCNOT') THEN(DO)
+             CHGVAR     VAR(&IMGPAGE) VALUE(%BIN(&TIFPG 1 2))
+             CHGVAR     VAR(&PG_OR_RRN) VALUE(%BIN(&DOCIDENT 1 4))
+             CALL       PGM(ADDSPYNOTR) PARM(&TXTFILEID &PG_OR_RRN +
+                          &IMGPAGE &RECS# &SDT &MSGID &MSGDTA)
+             ENDDO
+
+             IF         COND(&CALLINGCMD *EQ 'ADDSPYNOT') THEN(DO)
+             CALL       PGM(ADDSPYNOTR) PARM(&TXTFILEID &DOCIDENT +
+                          &TIFPG &RECS# &SDT &MSGID &MSGDTA)
+             ENDDO
+
+             IF         COND(&MSGID *NE ' ') THEN(SNDPGMMSG +
+                          MSGID(&MSGID) MSGF(PSCON) MSGDTA(&MSGDTA) +
+                          MSGTYPE(*ESCAPE))
+             GOTO       CMDLBL(END)
+
+ ERROR:      RCVMSG     RMV(*NO) MSGDTA(&MSGDTA) MSGID(&MSGID)
+             SNDPGMMSG  MSGID(&MSGID) MSGF(QCPFMSG) MSGDTA(&MSGDTA) +
+                          MSGTYPE(*ESCAPE)
+
+ END:        CALL       MAG1031  PARM(ADDSPYNOT Q)
+             IF         (&CHANGE *EQ 'Y') RMVLIBLE &SPYLIB
+             ENDPGM

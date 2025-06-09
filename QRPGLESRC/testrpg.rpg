@@ -1,0 +1,10 @@
+     IPGMSDS     SDS                            528
+      *              Pgm status                             RPG pg 43
+     I                                     *PROGRAM QPGM
+     I                                        1  10 WQPGMN
+     I                                       40  46 QERNR
+     I                                       81  90 WQLIBN
+     I                                       91 170 QERMSG
+     I                                      201 210 QERFIL
+     I                                      254 263 WQUSRN
+     C                     MOVE *ON       *INLR

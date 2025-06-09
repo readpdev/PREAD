@@ -1,0 +1,9 @@
+/* 05-03-10 PLR Rolled back from 8.8. No changes needed as it did not exist   */
+/*              in this release (8.7.4). J2603.                               */
+STRPGMEXP PGMLVL(*CURRENT)
+/********************************************************************/
+/*   *MODULE      MASPLQA      EGARSKE      07/06/09  10:31:34      */
+/********************************************************************/
+  EXPORT SYMBOL("GETSPLSIZE")
+  EXPORT SYMBOL("GETSPLVALID")
+ENDPGMEXP

@@ -1,0 +1,8 @@
+pgm
+
+             DCL        VAR(&MYDEC6) TYPE(*DEC) LEN(6 0) VALUE(1)
+             DCL        VAR(&MYCHAR) TYPE(*CHAR) LEN(6)
+
+             CHGVAR     VAR(&MYCHAR) VALUE(&MYDEC6)
+
+endpgm

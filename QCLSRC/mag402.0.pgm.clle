@@ -1,0 +1,994 @@
+/*******---------------
+ MAG402  Archive Report
+ *******---------------
+PLR 08-24-09 Move spooled file to error outq if cpysplf terminates
+             with CPF3429 during autoarchive. T1980J.
+PLR 01-13-05 Added code to handle -1 and 0 splnbr condition used for
+             new spool file handling. See 8203. This bug 9388.
+JMO 12-07-04 Add logic to create/clear/delete a data area to hold
+              the hash value created for the A-file data
+PLR 10-20-04 Send error messages sent from MAGPCL to msgq. /8448
+JMO  4-09-04 Added new logic to build DISP file for *LINE reports
+              with Page Definitions. New pgm MAG1073
+JMO 10-09-03 Add logic to support spool file numbers > 9999  /6708
+JMO 06-10-03 Changed size of Spool file attributes           /8388
+              from 3301 to 8192                              /8388
+GT   4-11-03 Ability to archive DBCS spooled files              /820
+GT   1-13-03 Change check for status *OPEN to use File Open attr
+              (done in 5681; made consistent with 6.0.5 patch)
+KAC 11-13-01 Add check for open spool file                  5681hq
+RA  07-13-01 Enable RMAINT override of ASCII stream is used  5006
+FID 03-10-99 Use SPYASCI to determine what ASCII stream is used
+GT  10-13-98 Change comparison to *BLANKS to ' '
+GT   9-04-98 Only update ENVDFT counters if run from auto archiver.
+GT   8-24-98 Add call to MAG402MP for run priority.
+GK   7-20-98 RptTyp=*none and PagDfn NE *blank ChgSplFA B4/Aft CpySp
+KAC  3-13-98 MOVE DLT/CHG SPLF TO SUBPROGRAM
+JJF  2-18-98 Process error returned from CRTFLD
+GK   1-29-98 ChgVar Fldr after Mag1043 is called for I/P to ArcNdxSp
+JJF  3-13-97 Report splitter: call Mag406, change ArcNdxSpy2 call
+JJF  7-30-96 Add parm: optical &DRIVE for MagServer
+GT   9-06-95 Change error messages to message IDs
+Dlm  2-13-95 Add Share(*No) to CrtPf Command
+
+Dlm 10-24-94 Add code to skip the archive of a spool file with
+Dlm 10-21-94 Add code to use data area to turn off optical writes
+DM  10- 6-94 HANDLE NON *SCS TYPE SPOOL FILES (APF)
+DM   8-16-94 HANDLE THE NEW RSPLCFG REPORT KEY CONFIGURATION MODULE
+DLM  6-21-94 FIX SAVE STATUS CHECK TO DELETE IF STATUS IS *SAVED
+DM   6-30-94 ONLY DO DISTRIBUTION (MAG1054 & MAG1056) IF CONFIGURED
+DM   6- 6-94 CHANGE INITIAL CODE TO 1 FOR ARCRTN IF NOT INTERACTIVE
+DM   5-18-94 UPDATE DISTRIBUTION LOG & HISTORY FILES MAG1056
+DM   5-16-94 CHECK DISTRIBUTION FILES FOR REFERENTIAL INTEGRITY
+DLM  4-21-94 CHANGE RUN PRIORITY IF IN BATCH MODE
+             CHECK MESSAGE SEVERITY TYPE TO DETERMINE
+              IF MESSAGES SHOULD BE SENT OR NOT
+DM   2-18-94 REMOVE THE SUBMIT CAPABILITY FROM LINKS AND INDEXES
+DM   2-15-94 ADD COMPRESS ROUTINES
+DLM  1-21-94 MOVE CODE TO INITIALIZE ARCRTN TO TOP OF PROGRAM
+DM   1-13-94 IF INTERACTIVE AND OPTICAL MODE CHANGE CALLING ARCRTN
+              PARM TO 'M' FOR STATUS BAR
+
+DLM 12-  -93 FIX BUG IF *ONLY OR *LAST IS PASSED AND LINK WERE
+              BUILT  0 WAS PASSED
+DLM          SUBMIT STANDARD INDEX AND SPYLINK BUILD
+              IF CALLED BY ARCHIVE MONITOR
+DLM          FIXED BUG IF DFT FOLDER WAS INPUTED AND INDEX CREATED
+              variable CPI, variable character Id, variable LPI,
+              variable font, graphics, IPDS transparent data or
+              a non *scs printer device type
+DM  11-  -93 NEW OPTICAL INTERFACE WITH MAG1043 (MAG1052)
+DLM 10-  -93 SKIP *CLOSED AND *OPEN STATUS
+DLM  8-  -93 ADD CODE FOR INDEXING
+DLM  7-  -93 ADD CRTPF ON DISP TO FORCE WRITE AT 2000 RECORDS
+DLM          REMOVE CRTPF ON DISP TO FORCE WRITE AT 2000 RECORDS
+DLM          FILL DATARA WITH JOB MONITOR INFORMATION
+DLM          ADD ERROR MESSAGE IF OPTICAL ERRORS
+DLM  6-  -93 PROGRAM CREATED
+
+
+             PGM        PARM(&RTN &FILE &JOB &CSPLNBR &FLDR &OPTICAL
+                          &DRIVE &PATH &DLTFAFT &PURGE_HOLD +
+                          &REMOV_SAVE &HOLD_STAT &MOVE_QUEUE +
+                          &MOVE_LIB &EXIT_PGM &EXIT_LIB &MSGQ &IND +
+                          &COMPRESS &ASPLNBR &MONID)
+
+             DCL        &RTN         *CHAR  1
+
+             DCL        &FILE        *CHAR 10     /* Describe the
+             DCL        &JOB         *CHAR 26     /* report to be
+             DCL        &DATFO       *CHAR  7     /* dt spool file o
+
+ /* all spool file number variables
+             DCL        &CSPLNBR     *CHAR  4     /* Binary 9,0
+             DCL        &ASPLNBR     *CHAR  4
+             DCL        &SPLNBR      *CHAR  9     /* char number
+             DCL        &ACTUALSPLN  *CHAR  4
+             DCL        &ACTUALSPLC  *CHAR  4
+             DCL        &FILNUM      *CHAR  4     /*  File number
+
+             DCL        &FLDR        *CHAR 20     /* What we are
+             DCL        &FLDR20      *CHAR 20
+             DCL        &OPTICAL     *CHAR  4     /* to do with it
+             DCL        &OPTYN       *CHAR  1
+             DCL        &DRIVE       *CHAR 15
+             DCL        &PATH        *CHAR 12
+             DCL        &DLTFAFT     *CHAR  4
+             DCL        &PURGE_HOLD  *CHAR  1
+             DCL        &REMOV_SAVE  *CHAR  1
+             DCL        &HOLD_STAT   *CHAR  1
+             DCL        &MOVE_QUEUE  *CHAR 10
+             DCL        &MOVE_LIB    *CHAR 10
+             DCL        &EXIT_PGM    *CHAR 10
+             DCL        &EXIT_LIB    *CHAR 10
+             DCL        &CALLER      *CHAR 10
+             DCL        &MSGQ        *CHAR  1
+             DCL        &IND         *CHAR  1
+             DCL        &COMPRESS    *CHAR  1
+             DCL        &MONID       *CHAR  2     /* End of *ENTRY
+
+             DCL        &NEWJOB      *CHAR 26
+             DCL        &APFILE      *CHAR 10
+             DCL        &FLDR        *CHAR 20
+             DCL        &FJOB        *CHAR 28
+             DCL        &NJOB        *CHAR 10
+             DCL        &NUSER       *CHAR 10
+             DCL        &NNUMBER     *CHAR  6
+             DCL        &FOLDER      *CHAR 10
+             DCL        &FLDLIB      *CHAR 10
+             DCL        &RCV_VAR     *CHAR 8192  /* 8388 */
+             DCL        &STR         *CHAR 255
+             DCL        &STRMSG      *CHAR 80
+             DCL        &CFRETN      *CHAR  8
+             DCL        &EXIST       *CHAR  1
+             DCL        &ARCRTN      *CHAR  1
+             DCL        &RTN409      *CHAR  1
+             DCL        &DSTCHK      *CHAR  1
+             DCL        &LDSTYN      *CHAR  1
+             DCL        &USR         *CHAR 10
+             DCL        &MSGID       *CHAR  7
+             DCL        &MSG         *CHAR 70
+             DCL        &SBYMSG      *CHAR  1     /* /7633 */
+             DCL        &CCNTR       *CHAR  5
+             DCL        &CNTR        *DEC   5
+             DCL        &NYMD        *DEC   9
+             DCL        &YMD         *CHAR  8
+             DCL        &TIME        *CHAR  6
+             DCL        &TYPE        *CHAR  1
+             DCL        &RUNPTYNO    *DEC   2
+             DCL        &RUNPTY      *CHAR  2
+             DCL        &SYSPAK      *CHAR  1
+             DCL        &OPTCFG      *CHAR  1
+             DCL        &JOBPTY      *CHAR  2
+             DCL        &MSGSEV      *CHAR  5
+             DCL        &APFCFG      *CHAR  1
+             DCL        &VARLPI      *CHAR   1
+             DCL        &OFCVIS      *CHAR   1
+             DCL        &DBLBYT      *CHAR   4
+             DCL        &PTRTYP      *CHAR  10
+
+             DCL        &ERR         *CHAR 256
+             DCL        &RTNC        *CHAR   1
+
+             DCL        &REPIND      *CHAR  10
+             DCL        &APFNAM      *CHAR  10
+
+             DCL        &MFILNA      *CHAR  10
+             DCL        &MJOBNA      *CHAR  10
+             DCL        &MPGMOP      *CHAR  10
+             DCL        &MUSRNA      *CHAR  10
+             DCL        &MUSRDT      *CHAR  10
+
+             DCL        &RFILNA      *CHAR  10
+             DCL        &RJOBNA      *CHAR  10
+             DCL        &RPGMOP      *CHAR  10
+             DCL        &RUSRNA      *CHAR  10
+             DCL        &RUSRDT      *CHAR  10
+
+             DCL        &RPTNAM      *CHAR  10        /*  Big 5
+             DCL        &JOBNAM      *CHAR  10
+             DCL        &PGMOPF      *CHAR  10
+             DCL        &USRNAM      *CHAR  10
+             DCL        &USRDTA      *CHAR  10
+
+             DCL        &CLRRPT      *CHAR   1        /*   SysDft
+             DCL        &CLRJOB      *CHAR   1        /*   exclude
+             DCL        &CLRPGM      *CHAR   1        /* Big 5 field
+             DCL        &CLRUSR      *CHAR   1        /*    Y/N
+             DCL        &CLRDTA      *CHAR   1
+
+             DCL        &AJOBNA      *CHAR  10
+             DCL        &AUSRNA      *CHAR  10
+             DCL        &AJOBNU      *CHAR   6
+             DCL        &AOUTQ       *CHAR  10
+             DCL        &AOUTQL      *CHAR  10
+
+             DCL        &INQMSGRPY   *CHAR  10
+             DCL        &CLCMD       *CHAR 255
+             DCL        &MINUSONE    *DEC   10  VALUE(-1)
+
+             DCL        &USER        *CHAR  10
+             DCL        &AOPT        *CHAR  1    /* MAG402A SPLF opt
+
+             DCL        &DO36        *CHAR   1
+
+             DCL        &PGDFN       *CHAR  10
+             DCL        &PGDFNL      *CHAR  10
+
+             DCL        &ASCIITYPE   *CHAR  10
+
+             DCL        &RTYPID      *CHAR  10
+
+             DCL        VAR(&ERRQ) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&ERRQLIB) TYPE(*CHAR) LEN(10)
+
+/*9388*/     IF         COND(%BIN(&CSPLNBR) *GT 0) THEN(CHGVAR +
+                          VAR(&SPLNBR) VALUE(%BIN(&CSPLNBR)))
+/*9388*/     IF         COND(%BIN(&CSPLNBR) *EQ -1) THEN(CHGVAR +
+                          VAR(&SPLNBR) VALUE('*LAST'))
+/*9388*/     IF         COND(%BIN(&CSPLNBR) *EQ 0) THEN(CHGVAR +
+                          VAR(&SPLNBR) VALUE('*ONLY'))
+
+/* ----- -----------------------------------------------------------
+   &MSGQ indicates where progress/error messages are to be sent:
+   -----         S = SpySystem MsgQ (named in SysDft 33-52)
+                        Used for Multi-report archiving where caller
+                        calls Mag402 many times during the job.
+                 U = User's MsgQ    (manually submitted job)
+             blank = No MsgQ - Send to screen format only
+   -------
+   &CALLER refers to the process that called Mag402:
+   ------- AUTOARC = The Auto Archiver (Mag102)
+           MANLARC = Interactive archiving  (Mag201, WrkInd, WrkR...
+           COMMAND = The Archiving command (ArcSplfSpy by Mag401)
+ -------------------------------------------------------------------
+
+/* * * * * * * * * * * * * * * */
+  /*  CALL SPYREAL/STOPME */
+/* * * * * * * * * * * * * * * */
+
+/* Set MSQ and CALLER parms */
+             IF         (&MSGQ *EQ ' ')   CHGVAR  &CALLER  'MANLARC'
+             IF         (&MSGQ *EQ 'S')   CHGVAR  &CALLER  'AUTOARC'
+             IF         (&MSGQ *EQ 'C')   DO
+             CHGVAR     &CALLER  'COMMAND'    /* Called by command *
+             CHGVAR     &MSGQ    'S'          /* Msgs to SpySys MsgQ
+             ENDDO
+
+/* create/clear the HashDtaAra                          */
+             CHKOBJ     OBJ(QTEMP/HASHDTAARA) OBJTYPE(*DTAARA)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+             CRTDTAARA  DTAARA(QTEMP/HASHDTAARA) TYPE(*CHAR) LEN(32)
+             ENDDO
+
+             CHGDTAARA  DTAARA(QTEMP/HASHDTAARA) VALUE(' ')
+
+
+/* If AutoArchiver, mark SysDft that Archiver is running */
+             IF         (&CALLER *EQ 'AUTOARC') (CHGDTAARA +
+                          (SYSDFT (569 1)) VALUE('Y'))
+
+             RTVJOBA    USER(&USER)
+             IF         (&RTN *EQ 'N') CHGVAR     &AOPT &RTN
+             CHGVAR     &RTN  '1'        /* Assume Error */
+             RTVUSRPRF  USRPRF(*CURRENT) RTNUSRPRF(&USR)
+             RTVJOBA    TYPE(&TYPE) RUNPTY(&RUNPTYNO) /* Interactive
+                          = 1 */
+             CHGVAR     &RUNPTY  &RUNPTYNO
+
+/* If running in batch, set the archiver run priority */
+             IF         (&TYPE *EQ '0')   DO
+               CALL       PGM(MAG402MP) PARM(&MONID &JOBPTY)
+               CHGVAR     &CLCMD  ('CHGJOB RUNPTY(' *TCAT +
+                            &JOBPTY *TCAT ')')
+               CALL       MAG1030  ('«' ' ' ' ' ' ' &CLCMD)
+             ENDDO
+
+/* Init MAG402 Error Returning DataArea */
+             DLTDTAARA  (QTEMP/MAG402)
+             MONMSG     MSGID(CPF0000) EXEC(RCVMSG MSGTYPE(*LAST))
+             CRTDTAARA  (QTEMP/MAG402) TYPE(*CHAR) LEN(256) +
+                          VALUE('ARC0001') TEXT('ArcSplfSpy  +
+                          Error Capturing DataArea')
+/* Init vars */
+             CHGVAR     &FJOB  ' '
+             IF         (%SST(&JOB 21 6) *NE '      ') +
+                          CHGVAR &FJOB  (%SST(&JOB 21 +
+                          6) *TCAT '/')
+             IF         (%SST(&JOB 11 10) *NE '          ') +
+                          CHGVAR &FJOB  (&FJOB *TCAT +
+                          (%SST(&JOB 11 10) *TCAT '/'))
+             IF         (%SST(&JOB  1 10) *NE '          ') +
+                          CHGVAR &FJOB  (&FJOB *TCAT +
+                          %SST(&JOB 1 10))
+
+             RTVDTAARA  (SYSDFT (93 5)) RTNVAR(&MSGSEV)
+
+             RTVDTAARA  DTAARA(SYSDFT (471 10)) RTNVAR(&ERRQ) +
+                          /*T1980J*/
+             RTVDTAARA  DTAARA(SYSDFT (481 10)) +
+                          RTNVAR(&ERRQLIB) /*T1980J*/
+
+/* Working on File */
+             IF         (&MSGSEV *EQ ' ' *OR &MSGSEV *EQ '*ALL' +
+                          *OR &MSGSEV *EQ '*STRT')   DO
+               RTVMSG     ERR1444 PSCON MSGDTA(&FILE *CAT +
+                            &FJOB *CAT &CSPLNBR) MSG(&STR)
+               CHGVAR     &STRMSG  &STR
+               IF         (&MSGQ *EQ 'S')  CALL LOGMSGQ &STRMSG
+             ENDDO
+
+             RTVDTAARA  (SYSDFT (86 1)) RTNVAR(&SYSPAK)
+             IF         (&SYSPAK *EQ 'Y' *OR &SYSPAK *EQ 'N') +
+                          CHGVAR  &COMPRESS  &SYSPAK
+             IF         (&COMPRESS *EQ ' ') CHGVAR &COMPRESS 'N'
+
+             RTVDTAARA  (SYSDFT (99 1)) RTNVAR(&OPTCFG)
+             IF         (&OPTCFG *EQ 'N')  DO
+               CHGVAR     &OPTICAL '*NO '
+               CHGVAR     &DRIVE   ' '
+               CHGVAR     &PATH    ' '
+             ENDDO
+
+             CHGVAR     &ARCRTN  '1'
+             IF         (&TYPE *EQ '1') CHGVAR &ARCRTN 'M'
+
+/* Folder to use */
+             IF         (&FLDR *EQ '*DFT')   DO
+               RTVDTAARA  (SYSDFT (53 10)) RTNVAR(&FOLDER)
+               RTVDTAARA  (SYSDFT (63 10)) RTNVAR(&FLDLIB)
+               CHGVAR     &FLDR  (&FOLDER *TCAT &FLDLIB)
+             ENDDO
+             ELSE       DO                         /* User Specified
+               CHGVAR     &FOLDER  %SST(&FLDR  1 10)
+               CHGVAR     &FLDLIB  %SST(&FLDR 11 10)
+             ENDDO
+
+/* Create folder if non-existent */
+             CALL       CRTFLD   (&FOLDER &FLDLIB &CFRETN)
+
+/* Return if CRTFLD fails */
+             IF         (&CFRETN *EQ '1')   DO
+             RTVMSG     ERR130B PSCON  MSG(&STR)
+             CHGVAR     &STRMSG  &STR
+             IF         (&MSGQ *EQ 'U') SNDMSG &STR &USR
+             IF         (&MSGQ *EQ 'S') CALL LOGMSGQ &STRMSG
+             IF         (&CALLER *EQ 'AUTOARC') THEN(CHGDTAARA +
+                          (SYSDFT (569 1)) VALUE(' '))
+             IF         (&TYPE *EQ '0')   DO
+             CHGVAR     &CLCMD  ('CHGJOB RUNPTY(' *TCAT +
+                          &RUNPTY *TCAT ')')
+             CALL       MAG1030  ('«' ' ' ' ' ' ' &CLCMD)
+             ENDDO
+             CHGDTAARA  (QTEMP/MAG402 (8 249)) VALUE(&STR)
+             RETURN
+             ENDDO
+
+             CALL       MAG1045  (&FOLDER &FLDLIB &EXIST)
+
+/* Return if folder is off-line */
+             IF         (&EXIST *EQ '1')   DO
+               RTVMSG     ERR1445 PSCON MSGDTA(&FOLDER +
+                            *CAT &FLDLIB) MSG(&STR)
+               CHGVAR     &STRMSG  &STR
+               IF         (&MSGQ *EQ 'U') SNDMSG &STR &USR
+               IF         (&MSGQ *EQ 'S') CALL LOGMSGQ &STRMSG
+               IF         (&CALLER *EQ 'AUTOARC') THEN(CHGDTAARA +
+                            (SYSDFT (569 1)) VALUE(' '))
+               IF         (&TYPE *EQ '0')   DO
+                 CHGVAR     &CLCMD  ('CHGJOB RUNPTY(' *TCAT +
+                              &RUNPTY *TCAT ')')
+                 CALL       MAG1030  ('«' ' ' ' ' ' ' &CLCMD)
+               ENDDO
+               CHGDTAARA  (QTEMP/MAG402 (8 249)) VALUE(&STR)
+               RETURN
+             ENDDO
+
+/* Aloc Folder */
+             IF         (&OPTICAL *EQ '*NO')   DO
+             CHGVAR     &STR  ('AlcObj Obj((' *TCAT &FLDLIB +
+                          *TCAT '/' *TCAT &FOLDER *BCAT '*File +
+                          *ExclRd)) Wait(0)')
+             CALL       QCMDEXC  (&STR 255)
+
+/* Return if unable to alloc */
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(DO)
+             RCVMSG     MSGTYPE(*LAST)
+             RTVMSG     ERR1446 PSCON MSGDTA(&FOLDER +
+                          *CAT &FLDLIB) MSG(&STR)
+             CHGVAR     &STRMSG  &STR
+
+             IF         (&MSGQ *EQ 'U') SNDMSG &STR &USR
+             IF         (&MSGQ *EQ 'S') CALL LOGMSGQ &STRMSG
+             IF         (&CALLER *EQ 'AUTOARC') CHGDTAARA +
+                          (SYSDFT (569 1)) ' '
+
+             IF         (&TYPE *EQ '0')   DO
+               CHGVAR     &CLCMD ('CHGJOB RUNPTY(' *TCAT +
+                            &RUNPTY *TCAT ')')
+               CALL       MAG1030  ('«' ' ' ' ' ' ' &CLCMD)
+             ENDDO
+
+             CHGDTAARA  (QTEMP/MAG402 (8 249)) VALUE(&STR)
+             RETURN
+             ENDDO
+             ENDDO
+
+/* Load RCV_VAR with spool file attributes */
+             CALL       MAG403  (&EXIST &RCV_VAR &JOB &FILE +
+                          &ASPLNBR &ACTUALSPLN &FILNUM)
+             CHGVAR     &ACTUALSPLC  &ACTUALSPLN
+             CHGVAR     &CSPLNBR     &ACTUALSPLN
+             CHGVAR     VAR(&DATFO) VALUE(%SST(&RCV_VAR 211 7))
+/* fail */
+             IF         (&EXIST *EQ '1')   DO
+               RTVMSG     ERR1447 PSCON MSGDTA(&FILE *CAT +
+                            &FJOB *CAT &CSPLNBR) MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+
+/* Skip *Closed & *Open spool files */
+             IF         (%SST(&RCV_VAR 109 10) *EQ '*CLOSED')  DO
+               RTVMSG     ERR1448 PSCON MSGDTA(&FILE *CAT +
+                            &FJOB *CAT &CSPLNBR) MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+
+             /* /7633 - Added "File open" attr check (pos 1019).
+              *         Also added *MESSAGE check for consistency
+              *         with MAG1402
+              */
+             RTVDTAARA  DTAARA(ENVDFT (841 1)) RTNVAR(&SBYMSG)
+             IF         (%SST(&RCV_VAR 1019 1) *EQ 'Y' *OR +
+                        (%SST(&RCV_VAR 109 10) *EQ '*MESSAGE' *AND +
+                          &SBYMSG *EQ 'Y')) DO
+               RTVMSG     ERR1449 PSCON MSGDTA(&FILE *CAT +
+                            &FJOB *CAT &CSPLNBR) MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+
+             RTVDTAARA  (SYSDFT (134 1)) RTNVAR(&APFCFG)
+
+/* Parse Big5 fields from RCV_VAR */
+/* Blank Big5 per SysDft "Report Key Exclusions" */
+             CHGVAR     &MFILNA  %SST(&RCV_VAR  75 10)
+             CHGVAR     &MJOBNA  %SST(&RCV_VAR  49 10)
+             CHGVAR     &MPGMOP  %SST(&RCV_VAR 244 10)
+             CHGVAR     &MUSRNA  %SST(&RCV_VAR  59 10)
+             CHGVAR     &MUSRDT  %SST(&RCV_VAR  99 10)
+             RTVDTAARA  (SYSDFT (252 1)) RTNVAR(&CLRRPT)
+             RTVDTAARA  (SYSDFT (253 1)) RTNVAR(&CLRJOB)
+             RTVDTAARA  (SYSDFT (254 1)) RTNVAR(&CLRPGM)
+             RTVDTAARA  (SYSDFT (255 1)) RTNVAR(&CLRUSR)
+             RTVDTAARA  (SYSDFT (256 1)) RTNVAR(&CLRDTA)
+             IF         (&CLRRPT *EQ 'Y') CHGVAR &MFILNA ' '
+             IF         (&CLRJOB *EQ 'Y') CHGVAR &MJOBNA ' '
+             IF         (&CLRPGM *EQ 'Y') CHGVAR &MPGMOP ' '
+             IF         (&CLRUSR *EQ 'Y') CHGVAR &MUSRNA ' '
+             IF         (&CLRDTA *EQ 'Y') CHGVAR &MUSRDT ' '
+
+/* Parse &A... fields from RCV_VAR:
+                        Job name  User name  Job#  OutQ  OutQ libr
+
+             CHGVAR     &AJOBNA  %SST(&RCV_VAR 49 10)
+             CHGVAR     &AUSRNA  %SST(&RCV_VAR 59 10)
+             CHGVAR     &AJOBNU  %SST(&RCV_VAR 69  6)
+             CHGVAR     &AOUTQ   %SST(&RCV_VAR 191 10)
+             CHGVAR     &AOUTQL  %SST(&RCV_VAR 201 10)
+
+             IF         (&CALLER *EQ 'AUTOARC')   DO
+               CALL       MAG402CHK  (&RTNC &MFILNA &MJOBNA +
+                            &MPGMOP &MUSRNA &MUSRDT &AJOBNA &AUSRNA
+                            &AJOBNU &AOUTQ &AOUTQL &RCV_VAR +
+                            &ACTUALSPLN &FILNUM)
+
+               IF         (&RTNC *EQ 'Y')   DO
+                 CHGVAR     &ACTUALSPLC &ACTUALSPLN
+                 CHGVAR     &CSPLNBR    &ACTUALSPLN
+               ENDDO
+
+             ENDDO
+
+             ELSE       CHGVAR  &RTNC 'N'
+
+/* Composite Job active */
+             IF         (&RTNC *EQ 'Q')   DO
+               RTVMSG     ERR1450 PSCON MSGDTA(&FILE *CAT +
+                            &FJOB *CAT &CSPLNBR) MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+
+             CHGVAR     &DBLBYT  %SST(&RCV_VAR  449  4)
+             CHGVAR     &OFCVIS  %SST(&RCV_VAR 1055  1)
+             CHGVAR     &VARLPI  %SST(&RCV_VAR 1041  1)
+             CHGVAR     &PTRTYP  %SST(&RCV_VAR  327 10)
+
+/* If not an APF installation and not a composite report check attr
+             IF         (&APFCFG *NE 'Y' *AND +
+                         &APFCFG *NE 'P' *AND &RTNC *NE 'Y')  DO
+/* Ptr Dev Type   */     IF ((%SST(&RCV_VAR 327 10) *NE '*SCS') *OR
+/* Variable CPI        */    (%SST(&RCV_VAR 1024 1) *EQ 'Y')    *OR
+/* Transparency        */    (%SST(&RCV_VAR 1025 1) *EQ 'Y')    *OR
+/* 3812 SCS            */    (%SST(&RCV_VAR 1030 1) *EQ 'Y')    *OR
+/* Field Outlining     */    (%SST(&RCV_VAR 1035 1) *EQ 'Y')    *OR
+/* Bar Codes           */    (%SST(&RCV_VAR 1037 1) *EQ 'Y')    *OR
+/* Color               */    (%SST(&RCV_VAR 1038 1) *EQ 'Y')    *OR
+/* Variable Drawer chg */    (%SST(&RCV_VAR 1039 1) *EQ 'Y')    *OR
+/* Variable Char Id    */    (%SST(&RCV_VAR 1040 1) *EQ 'Y')    *OR
+/* Variable LPI        */    (&VARLPI               *EQ 'Y')    *OR
+/* Variable Font       */    (%SST(&RCV_VAR 1042 1) *EQ 'Y')    *OR
+/* Page Rotate         */    (%SST(&RCV_VAR 1044 1) *EQ 'Y')    *OR
+/* SubScript           */    (%SST(&RCV_VAR 1045 1) *EQ 'Y')    *OR
+/* SuperScript         */    (%SST(&RCV_VAR 1046 1) *EQ 'Y')    *OR
+/* Graphics            */    (%SST(&RCV_VAR 1051 1) *EQ 'Y')    *OR
+/* Unrecognizable data */    (%SST(&RCV_VAR 1052 1) *EQ 'Y')    *OR
+/* Ascii Transparency  */    (%SST(&RCV_VAR 1053 1) *EQ 'Y')    *OR
+/* IPDS Transparent    */    (%SST(&RCV_VAR 1054 1) *EQ 'Y')) THEN(D
+
+             RTVMSG     ERR1451 PSCON  MSGDTA(&FILE *CAT +
+                          &FJOB *CAT &CSPLNBR) MSG(&STR)
+             GOTO       FINIMSG
+             ENDDO
+             ENDDO
+
+             CALL       MAG1042  (&EXIST &FOLDER &FLDLIB '0' &RCV_VA
+
+/* Report already exists in the folder */
+             IF         (&EXIST *EQ '1')   DO
+               RTVMSG     ERR1452 PSCON MSGDTA(&FILE *CAT +
+                            &FJOB *CAT &CSPLNBR) MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+
+/* Create QTEMP/DISP */
+             CHGDTAARA  (QTEMP/MAG402 (1 256)) VALUE('ARC0002')
+             CALL       PGM(MACRDISP) PARM('*ATTR     ' '*NOMAX    '
+                          &RCV_VAR)
+
+             IF         (&CALLER *EQ 'AUTOARC') CALL MAG402C +
+                          (&RTNC &MFILNA &MJOBNA &MPGMOP +
+                          &MUSRNA &MUSRDT &AJOBNA &AUSRNA &AJOBNU +
+                          &AOUTQ &AOUTQL &RCV_VAR)
+             ELSE       CHGVAR  &RTNC 'N'
+
+/* Composite Report already exists in a folder */
+             IF         (&RTNC *EQ 'E')   DO
+               RTVMSG     ERR1453 PSCON MSGDTA(&FILE *CAT +
+                            &FJOB *CAT &CSPLNBR) MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+
+             CHGVAR     &REPIND  ' '
+             CHGVAR     &APFNAM  ' '
+             CHGVAR     &APFILE  ' '
+
+             IF         (&RTNC *NE 'Y')   DO
+
+             IF         (&PTRTYP *EQ '*AFPDS')  DO
+               CHGVAR     &MSGID ' '
+               CALL       MAGSPLF  (&MSGID &MSG &AJOBNA +
+                            &AUSRNA &AJOBNU &FILE &ACTUALSPLN &FOLDE
+                            &FLDLIB &REPIND &APFNAM &MINUSONE ' ' +
+                            &OPTICAL &DRIVE &PATH &APFILE)
+               GOTO       AFPDS
+             ENDDO
+
+             IF         (&PTRTYP *EQ '*USERASCII')  DO
+/* TRY TO FIGURE OUT WHAT ASCII WE USE */
+
+/* Parse Big5 fields from RCV_VAR */
+
+             CHGVAR     &RFILNA  %SST(&RCV_VAR  75 10)
+             CHGVAR     &RJOBNA  %SST(&RCV_VAR  49 10)
+             CHGVAR     &RPGMOP  %SST(&RCV_VAR 244 10)
+             CHGVAR     &RUSRNA  %SST(&RCV_VAR  59 10)
+             CHGVAR     &RUSRDT  %SST(&RCV_VAR  99 10)
+             RTVDTAARA  (SYSDFT (252 1)) RTNVAR(&CLRRPT)
+             RTVDTAARA  (SYSDFT (253 1)) RTNVAR(&CLRJOB)
+             RTVDTAARA  (SYSDFT (254 1)) RTNVAR(&CLRPGM)
+             RTVDTAARA  (SYSDFT (255 1)) RTNVAR(&CLRUSR)
+             RTVDTAARA  (SYSDFT (256 1)) RTNVAR(&CLRDTA)
+             IF         (&CLRRPT *EQ 'Y') CHGVAR &RFILNA ' '
+             IF         (&CLRJOB *EQ 'Y') CHGVAR &RJOBNA ' '
+             IF         (&CLRPGM *EQ 'Y') CHGVAR &RPGMOP ' '
+             IF         (&CLRUSR *EQ 'Y') CHGVAR &RUSRNA ' '
+             IF         (&CLRDTA *EQ 'Y') CHGVAR &RUSRDT ' '
+
+/* GET RTYPID FROM BIG 5   */
+             CALL       PGM(GETRTYPID) PARM(&RFILNA &RJOBNA &RPGMOP
+                              &RUSRNA &RUSRDT &RTYPID)
+
+/* TRY TO FIGURE OUT WHAT ASCII WE USE */
+             CALL       PGM(SPYASCI) PARM(&AJOBNA &AUSRNA &AJOBNU +
+                          &FILE &ACTUALSPLN &ASCIITYPE &RTYPID)
+             MONMSG     MSGID(CPF0000)
+
+               CHGVAR     &MSGID ' '
+
+             IF         COND(&ASCIITYPE *EQ '*PCL5') THEN(DO)
+             CALL       PGM(MAGPCL5) PARM(&MSGID &MSG &AJOBNA +
+                          &AUSRNA &AJOBNU &FILE &ACTUALSPLN &FOLDER
+                          &FLDLIB &REPIND &APFNAM &MINUSONE ' ' +
+                          &OPTICAL &DRIVE &PATH &APFILE)
+             ENDDO
+             ELSE       CMD(DO)
+             CALL       PGM(MAGASCI) PARM(&MSGID &MSG &AJOBNA +
+                          &AUSRNA &AJOBNU &FILE &ACTUALSPLN &FOLDER
+                          &FLDLIB &REPIND &APFNAM &MINUSONE ' ' +
+                          &OPTICAL &DRIVE &PATH &APFILE)
+             ENDDO
+             ENDDO
+
+             ELSE       DO      /*  &RTNC='Y'  */
+
+/* If RptTyp=*LINE and PagDfn NE blank chg SplFilAtr to PAGDFN(*NONE
+/* and change back after the CpySplF.
+             IF         (%SST(&RCV_VAR 327 10) *EQ '*LINE') DO
+             IF         (%SST(&RCV_VAR 819 10) *NE ' ') DO
+             CALL       PGM(MAG1073) PARM(&FILE &ACTUALSPLN &AJOBNA
+                          &AUSRNA &AJOBNU &STR)
+             IF         COND(&STR *NE ' ') THEN(GOTO CMDLBL(FINIMSG)
+             ELSE       CMD(GOTO CMDLBL(AFPDS))
+             ENDDO
+             ENDDO
+
+/* If Office Vision or Variable LPI, seton flag &DO36 for S36FMT  */
+             IF         (&OFCVIS *EQ 'Y'  *OR  &VARLPI *EQ 'Y') +
+                           CHGVAR &DO36 '1'
+
+/* Not Office Vision, not var LPI: CpySplF *FCFC  */
+             IF         (&DO36 *NE '1') +
+             CHGVAR     &STR  ('CPYSPLF FILE(' *TCAT &FILE +
+                          *TCAT ') TOFILE(QTEMP/DISP) JOB(' *TCAT +
+                          &FJOB *TCAT ') CTLCHAR(*FCFC) SPLNBR(' +
+                          *TCAT &SPLNBR *TCAT ')')
+
+/* Office Vision or Variable LPI: CpySplF *S36FMT  */
+             ELSE       +
+             CHGVAR     &STR  ('CPYSPLF FILE(' *TCAT &FILE +
+                          *TCAT ') TOFILE(QTEMP/DISP) JOB(' *TCAT +
+                          &FJOB *TCAT ') CTLCHAR(*S36FMT) SPLNBR(' +
+                          *TCAT &SPLNBR *TCAT ')')
+
+             RTVJOBA    INQMSGRPY(&INQMSGRPY)
+             CHGJOB     INQMSGRPY(*DFT)
+             CALL       MAG1041  (&STR &MSGID &MSG)       /* CpySplF
+             CHGJOB     INQMSGRPY(&INQMSGRPY)
+             ENDDO
+
+/* Convert FMTS36 CPYSPLF format to *FCFC CPYSPLF format   */
+
+             IF         (&DO36 *EQ '1')  CALL MAG1058O
+
+/* CpySplF error */
+AFPDS:       IF         (&MSGID *NE '       ')   DO
+/*8448*/     IF         COND(&MSG *EQ ' ') THEN(DO)
+             RTVMSG     MSGID(&MSGID) MSGF(PSCON) MSG(&MSG)
+             ENDDO
+               CHGVAR     &STR    (&MSGID *BCAT '-' *BCAT &MSG)
+               CHGVAR     &STRMSG  &STR
+               IF         (&MSGQ *EQ 'U') SNDMSG &STR &USR
+               IF         (&MSGQ *EQ 'S') CALL LOGMSGQ &STRMSG
+               RTVMSG     ERR1454 PSCON MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+             ENDDO
+
+/* If RptTyp=*LINE and PagDfn NE blank reset orig PagDfn
+             IF         (%SST(&RCV_VAR 327 10) *EQ '*LINE' *AND  +
+                         %SST(&RCV_VAR 819 10) *NE ' ')      DO
+               CHGVAR     &PGDFN  %SST(&RCV_VAR  819 10)
+               CHGVAR     &PGDFNL %SST(&RCV_VAR  829 10)
+               CHGVAR     &STR  ('CHGSPLFA FILE(' *TCAT &FILE +
+                        *TCAT ') JOB(' *TCAT &FJOB *TCAT ') SPLNBR('
+                        *TCAT &SPLNBR *TCAT ') ALIGN(*SAME) PAGDFN('
+                        *TCAT &PGDFNL *TCAT '/' *TCAT &PGDFN
+                          *TCAT ')')
+               CALL       MAG1041  (&STR &MSGID &MSG)    /* ChgSplFA
+             ENDDO
+
+/* If this is a Splitter type Report                       */
+/* recreate the DISP file sorted by report.                */
+             CALL      MAG409 (&RCV_VAR &RTN409)
+             IF         (&RTN409 *EQ '1')   DO
+               RTVMSG     ERR1457 PSCON MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+
+/* Skip if bad referential integrity of distribution files */
+/* "File(&1) Job(&2) SplNbr(&3) skipped. See previous msg" */
+             CHGVAR     &DSTCHK '0'
+             RTVDTAARA  (SYSDFT (220 1)) RTNVAR(&LDSTYN)
+             IF         (&LDSTYN *EQ 'Y') CALL MAG1054 +
+                          (&FOLDER &FLDLIB &RCV_VAR &DSTCHK)
+             IF         (&DSTCHK *EQ '1')   DO
+               CHGDTAARA  (QTEMP/MAG402 (1 256)) VALUE('ARC0003')
+               RTVMSG     ERR1455 PSCON MSGDTA(&FILE *CAT +
+                            &FJOB *CAT &CSPLNBR) MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+
+             DLTF       QTEMP/INDXTICK
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(RCVMSG +
+                          MSGTYPE(*LAST))
+
+             CHGDTAARA  (QTEMP/MAG402 (1 256)) VALUE('ARC0004')
+
+/*----------+
+   Archive  +
+  ----------*/
+             IF         (&OPTICAL *EQ '*YES') CHGVAR &OPTYN 'Y'
+             ELSE                             CHGVAR &OPTYN 'N'
+
+             CALL       PGM(MAG1043) PARM(&FOLDER &FLDLIB &RCV_VAR +
+                          &COMPRESS &OPTYN &DRIVE &PATH &RPTNAM +
+                          &JOBNAM &PGMOPF &USRNAM &USRDTA &ARCRTN +
+                          &RTNC &REPIND &APFNAM &APFILE &ASCIITYPE)
+
+             IF         (&ARCRTN *EQ '1')   DO
+               IF         (&OPTYN  *EQ 'Y') CHGVAR &MSGID 'ERR1456'
+               ELSE                         CHGVAR &MSGID 'ERR1457'
+               RTVMSG     &MSGID PSCON MSG(&STR)
+               GOTO       FINIMSG
+             ENDDO
+
+             CHGVAR     &NJOB    &JOBNAM
+             CHGVAR     &NUSER   &USRNAM
+             CHGVAR     &NNUMBER %SST(&JOB 21 6)
+
+/*---------------+
+   Distribution  +
+ *---------------*/
+
+/*   Report Splitter is active if if INDXTICK exists: */
+             CHKOBJ     OBJ(QTEMP/INDXTICK) OBJTYPE(*FILE)
+             MONMSG     CPF0000  EXEC(GOTO NOTICKDST)
+             OVRDBF     TICKLER  QTEMP/INDXTICK
+             CALL       MAG408
+             GOTO       ENDDIST
+
+ NOTICKDST:  IF         COND(&LDSTYN *EQ 'Y') THEN(CALL PGM(MAG1056)
+                          PARM(&FOLDER &FLDLIB &RPTNAM &JOBNAM +
+                          &PGMOPF &USRNAM &USRDTA &NNUMBER &DATFO +
+                          &FILNUM))
+ENDDIST:
+
+/*-------------------------+
+   Std Indices & SpyLinks  +
+ *-------------------------*/
+
+             IF         (&IND *NE 'Y')  GOTO  ENDINDEX
+
+             CHGDTAARA  (QTEMP/MAG402 (1 256)) VALUE('ARC0005')
+
+/* Splitter if INDXTICK exists:
+      Call Mag406, which calls ArcNdxSpy2 repeatedly
+      Call Mag407, which calls Mag404     repeatedly
+                   to build from multiple archived rpts
+
+             CHKOBJ     OBJ(QTEMP/INDXTICK) OBJTYPE(*FILE)
+             MONMSG     CPF0000  EXEC(GOTO NOTICKLER)
+             OVRDBF     TICKLER  QTEMP/INDXTICK
+             CALL       MAG406
+             CHGDTAARA  (QTEMP/MAG402 (1 256)) VALUE('ARC0006')
+             CALL       MAG407
+             GOTO       ENDINDEX
+
+/* Std Indices */
+NOTICKLER:   RCVMSG     MSGTYPE(*LAST)
+             CHGVAR     &NEWJOB  (&NJOB *CAT &NUSER *CAT &NNUMBER)
+             CHGVAR &FLDR20 (&FOLDER *CAT &FLDLIB)
+
+             CALL       ARCNDXSPY2  (' ' &RPTNAM &NEWJOB &DATFO &FIL
+                          &FLDR20 &OPTICAL &DRIVE &PATH &MSGQ Y)
+             RTVDTAARA  (QTEMP/MAG402 (1 256)) RTNVAR(&ERR)
+             IF         (&ERR *NE ' ')  DO
+               CHGVAR     VAR(&STR) VALUE(%SST(&ERR 8 249))
+               GOTO       FINIMSG
+             ENDDO
+
+/* SpyLinks */
+             CHGDTAARA  (QTEMP/MAG402 (1 256)) VALUE('ARC0006')
+             CALL       PGM(MAG404) PARM(&FOLDER &FLDLIB &RPTNAM +
+                          &NJOB &NUSER &NNUMBER &DATFO &FILNUM +
+                          &MSGQ '*USRPRF' '          ')
+             RTVDTAARA  (QTEMP/MAG402 (1 256)) RTNVAR(&ERR)
+             IF         (&ERR *NE ' ')  DO
+               CHGVAR     VAR(&STR) VALUE(%SST(&ERR 8 249))
+               GOTO       FINIMSG
+             ENDDO
+ENDINDEX:
+             CHGDTAARA  (QTEMP/MAG402 (1 256)) VALUE('ARC0007')
+
+/* If &RTNC=Y, call Mag402E */
+             IF         (&RTNC *EQ 'Y')   DO
+               CALL       MAG402E  (&DLTFAFT &PURGE_HOLD +
+                            &REMOV_SAVE &HOLD_STAT &MOVE_QUEUE +
+                          &MOVE_LIB &EXIT_PGM &EXIT_LIB &RCV_VAR &AO
+               GOTO COMP
+             ENDDO
+
+/* Delete spool file after */
+/* Delete if on hold */
+/* Remove if saved */
+/* Hold status change:  Put on hold or release */
+/* Move to queue */
+             IF         (&DLTFAFT    *EQ '*YES' *OR +
+                         &PURGE_HOLD *EQ 'Y'    *OR +
+                         &REMOV_SAVE *EQ 'Y'    *OR +
+                         &HOLD_STAT  *NE ' '    *OR +
+                         &MOVE_QUEUE *NE ' ')       +
+                         CALL MAG402A  (&AOPT &FILE &JOB &CSPLNBR +
+                            &DLTFAFT &PURGE_HOLD &REMOV_SAVE +
+                            &HOLD_STAT &MOVE_QUEUE &MOVE_LIB)
+
+/* User Exit Program */
+EXITPGM:     IF         (&EXIT_PGM *NE ' ')   DO
+               CHGVAR     &STR  ('CALL' *BCAT &EXIT_LIB *TCAT +
+                            '/' *TCAT &EXIT_PGM)
+               CALL       MAG1041  (&STR &MSGID &MSG)
+             ENDDO
+
+/* If release_security *EQ 'Y' */
+/* Update data area with current spool file data */
+COMP:        IF         (&CALLER *EQ 'AUTOARC')  DO
+               RTVDTAARA  (ENVDFT (421  5)) RTNVAR(&CCNTR)
+               CHGVAR     &CNTR   &CCNTR
+               CHGVAR     &CNTR  (&CNTR + 1 )
+               CHGVAR     &CCNTR  &CNTR
+               CHGDTAARA  (ENVDFT (421  5)) VALUE(&CCNTR)
+               RTVDTAARA  (ENVDFT (426  5)) RTNVAR(&CCNTR)
+               CHGVAR     &CNTR   &CCNTR
+               CHGVAR     &CNTR  (&CNTR + 1 )
+               CHGVAR     &CCNTR  &CNTR
+               CHGDTAARA  (ENVDFT (426  5)) VALUE(&CCNTR)
+               CHGDTAARA  (ENVDFT (436 10)) VALUE(&FOLDER)
+               CHGDTAARA  (ENVDFT (446 10)) VALUE(&FLDLIB)
+               CHGDTAARA  (ENVDFT (456 10)) VALUE(&FILE)
+               CHGDTAARA  (ENVDFT (466 10)) VALUE(%SST(&RCV_VAR 49 1
+               CHGDTAARA  (ENVDFT (476 10)) VALUE(%SST(&RCV_VAR 59 1
+               CHGDTAARA  (ENVDFT (486  6)) VALUE(%SST(&RCV_VAR 69
+               CHGDTAARA  (ENVDFT (492  4)) VALUE(&ACTUALSPLC)
+               CHGDTAARA  (ENVDFT (496 10)) (%SST(&RCV_VAR 244 10))
+               CHGDTAARA  (ENVDFT (506 10)) (%SST(&RCV_VAR 254 10))
+
+               CALL MAG1047 (&NYMD &YMD)
+               CHGDTAARA  (ENVDFT (516  8)) VALUE(&YMD)
+               RTVSYSVAL  SYSVAL(QTIME) RTNVAR(&TIME)
+               CHGDTAARA  (ENVDFT (524  6)) VALUE(&TIME)
+               CHGDTAARA  (ENVDFT (530  1)) VALUE(%SST(&OPTICAL 2 1)
+               CHGDTAARA  (ENVDFT (531 12)) VALUE(&PATH)
+             ENDDO
+
+/* Successful Completion
+  "File &1 Job &2 SplNbr &3 added to Folder &4/&5"
+             CHGVAR     &RTN '0'
+             IF         (&AOPT *EQ '1')  CHGVAR &RTN &AOPT
+
+             IF         (&MSGSEV *EQ ' ' *OR &MSGSEV *EQ '*ALL' +
+                          *OR &MSGSEV *EQ '*END')             DO
+               RTVMSG     ERR1459 PSCON MSGDTA(&FILE *CAT +
+                            &FJOB *CAT &CSPLNBR *CAT &FLDLIB *CAT +
+                            &FOLDER) MSG(&STR)
+               CHGVAR     &STRMSG  &STR
+               IF         (&MSGQ *EQ 'S')  CALL LOGMSGQ &STRMSG
+             ENDDO
+
+             CHGDTAARA  (QTEMP/MAG402 (1 256)) VALUE(' ')
+             GOTO       OK
+
+/* Error exit */
+ FINIMSG:    CHGVAR     &STR (&STR *BCAT &FLDR *BCAT &FILE +
+                           *BCAT &REPIND)
+             CHGVAR     &STRMSG  &STR
+             IF         (&MSGQ *EQ 'U')  SNDMSG &STR &USR
+             IF         (&MSGQ *EQ 'S')  CALL LOGMSGQ &STRMSG
+             CHGDTAARA  (QTEMP/MAG402 (8 249)) VALUE(&STR)
+
+             IF         (&CALLER *EQ 'AUTOARC') THEN(DO)
+               RTVDTAARA  (ENVDFT (431 5)) RTNVAR(&CCNTR)
+               CHGVAR     &CNTR   &CCNTR
+               CHGVAR     &CNTR  (&CNTR + 1)
+               CHGVAR     &CCNTR  &CNTR
+               CHGDTAARA  (ENVDFT (431  5)) VALUE(&CCNTR)
+/* Begin T1980J - Move the spool file to the error outq */
+               IF         COND(&MSGID *EQ 'CPF3429') THEN(DO)
+                  CHKOBJ     OBJ(&ERRQLIB/&ERRQ) OBJTYPE(*OUTQ)
+                  MONMSG     MSGID(CPF0000) EXEC(GOTO OK)
+                  CHGVAR     VAR(&STR) VALUE('CHGSPLFA FILE(' +
+                               *TCAT &FILE *TCAT ') JOB(' +
+                               *TCAT &FJOB *TCAT ') SPLNBR(' +
+                               *TCAT &SPLNBR *TCAT ') OUTQ(' +
+                               *TCAT &ERRQLIB *TCAT '/' *TCAT +
+                               &ERRQ *TCAT ')')
+                  IF         COND(&MSGQ *EQ 'U') THEN(SNDMSG +
+                               &STR &USR)
+                  IF         COND(&MSGQ *EQ 'S') THEN(CALL +
+                               LOGMSGQ &STRMSG)
+               ENDDO
+/* End T1980J */
+             ENDDO
+
+/* Unlock folder */
+ OK:         IF         (&OPTICAL *EQ '*NO')   DO
+               CHGVAR     &STR  ('DlcObj Obj((' *TCAT &FLDLIB +
+                            *TCAT '/' *TCAT &FOLDER *BCAT '*File +
+                            *ExclRd))')
+               CALL       QCMDEXC  (&STR 255)
+             ENDDO
+
+             DLTF       QTEMP/INDXTICK
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(RCVMSG +
+                          MSGTYPE(*LAST))
+             DLTF       QTEMP/DISP
+             MONMSG     MSGID(CPF0000 MCH0000) EXEC(RCVMSG +
+                          MSGTYPE(*LAST))
+
+             IF         (&CALLER *EQ 'AUTOARC') CHGDTAARA +
+                          (SYSDFT (569 1)) VALUE(' ')
+
+             IF         (&TYPE *EQ '0')   DO
+               CHGVAR     &CLCMD  ('CHGJOB RUNPTY(' *TCAT +
+                            &RUNPTY *TCAT ')')
+               CALL       MAG1030  ('«' ' ' ' ' ' ' &CLCMD)
+             ENDDO
+
+ /* IF ARCHIVING WENT FINE, SEND COMPLETE MESSAGE   */
+             IF         (&REPIND *NE ' ') THEN(DO)
+             IF         (&CALLER *EQ 'MANLARC') THEN(DO)
+               SNDPGMMSG  MSGID(ARC0014) MSGF(PSCON) MSGDTA(&FILE *C
+                            &FJOB *CAT &CSPLNBR *CAT &REPIND) +
+                            TOPGMQ(*PRV) MSGTYPE(*COMP)
+             ENDDO
+             ELSE       DO
+               CHGDTAARA  (QTEMP/MAG402 (1 7)) VALUE('ARC0014')
+               CHGDTAARA  (QTEMP/MAG402 (8 249)) VALUE(&FILE +
+                            *CAT &FJOB *CAT &CSPLNBR *CAT &REPIND)
+             ENDDO
+             ENDDO
+             ENDPGM
+/*********************************************************************/
+/* ARCSTMFSPY                                                        */
+/*                                                                   */
+/* MOD  DATE      PGMR  DESCRIPTION                                  */
+/* 2567 10/10/00  JAM   Add library list entries.                    */
+/* 6480 04/17/02  GT    ARCSTMFSPY doesn't send escape msg on error  */
+/*********************************************************************/
+             PGM        PARM(&PATH &DLTAFT &DOCCLS &PMTVAL &VAL1 +
+                          &VAL2 &VAL3 &VAL4 &VAL5 &VAL6 &VAL7)
+
+             DCL        VAR(&PATH) TYPE(*CHAR) LEN(256)
+             DCL        VAR(&DLTAFT) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&DOCCLS) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PMTVAL) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&VAL1) TYPE(*CHAR) LEN(99)
+             DCL        VAR(&VAL2) TYPE(*CHAR) LEN(99)
+             DCL        VAR(&VAL3) TYPE(*CHAR) LEN(99)
+             DCL        VAR(&VAL4) TYPE(*CHAR) LEN(99)
+             DCL        VAR(&VAL5) TYPE(*CHAR) LEN(99)
+             DCL        VAR(&VAL6) TYPE(*CHAR) LEN(99)
+             DCL        VAR(&VAL7) TYPE(*CHAR) LEN(99)
+
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(256)
+             DCL        VAR(&MSGTYP) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&EMSGDTA) TYPE(*CHAR) LEN(500)
+             DCL        VAR(&EMSGDTALEN) TYPE(*DEC) LEN(5 0)
+             DCL        VAR(&EMSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&EMSGF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&EMSGFLIB) TYPE(*CHAR) LEN(10)
+/*                                                                   */
+/* Add library list entries                                          */
+/* 2567 */   CALL       MAG1031  (ARCSTMFSPY ' ')
+/* 2567 */   CALL       MAG103A
+/* 2567 */              MONMSG     MSGID(CPF0000 MCH0000) EXEC(DO)
+/* 2567 */              CALL       MAG1031  (ARCSTMFSPY Q)
+/* 2567 */              MONMSG     MSGID(CPF0000 MCH0000)
+/* 2567 */              GOTO       ERRPGM
+/* 2567 */              ENDDO
+
+             CALL       PGM(SPYPCARC) PARM(&PATH &DLTAFT &DOCCLS +
+                          &PMTVAL &VAL1 &VAL2 &VAL3 &VAL4 &VAL5 +
+                          &VAL6 &VAL7 &MSGID &MSGDTA &MSGTYP)
+
+/* 2567 */   CALL       MAG1031  (ARCSTMFSPY Q)
+
+             IF         COND(&MSGID *NE '       ') THEN(DO)
+             SNDPGMMSG  MSGID(&MSGID) MSGF(PSCON) MSGDTA(&MSGDTA) +
+                          MSGTYPE(&MSGTYP)
+             ENDDO
+             RETURN
+
+ ERRPGM:
+/* 2567 */   CALL       MAG1031  (ARCSTMFSPY Q)
+
+             RCVMSG     MSGTYPE(*LAST) RMV(*NO) MSGDTA(&EMSGDTA) +
+                          MSGDTALEN(&EMSGDTALEN) MSGID(&EMSGID) +
+                          MSGF(&EMSGF) MSGFLIB(&EMSGFLIB)
+
+             SNDPGMMSG  MSGID(&EMSGID) MSGF(&EMSGFLIB/&EMSGF) +
+                          MSGDTA(&EMSGDTA) MSGTYPE(*ESCAPE)
+
+ENDPGM:
+             ENDPGM

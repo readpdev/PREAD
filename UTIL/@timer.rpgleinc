@@ -1,0 +1,2 @@
+     d timer           pr                  extproc('timer')
+     d  opcode                         *   options(*string) value

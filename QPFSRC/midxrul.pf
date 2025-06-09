@@ -1,0 +1,26 @@
+      *%METADATA                                                       *
+      * %TEXT Report index rules                                       *
+      *%EMETADATA                                                      *
+      **********
+      * MIDXRUL  Index Rules
+      **********
+     A                                      UNIQUE
+     A                                      CCSID(65535)
+     A          R IDXRUL
+      *
+     A            RURPT         10          COLHDG('Report' 'Type ID')
+     A            RUTYP         10          COLHDG('Record' 'Type')
+     A            RUSEQ         10          COLHDG('Sequence')
+     A            RUKEY         20          COLHDG('Key')
+     A            RUPOS          5  0       COLHDG('Position')
+     A                                      EDTCDE(Z)
+     A            RUAO           3          COLHDG('AND' 'OR')
+     A            RUIDX         10          COLHDG('Index' 'Field')
+     A            RUCMP          2          COLHDG('Compare')
+     A            RUVAL         40          COLHDG('Value')
+      *
+     A          K RURPT
+     A          K RUTYP
+     A          K RUSEQ
+     A          K RUKEY
+     A          K RUPOS

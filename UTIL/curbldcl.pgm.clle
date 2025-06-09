@@ -1,0 +1,17 @@
+      /*%METADATA                                                     */
+      /* %TEXT Display current build                                  */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&VERSION)
+             DCL        VAR(&VERSION) TYPE(*CHAR) LEN(3)
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(21)
+             DCL        VAR(&TEXT) TYPE(*CHAR) LEN(80)
+             DCL        VAR(&TARGET) TYPE(*CHAR) LEN(10)
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ERROR))
+             CHGVAR     VAR(&LIBRARY) VALUE('DOCRLS' || &VERSION)
+             CHGVAR     VAR(&TARGET) VALUE('SPGMR' || &VERSION)
+             RTVOBJD    OBJ(&LIBRARY/&TARGET) OBJTYPE(*FILE) TEXT(&TEXT)
+             SNDPGMMSG  MSG(&TEXT)
+             GOTO       CMDLBL(QUIT)
+ ERROR:      RCVMSG     MSGQ(*PGMQ) MSG(&TEXT)
+             SNDPGMMSG  MSG(&TEXT)
+ QUIT:       ENDPGM

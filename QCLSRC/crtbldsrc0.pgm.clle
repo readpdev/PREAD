@@ -1,0 +1,214 @@
+      /*%METADATA                                                     */
+      /* %TEXT Create Source Based Build Environment                  */
+      /*%EMETADATA                                                    */
+/*                                                                            */
+/* 02-25-12 PLR Create source build environment. When run to completion,      */
+/*              all source and supporting data will be available for          */
+/*              a build of the DMS system. J4017.                             */
+/*                                                                            */
+             PGM        (&SRCLIB &PGMLIB &DTALIB &TGTLIB &TGTRLS +
+                          &IFSRLSDIR )
+
+             DCLF       FILE(SAMPLEDATA)
+
+             DCL        VAR(&SRCLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PGMLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&DTALIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TGTLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&TGTRLS) TYPE(*CHAR) LEN(6)
+             DCL        VAR(&IFSRLSDIR) TYPE(*CHAR) LEN(15)
+
+             DCL        VAR(&SRCFNAMES) TYPE(*CHAR) LEN(150) VALUE('H      -
+   QCLLESRC  QCLSRC    QCMDSRC   QCPPSRC   QCSRC -
+    QDDSSRC   QLFSRC    QMNUSRC   QPFSRC    +
+                          QPNLSRC   QPRTSRC   QRPGLESRC QRPGSRC   QSRVSRC  -
+ ')
+             DCL        VAR(&SRCFNAMEP) TYPE(*PTR) ADDRESS(&SRCFNAMES)
+             DCL        VAR(&SRCFNAME) TYPE(*CHAR) STG(*BASED) LEN(10) +
+                          BASPTR(&SRCFNAMEP)
+             DCL        VAR(&TOFILE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&IFSSAVF) TYPE(*CHAR) LEN(128)
+             DCL        VAR(&I) TYPE(*INT)
+             DCL        VAR(&J) TYPE(*INT)
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(100)
+             DCL        VAR(&IFSOMIT) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&RPGNAMS) TYPE(*CHAR) +
+                          VALUE('MAG1030MAG1505MAG1507MAG8012')
+             DCL        VAR(&RPGNAMP) TYPE(*PTR) ADDRESS(&RPGNAMS)
+             DCL        VAR(&RPGNAM) TYPE(*CHAR) STG(*BASED) LEN(7) +
+                          BASPTR(&RPGNAMP)
+             DCL        VAR(&TOMBR) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RCDLEN) TYPE(*INT)
+
+             /* Create target library. */
+             CHKOBJ     OBJ(&TGTLIB) OBJTYPE(*LIB)
+             MONMSG     MSGID(CPF9801) EXEC(CRTLIB LIB(&TGTLIB))
+
+             /* Check if other libraries exist before getting into it. */
+             CHKOBJ     OBJ(&SRCLIB) OBJTYPE(*LIB)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+                CHGVAR     &MSG VALUE('Library' |> &SRCLIB |> 'does not +
+                             exist.')
+                CALLSUBR   SUBR(SPM)
+                RETURN
+             ENDDO
+             CHKOBJ     OBJ(&PGMLIB) OBJTYPE(*LIB)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+                CHGVAR     &MSG VALUE('Library' |> &PGMLIB |> 'does not +
+                             exist.')
+                CALLSUBR   SUBR(SPM)
+                RETURN
+             ENDDO
+             CHKOBJ     OBJ(&DTALIB) OBJTYPE(*LIB)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+                CHGVAR     &MSG VALUE('Library' |> &DTALIB |> 'does not +
+                             exist.')
+                CALLSUBR   SUBR(SPM)
+                RETURN
+             ENDDO
+
+             /* Build sample data files. */
+ READLOOP:   RCVF
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ENDLOOP))
+             CHGVAR     VAR(&TOFILE) VALUE('X' |< &MBFILE)
+             CPYF       FROMFILE(&DTALIB/&MBFILE) TOFILE(&TGTLIB/&TOFILE) +
+                          MBROPT(*REPLACE) CRTFILE(*YES)
+             MONMSG     MSGID(CPF0000)
+             GOTO       CMDLBL(READLOOP)
+ ENDLOOP:    /* Copy the list of files containing sample data so it can */
+             /* be used by the build script.                            */
+             CPYF       FROMFILE(SAMPLEDATA) TOFILE(&TGTLIB/SAMPLEDATA) +
+                          MBROPT(*REPLACE) CRTFILE(*YES)
+
+             /* Copy source members to target library. */
+             DOFOR      VAR(&I) FROM(1) TO(15)
+                CHGVAR     VAR(&MSG) VALUE('Creating source file' |> +
+                             &TGTLIB |< '/' |< &SRCFNAME)
+                CALLSUBR   SPM
+                CHGVAR     VAR(&RCDLEN) VALUE(200)
+                IF         COND(&SRCFNAME *EQ 'QDDSSRC') THEN(CHGVAR +
+                             VAR(&RCDLEN) VALUE(132))
+                CRTSRCPF   FILE(&TGTLIB/&SRCFNAME) RCDLEN(&RCDLEN)
+                MONMSG     MSGID(CPF0000)
+                CPYSRCF    FROMFILE(&SRCLIB/&SRCFNAME) +
+                          TOFILE(&TGTLIB/&SRCFNAME) FROMMBR(*ALL) +
+                          TOMBR(*FROMMBR) TOMBRID(*FROMMBR) +
+                          MBROPT(*REPLACE)
+                MONMSG     MSGID(CPF0000)
+                /* Convert RPG source to ILE */
+                IF         (&SRCFNAME *EQ 'QRPGSRC') THEN(DO)
+                   CVTRPGSRC  FROMFILE(&SRCLIB/&SRCFNAME) FROMMBR(*ALL) +
+                                TOFILE(&TGTLIB/QRPGLESRC) CVTRPT(*NO) +
+                                LOGFILE(*NONE)
+                   MONMSG     CPF0000
+                   ITERATE
+                ENDDO
+                /* Convert handful of RPG source members in QRPGLESRC */
+                IF         (&SRCFNAME *EQ 'QRPGLESRC') THEN(DO)
+                   DOFOR      VAR(&J) FROM(1) TO(4)
+                      CHGVAR     &TOMBR VALUE('X' |< &RPGNAM)
+                      CVTRPGSRC  FROMFILE(&TGTLIB/&SRCFNAME) +
+                                   FROMMBR(&RPGNAM) +
+                                   TOFILE(&TGTLIB/QRPGLESRC) TOMBR(&TOMBR) +
+                                   CVTRPT(*NO) LOGFILE(*NONE)
+                      MONMSG     MSGID(CPF0000) EXEC(ITERATE)
+                      RMVM       FILE(&TGTLIB/&SRCFNAME) MBR(&RPGNAM)
+                      MONMSG CPF0000
+                      RNMM       FILE(&TGTLIB/&SRCFNAME) MBR(&TOMBR) +
+                                   NEWMBR(&RPGNAM)
+                      MONMSG CPF0000
+                      CHGVAR     VAR(%OFFSET(&RPGNAMP)) +
+                                   VALUE(%OFFSET(&RPGNAMP) + 7)
+                   ENDDO
+                ENDDO
+                CHGVAR     VAR(%OFFSET(&SRCFNAMEP)) +
+                             VALUE(%OFFSET(&SRCFNAMEP) + 10)
+             ENDDO
+
+             /* Save IFS supporting data. */
+             CHGVAR     &MSG VALUE('Saving IFS supporting data')
+             CALLSUBR   SPM
+             CRTSAVF    FILE(&TGTLIB/IFSDATA)
+             MONMSG     MSGID(CPF0000)
+             CHGVAR     VAR(&IFSSAVF) VALUE('/QSYS.LIB/' |< &TGTLIB |< +
+                          '.LIB/IFSDATA.FILE')
+             CHGVAR     &IFSOMIT VALUE(&IFSRLSDIR |< '/Update/*')
+             SAV        DEV(&IFSSAVF) OBJ((&IFSRLSDIR *INCLUDE) +
+                          (&IFSOMIT *OMIT)) CLEAR(*REPLACE)
+
+             /* Copy all message files to target library. */
+             CHGVAR     &MSG VALUE('Saving language message files')
+             CALLSUBR   SPM
+             DLTF       FILE(QTEMP/TEMPCOPY)
+             MONMSG     MSGID(CPF0000)
+             CRTSAVF    FILE(QTEMP/TEMPCOPY)
+             SAVOBJ     OBJ(PSCON*) LIB(&PGMLIB) DEV(*SAVF) +
+                          OBJTYPE(*MSGF) SAVF(QTEMP/TEMPCOPY)
+             RSTOBJ     OBJ(PSCON*) SAVLIB(&PGMLIB) DEV(*SAVF) +
+                          OBJTYPE(*MSGF) SAVF(QTEMP/TEMPCOPY) +
+                          MBROPT(*ALL) ALWOBJDIF(*ALL) RSTLIB(&TGTLIB)
+             MONMSG     MSGID(CPF0000)
+             /*CRTDUPOBJ  OBJ(PSCON*) FROMLIB(&PGMLIB) OBJTYPE(*MSGF) +
+                          TOLIB(&TGTLIB) */
+             /* Delete the PSCON message file to save space. One of the */
+             /* PSCONXX will be copied to PSCON during the build process. */
+             DLTMSGF    MSGF(&TGTLIB/PSCON)
+
+             /* Save template source file/members from data library. */
+             CHGVAR     VAR(&MSG) VALUE('Copying sample and template +
+                          source files.')
+             CALLSUBR   SUBR(SPM)
+             CRTSRCPF   FILE(&TGTLIB/FAXSRC) RCDLEN(192)
+             MONMSG     MSGID(CPF0000)
+             CPYSRCF    FROMFILE(&DTALIB/FAXSRC) +
+                          TOFILE(&TGTLIB/FAXSRC) FROMMBR(*ALL) +
+                          TOMBR(*FROMMBR) TOMBRID(*FROMMBR) +
+                          MBROPT(*REPLACE)
+             MONMSG     MSGID(CPF0000)
+             CRTSRCPF   FILE(&TGTLIB/QNDXSRC) RCDLEN(92)
+             MONMSG     MSGID(CPF0000)
+             CPYSRCF    FROMFILE(&DTALIB/QNDXSRC) +
+                          TOFILE(&TGTLIB/QNDXSRC) FROMMBR(*ALL) +
+                          TOMBR(*FROMMBR) TOMBRID(*FROMMBR) +
+                          MBROPT(*REPLACE)
+             MONMSG     MSGID(CPF0000)
+             CRTSRCPF   FILE(&TGTLIB/XQRPGLESRC) RCDLEN(192)
+             MONMSG     MSGID(CPF0000)
+             CPYSRCF    FROMFILE(&DTALIB/QRPGLESRC) +
+                          TOFILE(&TGTLIB/XQRPGLESRC) FROMMBR(*ALL) +
+                          TOMBR(*FROMMBR) TOMBRID(*FROMMBR) +
+                          MBROPT(*REPLACE)
+             MONMSG     MSGID(CPF0000)
+             CRTSRCPF   FILE(&TGTLIB/XQCLSRC) RCDLEN(192)
+             MONMSG     MSGID(CPF0000)
+             CPYSRCF    FROMFILE(&DTALIB/QCLSRC) +
+                          TOFILE(&TGTLIB/XQCLSRC) FROMMBR(*ALL) +
+                          TOMBR(*FROMMBR) MBROPT(*REPLACE)
+             MONMSG     MSGID(CPF0000)
+
+             /* Save the target library to save file DOCBLDSRC in the */
+             /* target library. Omit from save list. */
+             CHGVAR     VAR(&MSG) VALUE('Saving build library to save +
+                          file' |> &TGTLIB |< '/' |< 'DOCBLDSRC')
+             CALLSUBR   SPM
+             CRTSAVF    FILE(&TGTLIB/DOCBLDSRC)
+             MONMSG     MSGID(CPF0000)
+             SAVLIB     LIB(&TGTLIB) DEV(*SAVF) +
+                          SAVF(&TGTLIB/DOCBLDSRC) TGTRLS(&TGTRLS) +
+                          UPDHST(*NO) CLEAR(*REPLACE) DTACPR(*HIGH) +
+                          OMITOBJ((&TGTLIB/DOCBLDSRC *FILE))
+
+             /* Send completion message. */
+             CHGVAR     VAR(&MSG) VALUE('Build data completed and saved.' +
+                          |> &TGTLIB)
+             CALLSUBR   SUBR(SPM)
+
+
+             /* Send program message */
+             SUBR       SUBR(SPM)
+                SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA(&MSG) +
+                             TOPGMQ(*EXT) MSGTYPE(*COMP)
+             ENDSUBR
+
+             ENDPGM
+

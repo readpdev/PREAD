@@ -1,0 +1,32 @@
+      /*%METADATA                                                     */
+      /* %TEXT Display program references                             */
+      /*%EMETADATA                                                    */
+#include<stdio.h>
+#include<stdlib.h>
+
+void main(int argc, char *argv[])
+{
+  exec sql include sqlca;
+  exec sql begin declare section;
+    char refPgmLib[10];
+    char refPgm[10];
+    char refObjLib[10];
+    char refObj[10];
+    char refType[10];
+  exec sql end declare section;
+  exec sql declare c1 cursor for select whlib, whpnam, whfnam, whlnam, whotyp fr
+  exec sql open c1;
+  printf("\n\n\n");
+  printf("Program Lib  Program      Object Lib  Object      Object Type\n");
+  printf("-----------  -----------  ----------  ----------  -----------\n");
+  exec sql fetch c1 into :refPgmLib, :refPgm, :refObjLib, :refObj, :refType;
+  while (sqlca.sqlcode == 0)
+  {
+    printf("%10.10s      %10.10s      %10.10s     %10.10s     %10.10s",
+      refPgmLib, refPgm, refObjLib, refObj, refType);
+    exec sql fetch c1 into :refPgmLib, :refPgm, :refObjLib, :refObj, :refType;
+  }
+  exec sql close c1;
+
+  return;
+}

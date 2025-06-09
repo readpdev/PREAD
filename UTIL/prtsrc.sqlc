@@ -1,0 +1,72 @@
+      /*%METADATA                                                     */
+      /* %TEXT Print Source Member                                    */
+      /*%EMETADATA                                                    */
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+exec sql include sqlca;
+#include<qcmdexc.h>
+
+#define OVERFLOW  80
+
+static void checkOverFlow(void);
+
+exec sql begin declare section;
+  char buf[198];
+exec sql end declare section;
+char library[11], srcFile[11], srcMbr[11], syscmd[256];
+FILE *qsysprt;
+int of;
+
+void main(int argc, char *argv[])
+{
+  int x, len;
+  if (argc < 4)
+  {
+     printf("Usage: prtsrc library sourceFile sourceMember\n");
+     return;
+  }
+  memset(&library,0,sizeof(library));
+  memset(&srcFile,0,sizeof(srcFile));
+  memset(&srcMbr,0,sizeof(srcMbr));
+  memcpy(&library,argv[1],sizeof(library)-1);
+  memcpy(&srcFile, argv[2], sizeof(srcFile)-1);
+  memcpy(&srcMbr, argv[3], sizeof(srcMbr)-1);
+  sprintf(syscmd,"ovrprtf file(qsysprt) splfname(%s) pagesize(88 198) lpi(8)\
+ cpi(16.7) ovrflw(80) pagrtt(0) duplex(*yes) ctlchar(*fcfc) usrdta(%.10s)",\
+"LPRINT",srcMbr);
+  QCMDEXC(syscmd, strlen(syscmd));
+  qsysprt = fopen("*LIBL/QSYSPRT", "wb, lrecl=198");
+  of = 80;
+  checkOverFlow();
+  sprintf(syscmd, "ovrdbf srcmbr %s/%s %s", library, srcFile, srcMbr);
+  QCMDEXC(syscmd, strlen(syscmd));
+  exec sql declare c1 cursor for select srcdta from srcmbr;
+  exec sql open c1;
+  exec sql fetch c1 into :buf;
+  while ( sqlca.sqlcode == 0 )
+  {
+    fprintf(qsysprt, "%c%-197s", ' ', buf);
+    checkOverFlow();
+    exec sql fetch c1 into :buf;
+  }
+  exec sql close c1;
+  fclose(qsysprt);
+  system("dltovr qsysprt");
+  system("dltovr srcmbr");
+  return;
+}
+
+static void checkOverFlow(void)
+{
+  int x;
+  static int page;
+  if (++of >= OVERFLOW)
+  {
+    sprintf(buf, "1Library: %-10s File: %-10s Member: %-10s Page: %0d",
+    library, srcFile, srcMbr, ++page);
+    fprintf(qsysprt, "%-198s", buf);
+    of = 1;
+  }
+  return;
+}

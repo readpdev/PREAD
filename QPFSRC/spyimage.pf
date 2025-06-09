@@ -1,0 +1,26 @@
+      *%METADATA                                                       *
+      * %TEXT Image Import file MO:DCA-P format for ImagePlus          *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... SPYIMAGE- Image Import file to ImagePlus  *
+     A* Date created...... 9/22/94                                   *
+     A*                                                              *
+     A* Text:      Individual records in MO:DCA-P format to be       *
+     A*            imported into ImagePlus.                          *
+     A*                                                              *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R IMAGER
+     A            CSS001         6S 0       COLHDG('SEQUENCE' 'NUMBER')
+     A            CSS002         1A         COLHDG('BEGIN DOC' 'FLAG')
+     A            CSS003         8A         COLHDG('DOCUMENT' 'TYPE')
+     A            CSS004         4B 0       COLHDG('OBJECT' 'TYPE')
+     A            CSS005         7A         COLHDG('FILLER')
+     A            CSS006        40A         COLHDG('IDENTIFIER')
+     A            CSS007         8S 0       COLHDG('DOCUMENT' 'SIZE')
+     A            CSS008         4S 0       COLHDG('NO OF' 'PAGES')
+     A            CSS009         5S 0       COLHDG('LENGTH' 'OF DATA')
+     A            CSSIND      5760A         COLHDG('DATA')
+     A          K CSS001

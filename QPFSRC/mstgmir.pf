@@ -1,0 +1,31 @@
+      *%METADATA                                                       *
+      * %TEXT Storage Mirror Status                                    *
+      *%EMETADATA                                                      *
+     A                                      UNIQUE
+     A                                      CCSID(65535)
+     A          R STGMIRF
+     A            SMOVOL        12          COLHDG('Original' 'Volume')
+     A            SMMVOL        12          COLHDG('Mirror' 'Volume')
+     A            SMPTH        120          COLHDG('Path')
+K    A            SMFIL         20          COLHDG('File')
+K    A            SMSIZ         13  0       COLHDG('File Size')
+     A            SMOPD          9B 0       COLHDG('Open' 'Date')
+     A                                      EDTWRD('     /  /  ')
+     A            SMOPT          9B 0       COLHDG('Open' 'Time')
+     A                                      EDTWRD('     :  :  ')
+     A            SMCLD          9B 0       COLHDG('Close' 'Date')
+     A                                      EDTWRD('     /  /  ')
+     A            SMCLT          9B 0       COLHDG('Close' 'Time')
+     A                                      EDTWRD('     :  :  ')
+     A            SMMID          9B 0       COLHDG('Mirror' 'Date')
+     A                                      EDTWRD('     /  /  ')
+     A            SMMIT          9B 0       COLHDG('Mirror' 'Time')
+     A                                      EDTWRD('     :  :  ')
+     A            SMSTS          1          COLHDG('Status')
+     A            SMJOB         26          COLHDG('Lock Job')
+      *                                       'O'=FILE IS OPEN
+      *                                       'M'=Manual
+      *                                       'I'=Immed
+      *                                       'K'=Done
+
+     A          K SMFIL

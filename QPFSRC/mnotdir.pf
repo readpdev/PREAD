@@ -1,0 +1,31 @@
+      *%METADATA                                                       *
+      * %TEXT Notes Directory File                                     *
+      *%EMETADATA                                                      *
+      **********
+      * MNOTDIR  Notes Directory file
+      **********
+     A                                      CCSID(65535)
+     A          R NOTDIR
+     A            NDBNUM        10A         COLHDG('Spy#' 'Batch#')
+     A            NDBSEQ         9B 0       COLHDG('Batch' 'Seq.')
+     A            NDPAGN         9B 0       COLHDG('Page' 'Num.')
+     A            NDNOTN         9B 0       COLHDG('Note' 'Num.')
+     A            NDREVI         9B 0       COLHDG('Revision' 'ID')
+     A            NDUSER        10A         COLHDG('User' 'ID')
+     A            NDDATE         9B 0       COLHDG('Date')
+     A            NDTIME         9B 0       COLHDG('Time')
+     A            NDTYPE         1A         COLHDG('Type')
+     A            NDATYP         5A         COLHDG('Annot.' 'Type')
+     A            NDALEN         9B 0       COLHDG('Annot.' 'Len')
+     A            NDACOO        50A         COLHDG('Annot.' 'Coordinates')
+     A            NDADTA        19A         COLHDG('Annot.' 'Data')
+     A            NDATFL        10A         COLHDG('Attached' 'File')
+     A            NDACTN         1A         COLHDG('Action' 'Code')
+     A            NDDCOD         9B 0       COLHDG('Domain' 'Code')
+     A            NDDTYP         9B 0       COLHDG('Domain' 'Data Type')
+     A          K NDBNUM
+     A          K NDBSEQ
+     A          K NDPAGN
+     A          K NDNOTN                    DESCEND
+     A          K NDREVI                    DESCEND
+     A          K NDACTN                    DESCEND

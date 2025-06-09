@@ -1,0 +1,55 @@
+      *%METADATA                                                       *
+      * %TEXT Web Security - Application User Access                   *
+      *%EMETADATA                                                      *
+      *********--------
+      * WDACCP  WEB Security - Application Access
+      *********--------
+
+     A                                      UNIQUE
+     A          R WDACCF                    TEXT('WEB Application Access')
+      *           ******
+      *
+     A            WDAPP         10          COLHDG('WEB' 'Application')
+     A            WDUSR         20          COLHDG('User')
+     A            WDTYP         10          COLHDG('Access' 'Type')
+     A            WDOBJ         10          COLHDG('Object' 'Name')
+     A            WDLIB         10          COLHDG('Object' 'Library')
+     A
+     A            WDDV1         30          COLHDG('Default' 'Value 1')
+     A            WDDV2         30          COLHDG('Default' 'Value 2')
+     A            WDDV3         30          COLHDG('Default' 'Value 3')
+     A            WDDV4         30          COLHDG('Default' 'Value 4')
+     A            WDDV5         30          COLHDG('Default' 'Value 5')
+     A            WDDV6         30          COLHDG('Default' 'Value 6')
+     A            WDDV7         30          COLHDG('Default' 'Value 7')
+     A            WDDV8         30          COLHDG('Default' 'Value 8')
+     A
+     A            WDPR1          1          COLHDG('Protect' 'Value 1')
+     A            WDPR2          1          COLHDG('Protect' 'Value 2')
+     A            WDPR3          1          COLHDG('Protect' 'Value 3')
+     A            WDPR4          1          COLHDG('Protect' 'Value 4')
+     A            WDPR5          1          COLHDG('Protect' 'Value 5')
+     A            WDPR6          1          COLHDG('Protect' 'Value 6')
+     A            WDPR7          1          COLHDG('Protect' 'Value 7')
+     A            WDPR8          1          COLHDG('Protect' 'Value 8')
+     A
+     A            WDDS1          1          COLHDG('Display' 'Value 1')
+     A            WDDS2          1          COLHDG('Display' 'Value 2')
+     A            WDDS3          1          COLHDG('Display' 'Value 3')
+     A            WDDS4          1          COLHDG('Display' 'Value 4')
+     A            WDDS5          1          COLHDG('Display' 'Value 5')
+     A            WDDS6          1          COLHDG('Display' 'Value 6')
+     A            WDDS7          1          COLHDG('Display' 'Value 7')
+     A            WDDS8          1          COLHDG('Display' 'Value 8')
+      *
+/2815A            WDRPFM        10          COLHDG('Report' 'Format')
+/     *                                   VALUES: *HTML, *PDF
+/2815A            WDSLLS         1          COLHDG('SpyLink' 'Limit' 'Scroll')
+/     *                                   VALUES: Y, N, " "=System Default
+     A
+     A          K WDAPP
+     A          K WDUSR
+     A          K WDOBJ
+     A          K WDLIB
+     A          K WDTYP
+

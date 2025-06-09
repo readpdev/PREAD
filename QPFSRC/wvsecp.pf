@@ -1,0 +1,22 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Security File                                 *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A                                      UNIQUE
+     A          R WVSECF                    TEXT('ActionFile Security')
+      *
+      **************************************************************
+      *
+     A            FETYP         10          COLHDG('Object Type')
+     A            FEOBJ         10          COLHDG('Object Name')
+     A            FETRA          3  0       COLHDG('Object Transact')
+     A            FEUSR         10          COLHDG('User')
+     A            FEUTP          1          COLHDG('User' 'Type')
+     A            FEAUT         10          COLHDG('Standard' 'Authority')
+     A            FEOPT         30          COLHDG('Option' 'Authority')
+      *
+     A          K FETYP
+     A          K FEOBJ
+     A          K FETRA
+     A          K FEUSR
+     A          K FEUTP

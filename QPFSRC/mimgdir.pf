@@ -1,0 +1,72 @@
+      *%METADATA                                                       *
+      * %TEXT Image  Directory File                                    *
+      *%EMETADATA                                                      *
+      **********
+      * MIMGDIR  Image Directory file
+      **********
+
+      * One record per batch of images.  Indicates the date it
+      * entered the system, its size and its current location
+
+      ********-------------------------------------------------------*
+      * NOTE:  IF A FIELD IS ADDED OR SUBTRACTED MIMGDIR MUST BE     *
+      *        COPIED TO MIMGUPD, NWIMGDIR                           *
+      *        ALSO CHANGE THE RECORD LENGTH IN SPYCSBCHN PROGRAM    *
+      ********-------------------------------------------------------*
+      *
+      *  1-16-97 Dm  Added logical 7
+      * 12-18-95 JJF Add six fields for offline tape id IDTVol..IDTSeq.
+      * 10-11-95 JJF New
+     A                                      UNIQUE
+     A                                      CCSID(65535)
+     A          R IMGDIR
+
+K    A            IDBNUM        10A         COLHDG('Batch Num.')
+     A            IDDOCT        10A         COLHDG('Document' 'Type')
+     A            IDPFIL        10A         COLHDG('Phys.File')
+      *                            "IFile" - Innnnnnnnn
+     A            IDFLD         10A         COLHDG('Folder')
+     A            IDFLIB        10A         COLHDG('Library')
+
+     A            IDBBGN         9B 0       COLHDG('Beginning' 'RRN')
+     A            IDBEND         9B 0       COLHDG('Ending' 'RRN')
+     A            IDICNT         9B 0       COLHDG('#Files')
+     A            IDDSCN         9B 0       COLHDG('Date' 'Scanned')
+     A            IDDCPT         9B 0       COLHDG('Date' 'Captured')
+     A            IDTCPT         6  0       COLHDG('Time' 'Captured')
+     A                                      EDTWRD('  :  :  ')
+     A            IDNODE        17A         COLHDG('Node ID')
+     A            IDILOC         1A         COLHDG('Loca' 'tion')
+      *    RDILoc: blank/0=Dasd  1=Tape 2=Optical 3=QDLS folders
+     A            IDITYP         1A         COLHDG('Image' 'Type')
+      *                             1=Old batch (No Img Hdr record)
+      *                             2=FileClerk
+      *                             3=New batch (Img Hdr record)
+      *                             4=PC file
+      *                             5=ImageView
+      *                             9=Coversion File
+     A            IDDESC        30A         COLHDG('Description')
+     A            IDTVOL        10A         COLHDG('Tape' 'Vol')
+     A            IDTFIL        10A         COLHDG('Tape' 'File')
+     A            IDTDTE         9B 0       COLHDG('Tape' 'Date')
+     A            IDTSYS         1A         COLHDG('Tape' 'Sys' )
+     A            IDTTYP         1A         COLHDG('Tape' 'Type')
+     A            IDTSEQ         4A         COLHDG('Tape' 'Seq#')
+     A            IDRTYP        10A         COLHDG('Report' 'Type')
+     A            IDSTS          1A         COLHDG('Status')
+      *                                     ' '=normal OK
+      *                                     '1'=Uploading
+
+     A          K IDBNUM
+      *
+      * Logicals: 1. DocType, Batch#
+      *           2. Date Scanned(descend), DocType
+      *           3. Folder, Library, Batch#
+      *           4. DocType, Date Captured(descend), Batch(descend)
+      *           5. Ifile, Folder, Fldr Library
+      *           6. Folder, Library, Ifile, Batch#
+      *           7. Folder, Library, Ifile, DocType
+      *           8. DocType, NodeID, CaptDate & Time
+      *           9. Fld, FldLib, RepTyp, CaptDate & Time
+      *          10. RepTyp, CaptDate & Time
+      *          11. Folder, CaptDate & Time

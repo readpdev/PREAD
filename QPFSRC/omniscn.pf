@@ -1,0 +1,9 @@
+      *%METADATA                                                       *
+      * %TEXT OmniScn - ScreenScrape Templates for the OmniApi         *
+      *%EMETADATA                                                      *
+      **************-----------------------------------
+      * OmniScn - Screen Templates for the OmniApi
+      *           The data is in Ascii
+      **************-----------------------------------
+     A          R OMNISCR                   TEXT('OMNI Screen Templates')
+     A            SCNDTA      1024          COLHDG('Screen Scrape Data')

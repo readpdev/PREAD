@@ -1,0 +1,36 @@
+      /*%METADATA                                                     */
+      /* %TEXT Check Signatures and Observability                     */
+      /*%EMETADATA                                                    */
+/*                                                                            */
+/* Check for observability (debug) and signature violations.                  */
+/*                                                                            */
+/* 08-18-16 PLR Created for unit test VIP-6578 in 9.3. &RTNSTS is not passed  */
+/*              by the command in order to accommodate both interactive       */
+/*              command line use and use by the unit test module. The unit    */
+/*              test can call this CL passing the 10 byte status parameter.   */
+/*                                                                            */
+/*                                                                            */
+             PGM        PARM(&LIBRARY &RTNSTS)
+
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RTNSTS) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&STSMSG) TYPE(*CHAR) LEN(80) VALUE('File +
+                          CHKSIGOBS created.')
+             DCL        VAR(&JOBTYP) TYPE(*CHAR) LEN(1)
+
+             RTVJOBA    TYPE(&JOBTYP)
+
+             CALL       PGM(CHKSIGOBSR) PARM(&LIBRARY &RTNSTS)
+
+             IF         COND(%ADDRESS(&RTNSTS) *NE *NULL) THEN(DO)
+               CHGVAR     VAR(&STSMSG) VALUE(&STSMSG |> 'Status:' |> +
+                            &RTNSTS)
+             ENDDO
+
+             SNDPGMMSG  MSG(&STSMSG) TOPGMQ(*EXT)
+
+             IF         COND(&JOBTYP = '1') THEN(DSPPFM +
+                          FILE(CHKSIGOBS))
+
+             ENDPGM

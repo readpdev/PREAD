@@ -1,0 +1,18 @@
+      *%METADATA                                                       *
+      * %TEXT SpyView Attention Key file                               *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * Physical file..... SPYATN - SpyView Attention Key file
+      *
+      *  6-18-98 JJF New file
+      *
+     A                                      UNIQUE
+     A          R SPYATNR
+K1   A            ATSEQ          2  0       COLHDG('Menu' 'Sequence')
+     A                                      EDTCDE(Z)
+     A            ATDESC        40A         COLHDG('Description')
+     A            ATCMD        120A         COLHDG('Command Line')
+
+     A          K ATSEQ

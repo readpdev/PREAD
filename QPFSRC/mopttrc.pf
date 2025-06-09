@@ -1,0 +1,17 @@
+      *
+/8696 * 11-13-03 PLR CREATED FOR ENHANCED OPTICAL TRACING. SEE SPYSTGIO FOR
+      *              EXAMPLES OF USAGE.
+      *
+                                            CCSID(65535)
+                R OPTTRCRC                  TEXT('Optical Trace Record Fmt')
+                  OTDATE         8  0       TEXT('Opt Trc Date')
+                  OTTIME         6  0       TEXT('Opt Trc Time')
+                  OTJNAM        10          TEXT('Opt Trc Job Name')
+                  OTJUSR        10          TEXT('Opt Trc User Name')
+                  OTJNBR         6          TEXT('Opt Trc Job Number')
+                  OTVOLN        12          TEXT('Opt Trc Volume Name')
+                  OTFILN        10          TEXT('Opt Trc File Name')
+                  OTDTYP        10          TEXT('Opt Trc Device Type')
+                  OTOPER        10          TEXT('Opt Trc Procedure Name')
+                  OTAPIE         7          TEXT('Opt Trc API Error Msg ID')
+                  OTAPIM        80          TEXT('Opt Trc API Error Msg Text')

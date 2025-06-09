@@ -1,0 +1,251 @@
+      *%METADATA                                                       *
+      * %TEXT Field Layouts                                            *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... MAGFLDR  - Field reference file           *
+      * Date created......                                           *
+      *                                                              *
+      ****************************************************************
+ EM   *  2/11/93 Add Fields for Rep. Mnt.                            *
+ DM   *  6/21/93 ADD FIELDS  OPT   &   OPVOL  & DBFIL                *
+ DM   * 12/20/93 ADD PROMPT FIELDS TO (INDEXING DATA SET)            *
+ DM   *  4/25/94 ADD OPVID TO RMAINT FIELDS                          *
+ DM   *  5/27/94 ADD TYPID TO RMAINT FIELDS                          *
+ EM   *  6/9/ 94 ADD USRF1 TO RMAINT FIELDS                          *
+      *          ADD USRF2 TO RMAINT FIELDS                          *
+ DM   * 11/07/94 ADD CPGID AND PRTCPG TO RMAINT FIELDS               *
+      ****************************************************************
+     A          R FLDREF
+      ************************************
+      **** Unique Report Generation Key
+      ************************************
+     A            RKEY           5  0       TEXT('Report Key')
+     A                                      COLHDG('Report' 'Key')
+      ************************************
+      **** Report Maintainance Fields
+      ************************************
+     A            RNAM          10          TEXT('Report Name')
+     A                                      COLHDG('Report' 'Name')
+     A            JNAM          10          TEXT('Job Name')
+     A                                      COLHDG('Job' 'Name')
+     A            PNAM          10          TEXT('Program Name')
+     A                                      COLHDG('Prog' 'Name')
+     A            UNAM          10          TEXT('User Name')
+     A                                      COLHDG('User' 'Name')
+     A            UDAT          10          TEXT('User Data')
+     A                                      COLHDG('User' 'Data')
+     A            RDESC         40          TEXT('Report Description')
+     A                                      COLHDG('Report' 'Description')
+     A            OLGEN          3  0       TEXT('On-Line Generations')
+     A                                      COLHDG('OL Gens')
+     A            OFGEN          3  0       TEXT('Off-Line Generations')
+     A                                      COLHDG('ADDRESS')
+     A            OLDAY          4  0       TEXT('On-Line Retention Days')
+     A                                      COLHDG('On-line' 'Ret' 'Days')
+     A            OFDAY          4  0       TEXT('Off-Line Rention Days')
+     A                                      COLHDG('Off-Line' 'Ret' 'Days')
+     A            DEFP          10          TEXT('Default Printer')
+     A                                      COLHDG('Default' 'Printer')
+     A            DEFQ          10          TEXT('Default Out Queue')
+     A                                      COLHDG('Default' 'Out' 'Queue')
+     A            DEFL          10          TEXT('Default Out Libr')
+     A                                      COLHDG('Default' 'Out' 'Library')
+     A            DFILT         10          TEXT('Default Printer Filter')
+     A                                      COLHDG('Default' 'Printer' 'Filter')
+     A            PGBK           1          TEXT('Print Page Breaks ')
+     A                                      COLHDG('Print' 'Page' 'Breaks')
+     A            LCKH           2  0       TEXT('Lock Heading Line #')
+     A                                      COLHDG('Lock' 'Headings' 'Line#')
+     A            SEC            1          TEXT('Security Enable')
+     A                                      COLHDG('Security' 'Enabled')
+     A            OPVID         12          TEXT('Optical Multivolume ID')
+     A                                      COLHDG('Optical' 'Multivolume ID')
+     A            TYPID         10          TEXT('Report Type ID')
+     A                                      COLHDG('Report' 'Type ID')
+     A            USRF1         10          TEXT('User Defined 1')
+     A                                      COLHDG('User' 'Field 1')
+     A            USRF2         10          TEXT('User Defined 2')
+     A                                      COLHDG('User' 'Field 2')
+     A            PRTCPG         1          TEXT('Print Custom Cover Page')
+     A                                      COLHDG('Print' 'Cover' 'Page')
+     A            CPGID         10          TEXT('Custom Cover Page Id')
+     A                                      COLHDG('Cover' 'Page' 'Id')
+      ************************************
+      ****  Queue Table
+      ************************************
+1    A            OUTQ          10A         TEXT('Output Queue to Monitor')
+     A                                      COLHDG('Output' 'Queue')
+     A            LIBR          10A         TEXT('Library Name')
+     A                                      COLHDG('Library' 'Name')
+     A            WAITPD         6B 0       TEXT('Wait Period')
+     A                                      COLHDG('Wait' 'Period')
+     A            DISF           1A         TEXT('Disable Monitoring Flag')
+     A                                      COLHDG('Disable' 'Monitor' 'Flag')
+5    A            FOLD          10A         TEXT('Report Folder Name')
+     A                                      COLHDG('Report' 'Folder' 'Name')
+     A            FLIB          10A         TEXT('Report Folder Library')
+     A                                      COLHDG('Report' 'Folder' 'Library')
+     A            DAFT           1          TEXT('Delete Rep. After Arch Alway')
+     A                                      COLHDG('Delete' 'After' 'Always')
+     A            DAFTP          1          TEXT('Delete only if Printed')
+     A                                      COLHDG('Delete' 'Only' 'If Printed')
+     A            HOLD           1          TEXT('Place Report on Hold Status')
+     A                                      COLHDG('Place' 'Report' 'On Hold')
+10   A            PHOLD          1          TEXT('Purge if on Hold')
+     A                                      COLHDG('Purge' 'If on Hold')
+     A            MQ            10          TEXT('Move Report to Out Queue')
+     A                                      COLHDG('Move' 'Report' 'to Outq')
+     A            MQLIB         10          TEXT('Move Report to Library')
+     A                                      COLHDG('Move' 'Report' 'To Libr')
+     A            UPRG          10          TEXT('User Exit Program Name')
+     A                                      COLHDG('User' 'Exit' 'Program')
+     A            ULIB          10          TEXT('User Exit Library Name')
+     A                                      COLHDG('User' 'Exit' 'Library')
+15   A            AIND           1          TEXT('Automatic Index')
+     A                                      COLHDG('Auto' 'Index')
+     A            INDX          10          TEXT('Index Name')
+     A                                      COLHDG('Index' 'Name')
+     A            EXPF           1          TEXT('Expand Folder If Full')
+     A                                      COLHDG('Expand' 'Folder')
+     A            EXPM           5  0       TEXT('Expand # of Mb')
+     A                                      COLHDG('Expand' 'Mb')
+     A            FSIZ           5  0       TEXT('Creation Size Mb')
+     A                                      COLHDG('Folder Size')
+20   A            SPLNO          9B 0       TEXT('No. of Spoolfiles')
+     A                                      COLHDG('# of ' 'Spoolfiles')
+     A            RMSV           1          TEXT('Remove Save Status')
+     A                                      COLHDG('Remove' 'Save Status')
+     A            RELF           1          TEXT('Release Spoofile Security')
+     A                                      COLHDG('Release' 'Security')
+     A            LSCKDT         8B 0       TEXT('Late Checked Date')
+     A                                      COLHDG('Late' 'Checked' 'Date')
+24   A            LSCKTM         6B 0       TEXT('Late Checked Time')
+     A                                      COLHDG('Late' 'Checked' 'Time')
+     A            OPT            1          TEXT('Optical (Y/N)')
+     A                                      COLHDG('Optical' 'Y/N')
+     A            OPVOL         12          TEXT('Optical Volume')
+     A                                      COLHDG('Optical' 'Volume')
+     A            QPACK          1          TEXT('Compress')
+     A                                      COLHDG('Compress')
+      ************************************
+      *** Security Data based fields
+      ************************************
+     A            DSPID         10          TEXT('User ID ')
+     A                                      COLHDG('User' 'Id')
+     A            READ           1          TEXT('Data Read')
+     A                                      COLHDG('Data' 'Read' 'Acc')
+     A            DELET          1          TEXT('Data Delete')
+     A                                      COLHDG('Data' 'Delete')
+     A            PRINT          1          TEXT('Data Print ')
+     A                                      COLHDG('Data' 'Print ')
+      ************************************
+      *** Windowing Data Set Fields
+      ************************************
+     A            WKEY           3  0       TEXT('Window Key # ')
+     A                                      COLHDG('Window' 'Key')
+     A            SCOL           3  0       TEXT('Starting Column')
+     A                                      COLHDG('Starting' 'Column')
+     A            SLEN           3  0       TEXT('Length of Column')
+     A                                      COLHDG('Length' 'of' 'Col.')
+     A            DCOL           3  0       TEXT('Display Column')
+     A                                      COLHDG('Display' 'Column')
+      ************************************
+      *** Indexing Data Set
+      ************************************
+     A            IKEY           3  0       TEXT('Index Key # ')
+     A                                      COLHDG('Index' 'Key')
+     A            RINDX         10          TEXT('Report Index Name')
+     A                                      COLHDG('Index' 'Name')
+     A            IDESC         30          TEXT('Report Index Desc')
+     A                                      COLHDG('Index' 'Name')
+     A            PLN#           3  0       TEXT('Page Line No. for Key')
+     A                                      COLHDG('Line' 'Number' 'for Key')
+      **   SCOL & SLEN are reused for Key
+      **   Position (Column & Lenght)
+     A            KLEN           3  0       TEXT('Key Length')
+     A                                      COLHDG('Key' 'Length')
+     A            INDA           1          TEXT('Index all Lines y/n')
+     A                                      COLHDG('Index' 'All')
+     A            ICMD           2  0       TEXT('Type of Index')
+     A                                      COLHDG('Type' 'Index')
+     A            DBFIL         10          TEXT('Database file for Index')
+     A                                      COLHDG('Index ' 'File')
+     A            PRMPT         30          TEXT('Link Prompt name')
+     A                                      COLHDG('Link' 'Prompt' 'Name')
+     A            PMTL           3  0       TEXT('Prompt Length')
+     A                                      COLHDG('Prompt' 'Length')
+     A            PMTSL          3  0       TEXT('Prompt Start Line')
+     A                                      COLHDG('Prompt' 'Start' 'Line')
+     A            PMTEL          3  0       TEXT('Prompt End Line')
+     A                                      COLHDG('Prompt' 'End' 'Line')
+     A            PMTSC          3  0       TEXT('Prompt Start Col.')
+     A                                      COLHDG('Prompt' 'Start' 'Col.')
+     A            PMTEC          3  0       TEXT('Prompt End Col.')
+     A                                      COLHDG('Prompt' 'End' 'Col.')
+     A            PMTRL          3  0       TEXT('Prompt Relative Line to Link')
+     A                                      COLHDG('Prompt' 'Rel' 'Line')
+     A            PMTRC          3  0       TEXT('Prompt Relative Col. to Link')
+     A                                      COLHDG('Prompt' 'Rel' 'Col.')
+      ************************************
+      *** Post it Notes  Data Set
+      ************************************
+     A            POST#          2  0       TEXT('Post it Note #')
+     A                                      COLHDG('Post' '#')
+     A            PPG#           2  0       TEXT('Page for Note')
+     A                                      COLHDG('Note' 'Page#')
+     A            PLIN#          2  0       TEXT('Line # for Note')
+     A                                      COLHDG('Note' 'Line#')
+      *           PUSR          10          TEXT('User who created note')
+      *                                     COLHDG('Created' 'By')
+     A            PCOM1         60          TEXT('Comment line 1')
+     A                                      COLHDG('Notes')
+     A            PCOM2         60          TEXT('Comment line 2')
+     A                                      COLHDG('Notes')
+     A            PCOM3         60          TEXT('Comment line 3')
+     A                                      COLHDG('Notes')
+     A            PCOM4         60          TEXT('Comment line 4')
+     A                                      COLHDG('Notes')
+      ************************************
+      *** Queue Table Over-rides
+      ************************************
+      * Most fields have already been defined by Queue Table
+     A            PROG          10          TEXT('Print Program ')
+     A                                      COLHDG('Print' 'Prog.')
+     A            ODESC         30          TEXT('Over-Ride Descrip.')
+     A                                      COLHDG('Over. ' 'Desc')
+      ************************************
+      *** Filters Table
+      ************************************
+     A            FILT          10          TEXT('Filter Name')
+     A                                      COLHDG('Filter' 'Name')
+     A            FDESC         30          TEXT('Filter Description')
+     A                                      COLHDG('Filter' 'Desc')
+     A            LPP            2  0       TEXT('Lines per page')
+     A                                      COLHDG('Lines' '/' 'Page')
+     A            LPI            3  1       TEXT('Lines per inch')
+     A                                      COLHDG('Lines' '/' 'inch')
+     A            SCR            1          TEXT('Suppress Carriage Return')
+     A                                      COLHDG('Suppress' 'CR')
+     A            SPEF           1          TEXT('Suppress Perforation')
+     A                                      COLHDG('Suppress' 'Perf')
+     A            SEJT           1          TEXT('Suppress final page eject')
+     A                                      COLHDG('Suppres' 'Eject')
+     A            SBEF          60          TEXT('Send Before')
+     A                                      COLHDG('Send' 'Before')
+     A            SAFT          60          TEXT('Send After')
+     A                                      COLHDG('Send' 'After')
+      ************************************
+      *** Printer Table
+      ************************************
+     A            PRTNM         10          TEXT('Printer Name')
+     A                                      COLHDG('Printer' 'Name')
+     A            PDESC         30          TEXT('Printer Description')
+     A                                      COLHDG('Printer' 'Desc')
+     A            PRTDV         10          TEXT('Printer Device')
+     A                                      COLHDG('Printer' 'Device')
+     A            POUTQ         10          TEXT('Output Queue')
+     A                                      COLHDG('Output' 'Queue')
+     A            PLIBR         10          TEXT('Output Queue  Library')
+     A                                      COLHDG('Outq' 'Library')

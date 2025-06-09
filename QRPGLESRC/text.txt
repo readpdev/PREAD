@@ -1,0 +1,90 @@
+
+Figure 1: Create an SSL environment
+
+
+     P CreateEnv       B
+
+     D CreateEnv       PI                  like(gsk_handle)
+
+     D rc              s             10I 0
+
+     D SslEnv          s                   like(Gsk_handle)
+
+      /free
+
+
+
+        // Create an SSL environment with default values
+
+
+         rc = gsk_environment_open(SslEnv);
+
+         if (rc <> GSK_OK);
+
+            return *NULL;
+
+         endif;
+A
+
+
+        // Tell the environment to use the *SYSTEM certificate
+
+        //  store
+
+         rc = gsk_attribute_set_buffer( SslEnv
+
+                                      : GSK_KEYRING_FILE
+
+                                      : '*SYSTEM'
+
+                                      : 0 );
+
+         if (rc <> GSK_OK);
+
+            gsk_environment_close( SslEnv );
+
+            return *NULL;
+
+         endif;
+B
+
+
+        // Tell the environment that this is a client connection
+
+         rc = gsk_attribute_set_enum( SslEnv
+
+                                    : GSK_SESSION_TYPE
+
+                                    : GSK_CLIENT_SESSION );
+
+         if (rc <> GSK_OK);
+
+            gsk_environment_close( SslEnv );
+
+            return *NULL;
+
+         endif;
+C
+
+
+        // Activate the new environment
+
+         rc = gsk_environment_init( SslEnv );
+
+         if (rc <> GSK_OK);
+
+            gsk_environment_close( SslEnv );
+
+            return *NULL;
+
+         endif;
+
+		
+D
+
+
+         return SslEnv;
+
+      /end-free
+
+     P                 E

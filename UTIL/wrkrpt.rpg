@@ -1,0 +1,2090 @@
+      *%METADATA                                                       *
+      * %TEXT SpyView - Work with Report Types                         *
+      *%EMETADATA                                                      *
+      **********-----------------------
+      * WRKRPT   Work with Report Types
+      **********-----------------------
+      *
+     FWRKRPTFMCF  E                    WORKSTN      KINFDS DSDSP      UC
+     F                                        RCD1  KSFILE SFL11
+     F                                        RCD1  KSFILE SFL12
+     F                                        RCD1  KSFILE SFL13
+     F                                        RCD2  KSFILE SFL2
+     FRLNKDEF UF  E           K        DISK                           UC
+     FRMAINT4 UF  E           K        DISK                           UC
+     FRMAINT  IF  E           K        DISK                           UC
+     F            RMNTRC                            KRENAMERMTNRC1
+     FRWINDOW UF  E           K        DISK                           UC
+     F*SPLCFG1UF  E           K        DISK                           UC
+     FRFORMS  UF  E           K        DISK                           UC
+     FRSECUR  UF  E           K        DISK                           UC
+     FRDSTDEF1IF  E           K        DISK                           UC
+     FRINDEX  UF  E           K        DISK                           UC
+     FMIMGDI10IF  E           K        DISK                           UC
+     FMRPTDI13IF  E           K        DISK                           UC
+     FMIDXRUL UF  E           K        DISK                           UC
+/4432FRDBKEY  UF  E           K        DISK                           UC
+      *
+/4432 * 08-31-01 PLR ADD RDBKEY TO DELETE ROUTINE.
+/2492 *  4-07-00 FID Added new option for overlay rules, also change delete subr
+/2347 *  2-04-00 JJF Prevent JoeUser from running (in subr APPSEC)
+      *  8-01-99 FID New option 16=Work with segments
+      *  3-18-99 FID If called over folder level sorting/positioning didn't work
+      *  2-12-99 JJF Fix ROLDAY/GEN and ROFDAY/GEN error in subf SFL13
+      *  2-07-99 FID Use BLDSPOPT to format option text
+      * 12-15-98 DM  Do not delete records from rsplfcfg
+      * 12-08-98 GT  Change call to CVTDAT to SPYCVTDT
+      *  8-12-98 GT  Change date format from system value to SYSDFT value
+      *  2-21-98 kac disable functions for imageview type reports
+      *  2-06-98 kac disable functions for r/dars type reports
+      *  9-03-97 GK  Pass 'FOLDER' or 'REPTYP' to SpyCal, was only
+      *                   'reptyp'
+      *  7-02-97 FID New program
+      *
+      *       01         validcmdkey
+      *       02         change matchcode field on screen
+      *       03         change matchcode field after f4 prompt
+      *       10         display option in subfile
+      *       11         subfile next change
+      *                  Position cursor
+      *       50         error
+      *       70 - 71    sfc1
+      *       74         sfldrop etc.
+      *       75         msgsfl
+      *       96/97      roll down active/response
+      *       98/99      roll up   active/response
+      *
+     E                    TXT         5132               Fkyviw texts
+     E                    DTS        40192               RMaint recs
+     E                    AUT        25  1               Auth returns
+      *
+     E                    SM      1   4  7               Sfl header msg
+     E                    SP          4  1 0             Sfl fields ptr
+     E                    SH          4 10               Sfl header
+     E                    SHR         4 10               Sfl pscon  fld
+     E                    SD          4 10               Sfl data
+     E                    SDR         4 10               Sfl rmaint fld
+     E                    OPT     1  20  7               Options MSGID
+     E                    OT         10132               OPTIOM texts
+     I           IDS
+     I                                        1  40 SH
+     I                                        1  10 HDR1
+     I                                       11  20 HDR2
+     I                                       21  30 HDR3
+     I                                       31  40 HDR4
+     I           IDS
+     I                                        1  40 SD
+     I                                        1  10 SFFLD1
+     I                                       11  20 SFFLD2
+     I                                       21  30 SFFLD3
+     I                                       31  40 SFFLD4
+     I           IDS
+     I                                    B   1   40APILEN
+     I                                    B   5   80MSGDTL
+     I                                    B   9  120FILNUB
+      *
+     IERRCD       DS                            116
+      *             Api error code
+     I I            116                   B   1   40@ERLEN
+     I                                        9  15 @ERCON
+     I                                       17 116 @ERDTA
+     I           IDS
+     I                                        1   80DAT80A
+     I                                        1   20DAY80A
+     I                                        3   40MON80A
+     I                                        5   80YEA80A
+      *
+     ISYSDFT      DS                           1024
+     I                                      136 136 DSPOFF
+     I                                      220 220 LDSTYN
+     I                                      227 227 RVIEW
+     I                                      296 305 PGMLIB
+     I                                      306 315 DTALIB
+     I                                      350 359 SUBFD1
+     I                                      671 671 SHWRTL
+      *
+     ISDT         DS                           7680
+      *             Send back Data
+     I                                        17680 DTS
+      *
+     IFYLDTA      DS                            192
+      *             RMAINT data in the DTS array
+     I                                        1  10 SFLD
+     I                                       11  20 SFLDLB
+     I                                       21  30 RRNAM
+     I                                       31  40 RJNAM
+     I                                       41  50 RPNAM
+     I                                       51  60 RUNAM
+     I                                       61  70 RUDAT
+     I                                       71  80 REPTYP
+     I                                       81 120 RRDESC
+     I                                      121 121 SPLNK
+     I                                      122 1240ROLGEN
+     I                                      125 1270ROFGEN
+      * * * *                             * 128 130 *unused
+     I                                      131 142 ROPVID
+     I                                      143 143 TYPE
+     I                                      144 1520LDATN
+     I                                      145 1480LYY
+     I                                      149 1500LMM
+     I                                      151 1520LDD
+     I                                      153 1580LTIMN
+     I                                      159 1620ROLDAY
+     I                                      163 1660ROFDAY
+      * * * *                             * 167 192 *unused
+      *
+     ITX1024     IDS                           1024
+     I          ESDSCASPGMD
+      *             SystemDS (SDS) - see PFSRC.CASPGMD
+     IMSGDS      IDS                            150
+      *             Retrieve msg
+     I                                    B   9  120MSGLEN
+     I                                       25 150 MSGTXT
+     I           IDS
+     I                                        1   60TIMSTP
+     I                                        1   20TIMHH
+     I                                        3   40TIMMM
+     I                                        5   60TIMSS
+     I           IDS
+     I                                    B   1   40STKCNT
+     I                                    B   5   80DTALEN
+     I                                    B   9  120ERRCOD
+     IDSDSP       DS
+     I                                      369 369 KEY
+     I                                    B 370 3710CSRLOC
+     I                                    B 378 3790SFLZ
+     I                                    B 382 3830WINLOC
+     I           IDS
+     I                                        1 100 RCVERR
+     I                                    B   1   40ERRPRO
+     I                                    B   5   80ERRAVA
+     I                                       17 100 ERRDT
+      *
+     I              X'33'                 C         F3
+     I              X'34'                 C         F4
+     I              X'35'                 C         F5
+     I              X'36'                 C         F6
+     I              X'3B'                 C         F11
+     I              X'3C'                 C         F12
+     I              X'B1'                 C         F13
+     I              X'B2'                 C         F14
+     I              X'B3'                 C         F15
+     I              X'B4'                 C         F16
+     I              X'B5'                 C         F17
+     I              X'B6'                 C         F18
+     I              X'B7'                 C         F19
+     I              X'B8'                 C         F20
+     I              X'B9'                 C         F21
+     I              X'BB'                 C         F23
+     I              X'BC'                 C         F24
+     I              X'F3'                 C         HELP
+     I              X'F4'                 C         PAGEUP
+     I              X'F5'                 C         PAGEDN
+     I              'PSCON     *LIBL     'C         PSCON
+      *----------------------------------------------------------------
+      *
+     C           *ENTRY    PLIST
+     C                     PARM           PRMFLD 10
+     C                     PARM           PRMFLB 10
+     C                     PARM           PRMPOS 10
+     C                     PARM           PRMOPC 10
+     C                     PARM           RTNRTY 10        Rtn rpttype
+     C                     PARM           RTNRNA 10        Rtn rptname
+     C                     PARM           RTNJNA 10        Rtn jobname
+     C                     PARM           RTNPNA 10        Rtn pgmname
+     C                     PARM           RTNUNA 10        Rtn usrname
+     C                     PARM           RTNUDT 10        Rtn ursdta
+     C                     PARM           RTNCDE  8
+      *
+<--1sC                     SELEC
+| -1wC           PRMOPC    WHEQ '*SELECT'
+|    C                     MOVEL'*RPTTYP' SORT      P
+| -1wC           PRMOPC    WHEQ '*SELBIG5'
+|    C                     MOVEL'*REPORT' SORT      P
+| -1wC           PRMFLD    WHNE *BLANKS
+|    C                     MOVEL'*RPTTYP' SORT      P                  MainLine
+| -1wC                     OTHER
+|    C                     MOVEL'*REPORT' SORT      P
+|__1sC                     ENDSL
+     C                     EXSR SRPTXT                     Pos to text
+      *
+      *   Clear rtnfields for *select opcode
+     C                     MOVE *BLANKS   RTNRTY           Rtn rpttype
+     C                     MOVE *BLANKS   RTNRNA           Rtn rptname
+     C                     MOVE *BLANKS   RTNJNA           Rtn jobname
+     C                     MOVE *BLANKS   RTNPNA           Rtn pgmname
+     C                     MOVE *BLANKS   RTNUNA           Rtn usrname    MainLn
+     C                     MOVE *BLANKS   RTNUDT           Rtn ursdta
+      * Load PRMVW
+     C                     EXSR GETVW
+      *
+     C           *LIKE     DEFN RCD1      TRCD1
+     C           *LIKE     DEFN RCD1      TRCD2
+     C                     WRITEWIN01
+     C                     WRITEFMTKEY
+     C                     WRITEFMTSEL                                 MainLine
+     C                     SETON                     96
+<--1 C           PRMPOS    IFNE *BLANKS                    Position to
+|    C                     MOVELPRMPOS    POSVAL
+|    C                     EXSR SRSET
+--E1 C                     ELSE
+|    C                     EXSR SRF17                      Top
+|__1 C                     ENDIF
+      *>>>>>>>>>>IN01
+     C           IN01      TAG
+      *
+<--1 C           *INKD     IFEQ *OFF
+|    C                     CLEARWINLIN
+|    C                     CLEARWINPOS
+|__1 C                     END
+      *
+<--1 C           TRCD1     IFEQ *ZEROS                      Kein satz
+|    C                     MOVE *ON       *IN71             in subfile
+|    C                     WRITENORCD
+--E1 C                     ELSE
+|    C                     MOVE *OFF      *IN71                        MainLine
+|__1 C                     END
+      *                                                                   MainLn
+<--1 C           SFLRC1    IFGT TRCD1
+|    C                     Z-ADDTRCD1     SFLRC1
+|__1 C                     ENDIF
+<--1 C           SFLRC1    IFEQ 0
+|    C                     Z-ADD1         SFLRC1
+|__1 C                     ENDIF
+      *
+     C                     MOVE *OFF      *IN70
+     C                     WRITEMSGSFC
+     C                     WRITEFMTSEL
+      *
+<--1sC                     SELEC
+| -1wC           VIEW      WHEQ 0
+|     *                 |--------------|                   subfile
+|    C                     EXFMTSFC11                       View 1
+| -1wC           VIEW      WHEQ 1
+|    C                     EXFMTSFC12                       View 2
+| -1wC           VIEW      WHEQ 2                                      MainLine
+|    C                     EXFMTSFC13                       View 3
+|     *                 |--------------|
+|__1sC                     ENDSL
+      *
+    IC                     READ FMTSEL                 5050 Read Filter
+     C                     Z-ADDSFLZ      SFLRC1
+     C                     Z-ADDSFLZ      CURRC1  50
+     C                     EXSR CLRMSG
+      * Ftn Keys
+<--1 C           *IN01     IFEQ *ON                        Vldcmdkey
+<--2 C           KEY       IFEQ HELP                       Help
+|    C                     MOVEL'SFC11'   HLPFMT    P                     MainLn
+|    C                     CALL 'SPYHLP'  PLHELP
+|    C           PLHELP    PLIST
+|    C                     PARM 'WRKRPT'  DSPFIL 10
+|    C                     PARM           HLPFMT 10
+|   GC                     GOTO IN01
+|__2 C                     END
+<--2 C           KEY       IFEQ F4                         F4
+|    C                     EXSR SRF4                                   MainLine
+|   GC                     GOTO IN01
+|__2 C                     ENDIF
+<--2 C           KEY       IFEQ F3                         F3
+|    C           KEY       OREQ F12                        F12
+|    C                     MOVE KEY       RTNCDE
+|    C                     EXSR QUIT
+|__2 C                     ENDIF
+<--2 C           KEY       CASEQF21       SRF21            F21 CmdLine
+|    C           KEY       CASEQF5        SRF5             F5  Refresh
+|    C           KEY       CASEQF16       SRF16            F16 sort
+|    C           KEY       CASEQF17       SRF17            F17 Top
+|    C           KEY       CASEQF18       SRF18            F18 Bottom
+|__2 C                     ENDCS
+<--2 C           KEY       IFEQ F11                        F11
+|    C                     EXSR SRF11
+|   GC                     GOTO IN01
+|__2 C                     ENDIF
+<--2 C           KEY       IFEQ F23                         F23
+|    C                     EXSR SRF23
+|   GC                     GOTO IN01
+|__2 C                     END
+<--2 C           KEY       IFEQ F24                                       MainLn
+|    C                     EXSR SRF24                      F24 More
+|   GC                     GOTO IN01                            Fkeys  MainLine
+|__2 C                     ENDIF
+<--2 C           KEY       IFEQ F14
+|    C                     EXSR SRF14                      F14 cfg
+|   GC                     GOTO IN01
+|__2 C                     ENDIF
+<--2 C           KEY       IFEQ F6
+|    C                     EXSR SRF6                       F6 Create
+|   GC                     GOTO IN01
+|__2 C                     ENDIF
+<--2 C           *IN99     IFEQ *ON                        Next page
+<--3 C           *IN02     IFEQ *OFF
+|    C           *IN03     ANDEQ*OFF
+|    C                     EXSR ROLUP
+|   GC                     GOTO IN01
+|__3 C                     END
+|__2 C                     END
+<--2 C           *IN97     IFEQ *ON                        Prev page
+<--3 C           *IN02     IFEQ *OFF
+|    C           *IN03     ANDEQ*OFF
+|    C                     EXSR REDSFL                                 MainLine
+|    C                     EXSR ROLDWN
+|   GC                     GOTO IN01
+|__3 C                     END
+|__2 C                     END
+|__1 C                     END
+      * Position to
+<--1 C           *IN02     IFEQ *ON
+|    C           *IN03     OREQ *ON                                       MainLn
+|    C                     EXSR REDSFL
+|    C                     EXSR SRSET
+|__1 C                     END
+      * Options
+     C                     EXSR REDSFL
+    GC                     GOTO IN01                       Loop until
+      *                                                     F3/f12...
+      *
+      *@$$$$$$$$ SNDMSG $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SNDMSG    BEGSR
+      *          Send pgm msg
+      *
+<--1 C           MSGID     IFNE *BLANKS
+|    C                     CALL 'SNDMSG2'              50
+|    C                     PARM           MSGID   7
+|    C                     PARM           MSGDTA132
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ QUIT   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           QUIT      BEGSR
+      *
+     C                     EXSR CLRW
+     C                     MOVEL'QUIT'    OPCODE    P
+     C                     CALL 'SPYCSRTY'PLLST
+     C                     MOVE *ON       *INLR
+     C                     RETRN
+     C                     ENDSR
+      *
+      *@$$$$$$$$ CHKDAT $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           CHKDAT    BEGSR
+      *          Convert INDATE to user format
+      *
+     C                     CALL 'SPYCVTDT'             50
+     C                     PARM INDATE    INDA10 10
+     C                     PARM           INFORM 10        From format
+     C                     PARM           OUTFRM 10         To  format
+     C                     PARM *BLANK    ERROR   1
+      *
+     C                     MOVELINDA10    INDATE  8
+      *
+<--1 C           ERROR     IFNE ' '
+|    C                     EXSR CLRMSG
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ FMTDAT $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           FMTDAT    BEGSR
+      *          Format date
+     C                     CLEARDATE
+<--1 C           DAT80A    IFNE 0
+|    C                     MOVELDAT80A    INDATE    P
+|    C                     MOVEL'*DMYY'   INFORM    P
+|    C                     MOVELINFMT     OUTFRM
+|    C                     EXSR CHKDAT
+|    C                     MOVELINDATE    F2A     2
+|    C           F2A       CAT  DATSEP:0  DATE    8 P
+|    C           2         SUBSTINDATE:3  F2A
+|    C                     CAT  F2A:0     DATE
+|    C                     CAT  DATSEP:0  DATE
+|    C           2         SUBSTINDATE:5  F2A
+|    C                     CAT  F2A:0     DATE
+|    C                     MOVELDATE      F1A     1
+<--2 C           F1A       IFEQ '0'
+|    C                     MOVEL' '       DATE
+|__2 C                     ENDIF
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ FMTTIM $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           FMTTIM    BEGSR
+      *          Format time
+<--1 C           TIME      IFNE '000000'
+|    C                     MOVELTIME      F6A     6
+|    C                     MOVELF6A       $HH     2
+|    C           2         SUBSTTIME:3    $MM     2
+|    C                     MOVE F6A       $SS     2
+|    C           $HH       CAT  TIMSEP:0  TIME    8 P
+|    C                     CAT  $MM:0     TIME
+|    C                     CAT  TIMSEP:0  TIME      P
+|    C                     CAT  $SS:0     TIME
+<--2 C           $HH       IFLE '09'
+|    C           $HH       ANDGE'00'
+|    C                     MOVEL' '       TIME
+|__2 C                     ENDIF
+--E1 C                     ELSE
+|    C                     CLEARTIME
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRCURS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRCURS    BEGSR
+      *          Get cursor position
+      *
+     C           CSRLOC    DIV  256       CSRLIN  30       curs line
+     C                     MVR            CSRPOS  30       curs pos
+     C           WINLOC    DIV  256       WINLIN  30       curs line
+     C                     MVR            WINPOS  30       curs pos
+     C                     ENDSR
+      *
+      *@$$$$$$$$ CLRMSG $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           CLRMSG    BEGSR
+      *          Remove msg
+     C                     CALL 'QMHRMVPM'
+     C                     PARM           WQPGMN
+     C                     PARM           STKCNT
+     C                     PARM           MSGKY
+     C                     PARM           MSGRMV
+     C                     PARM           ERRCOD
+     C                     ENDSR
+      *
+      *@$$$$$$$$ *INZSR $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           *INZSR    BEGSR
+      *
+     C           WQLIBN    CAT  '/MAG103B'MG103B 21        AddLibl
+     C                     CALL MG103B                       SpyPgmLib
+     C                     PARM           CGLIST  10
+      *
+     C                     CALL 'MAG1031'                  Save user's
+     C                     PARM           WQPGMN            LibList
+     C                     PARM ' '       #LOAD   1         and LDA
+      *
+     C                     CALL 'MAG103A'              81  Build SpyLst
+      *                                                     pgm+data
+<--1 C           *IN81     IFEQ *ON                        Error...
+|    C                     CALL 'MAG1031'                   Restore
+|    C                     PARM           WQPGMN            LibList
+|    C                     PARM 'Q'       #LOAD
+|    C                     CALL 'SPYERR'                    Send error
+|    C                     PARM 'API0004' MSGID   7         message
+|    C                     PARM *BLANK    MSGDTA132
+|    C                     PARM 'PSCON'   MSGF   10
+|    C                     PARM '*LIBL'   MSGFLB 10         and        *INZSR
+|    C                     EXSR QUIT                        quit.
+|__1 C                     END
+      * Open files
+     C                     OPEN WRKRPTFM
+      * Sysdef action file index counter
+     C           *NAMVAR   DEFN           SYSDFT
+     C                     IN   SYSDFT
+      *
+     C                     MOVE *ON       *IN75
+     C                     MOVE *BLANKS   MSGKY   4                       *INZSR
+     C                     MOVEL'*ALL'    MSGRMV 10
+     C                     Z-ADD1         SFLRC1
+     C                     MOVEL'*PUBLIC' PUBLIC 10
+      *
+     C                     Z-ADD10        TOTSFL  40       Rcds in sfl
+     C                     Z-ADD11        TOTREQ  40       Rcds to read
+      * Get SysValues
+     C                     CALL 'MAG8090'                  Get date fmt
+     C                     PARM           DATFMT  3
+     C                     PARM           DATSEP  1                    *INZSR
+     C                     PARM           TIMSEP  1
+      *
+     C           '*'       CAT  DATFMT:0  INFMT   8        Date format
+      * Position to
+     C                     MOVE 'P000075' MSGID            Position to
+     C                     EXSR RTVMSG
+     C                     MOVELMSGTXT    POSITN 30
+      *
+     C                     EXSR GETVW
+      * FKeys Options
+     C                     EXSR GETOPT
+      * FKeys text
+     C                     EXSR GETFKY
+      * Sort fields subfile headings
+<--1dC                     DO   4         I1      50
+|    C                     MOVE SM,I1     MSGID
+|    C                     EXSR RTVMSG
+|    C                     MOVEAMSGTXT    SHR,I1
+|__1dC                     ENDDO
+     C                     Z-ADD1         SP,1                            *INZSR
+     C                     Z-ADD2         SP,2
+     C                     Z-ADD3         SP,3
+     C                     Z-ADD4         SP,4                         *INZSR
+     C                     ENDSR
+      *
+      *@$$$$$$$$ GETOPT $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           GETOPT    BEGSR
+      * Options
+     C                     EXSR APPSEC                     App Sec
+      *
+      * Adjust M1060 elements: Mag1060   Option#
+     C                     MOVE AUT,13    AUT,6             Security
+     C                     MOVE AUT,10    AUT,7             Rename
+     C                     MOVE AUT,1     AUT,10            Vu SpyLinks
+     C                     MOVE AUT,8     AUT,13            Config
+     C                     MOVE AUT,8     AUT,18            Config
+     C                     MOVE AUT,17    AUT,15            Distribution
+     C                     MOVE AUT,17    AUT,16            Segment
+     C                     MOVE AUT,1     AUT,20            Calendar
+      * Title 1
+      *
+<--1dC           1         DO   20        #       30
+<--2 C           OPT,#     IFNE *BLANK                     In use here,
+|    C           AUT,#     ANDNE'N'                         and  auth
+|    C                     MOVE OPT,#     MSGID            1-6
+|    C                     EXSR RTVMSG
+|    C                     CAT  MSGTXT:2  TX1024           Title1
+|__2 C                     END
+|__1dC                     ENDDO
+      *
+     C                     CALL 'BLDSPOPT'
+     C                     PARM           TX1024           Text
+     C                     PARM 74        MAXOPT  50       Max length
+     C                     PARM 2         MAXLIN  50       Max Lines
+     C                     PARM           OT               Rtn text
+     C                     PARM           MAXF23  50       Max pres F23
+      *                                                                   GETOPT
+     C                     Z-ADD1         OT#
+     C                     MOVELOT,OT#    TITLE1
+     C                     ADD  1         OT#
+     C                     MOVELOT,OT#    TITLE2
+     C                     SUB  1         OT#
+      *
+     C                     ENDSR
+      *
+      *@$$$$$$$$ GETFKY $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           GETFKY    BEGSR
+      * FKeys text
+     C                     MOVE 'WRD004A' MSGID            Fkey text
+     C                     EXSR RTVMSG
+     C                     MOVELMSGTXT    TX1024    P
+<--1 C           PRMVW     IFNE 'FOLDER'
+|    C                     MOVE 'WRD004B' MSGID            F16=sort
+|    C                     EXSR RTVMSG
+|    C                     CAT  MSGTXT:3  TX1024
+|__1 C                     ENDIF
+     C                     MOVE 'WRD004C' MSGID            F16=sort
+     C                     EXSR RTVMSG                                 *INZSR
+     C                     CAT  MSGTXT:3  TX1024
+      *
+<--1 C           MAXF23    IFGT 1
+|    C                     MOVE 'FKY2300' MSGID            F24
+|    C                     EXSR RTVMSG
+|    C                     CAT  MSGTXT:3  TX1024
+|__1 C                     ENDIF
+      *
+     C                     CALL 'BLDSPKEY'
+     C                     PARM           TX1024           Text
+     C                     PARM 73        MAXFKY  50       Max length
+     C                     PARM           TXT              Rtn text
+     C                     PARM           MAXF24  50       Max pres f24
+      *
+     C                     MOVELTXT,1     FKEY
+     C                     Z-ADD1         KEY#
+     C                     ENDSR
+      *
+      *@$$$$$$$$ BLDHDR $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           BLDHDR    BEGSR
+      *          Build the heading
+<--1dC                     DO   4         I1
+|    C                     Z-ADDSP,I1     I2      50
+|    C                     MOVE SHR,I2    SH,I1
+|__1dC                     ENDDO
+     C                     ENDSR
+      *
+      *@$$$$$$$$ APPSEC $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           APPSEC    BEGSR
+      *          Get user authority to run this pgm & its options.
+      *
+     C                     CALL 'MAG1060'
+     C                     PARM 'WRKRPT'  CALPGM 10        Calling pgm
+     C                     PARM           PGMOFF  1        Unload M1060
+     C                     PARM 'O'       CKTYPE  1        Chk type
+     C                     PARM 'A'       OBJCOD  1        (A)plication
+     C                     PARM 'WRKRPT'  OBJNAM 10        Object name
+     C                     PARM WQLIBN    OBJLIB 10        Object libr
+     C                     PARM *BLANK    RNAME  10
+     C                     PARM *BLANK    JNAME  10
+     C                     PARM *BLANK    PNAME  10
+     C                     PARM *BLANK    UNAME  10
+     C                     PARM *BLANK    UDATA  10
+     C                     PARM 07        REQOPT  20       Run auth
+     C                     PARM *BLANK    AUTRTN  1        Return Y/N
+     C                     PARM *BLANK    AUT              Return array
+      *
+/2347 * Quit if user cannot run this program
+<--1 C           AUTRTN    IFEQ 'N'
+|    C                     CALL 'SPYERR'
+|    C                     PARM 'E000009' MSGID   7
+|    C                     EXSR QUIT
+|__1 C                     END
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SPYERR $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SPYERR    BEGSR
+     C                     CALL 'SPYERR'               50
+     C                     PARM           ERRID   7
+     C                     PARM           ERRDTA250
+     C                     ENDSR
+      *
+      *@$$$$$$$$ RTVMSG $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           RTVMSG    BEGSR
+      *          Retrieve Messages from QCPFMSG in QSYS
+      *
+     C                     CLEARMSGTXT
+     C                     MOVELPSCON     MSGFIL    P
+     C                     Z-ADD100       ERRPRO
+     C                     Z-ADD0         ERRAVA
+     C                     CALL 'QMHRTVM'              50
+     C                     PARM           MSGDS            Retrieve
+     C                     PARM 150       APILEN           Message
+     C                     PARM 'RTVM0100'MSGFMT  8
+     C                     PARM           MSGID   7
+     C                     PARM           MSGFIL 20
+     C                     PARM           MSGDTA132
+     C                     PARM 132       MSGDTL
+     C                     PARM '*YES'    MSGSUB 10
+     C                     PARM '*NO'     MSGCTL 10
+     C                     PARM           RCVERR
+      *
+<--1 C           *IN50     IFEQ *ON
+|    C           ERRAVA    ORNE 0                                      RTVMSG
+|    C           '??'      CAT  MSGID:0   MSGTXT    P
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ CLRSFL $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           CLRSFL    BEGSR
+     C                     MOVEA'11'      *IN,70
+     C                     WRITESFC11
+     C                     WRITESFC12
+     C                     WRITESFC13
+     C                     MOVEA'00'      *IN,70
+     C                     CLEARRCD1
+     C                     CLEARTRCD1
+     C                     CLEAROPTION
+     C                     MOVE *OFF      *IN11
+     C                     MOVE *OFF      *IN03
+     C                     MOVE *OFF      *IN02
+     C                     MOVE *OFF      CHANGE  1
+     C                     ENDSR
+      *
+      *@$$$$$$$$ ERRSFL $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           ERRSFL    BEGSR
+      *          Error in SFL
+      *
+<--1 C           MSGID     IFNE *BLANKS
+|    C                     EXSR SNDMSG
+|__1 C                     ENDIF
+     C                     CLEARMSGID
+     C                     Z-ADDRCD1      RECORD
+     C                     EXSR CHNSFL
+     C                     MOVE *ON       *IN11
+     C                     MOVE *ON       *IN12             High
+     C                     MOVE #OPT      OPTION
+     C                     EXSR UPDSFL
+     C                     MOVE *OFF      *IN12
+     C                     ENDSR
+      *
+      *@$$$$$$$$ REDSFL $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           REDSFL    BEGSR
+      *          Read subfile and process options
+      *
+      * Clear delete sfl
+<--1 C           TRCD2     IFNE *ZEROS
+|    C                     MOVEA'11'      *IN,72
+|    C                     WRITESFC2
+|    C                     MOVEA'00'      *IN,72
+|    C                     CLEARTRCD2
+|    C                     CLEARRCD2
+|__1 C                     ENDIF
+      *
+     C           CURRC1    ADD  10        MAXRC1  50
+     C                     MOVE *BLANKS   OUTRPT 10
+     C                     MOVE *BLANKS   OUTLIB 10
+     C                     CLEARERRDLT
+      *
+<--1 C           TRCD1     IFGT 0
+<--2dC                     DO   *HIVAL                     Read all
+<--3sC                     SELEC                            changed
+| -3wC           VIEW      WHEQ 0                                      REDSFL
+|   IC                     READCSFL11                  5050
+| -3wC           VIEW      WHEQ 1
+|   IC                     READCSFL12                  5050
+| -3wC           VIEW      WHEQ 2
+|   IC                     READCSFL13                  5050
+|__3sC                     ENDSL
+-¬2  C   50                LEAVE
+|     *
+|    C                     Z-ADDRCD1      RECORD
+|    C                     MOVE OPTION    #OPT    20                      REDSFL
+|    C                     CLEAROPTION
+|    C           #OPT      COMP *ZERO                1111  Sflnxtchg
+|    C                     EXSR UPDSFL
+|     *
+<--3 C           RCD1      IFGE CURRC1                     Cursor on
+|    C           RCD1      ANDLEMAXRC1                     Correct rcd
+|    C           #OPT      ANDNE*ZEROS
+|    C                     Z-ADDRCD1      SFLRC1           position
+|__3 C                     ENDIF
+|     *                                                                REDSFL
+|    C                     MOVE *BLANKS   MSGID
+<--3sC                     SELEC
+| -3wC           #OPT      WHEQ 1                          1=Select
+<--4 C           AUT,1     IFEQ 'Y'
+|    C                     EXSR SRO01
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+| -3wC           #OPT      WHEQ 2                          2=Change
+<--4 C           AUT,2     IFEQ 'Y'
+|    C                     EXSR SRO02
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+| -3wC           #OPT      WHEQ 3                          3=Copy
+<--4 C           AUT,3     IFEQ 'Y'
+|    C                     EXSR SRO03
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END                                         REDSFL
+| -3wC           #OPT      WHEQ 4                          4=Delete       REDSFL
+<--4 C           AUT,4     IFEQ 'Y'
+|    C                     EXSR SRO04
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+| -3wC           #OPT      WHEQ 5                          5=View
+<--4 C           AUT,5     IFEQ 'Y'
+|    C                     EXSR SRO05
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+| -3wC           #OPT      WHEQ 6                          6=Security
+<--4 C           AUT,6     IFEQ 'Y'
+|    C                     EXSR SRO06
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+| -3wC           #OPT      WHEQ 7                          7=Rename
+<--4 C           AUT,7     IFEQ 'Y'                                    REDSFL
+|    C                     EXSR SRO07
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+| -3wC           #OPT      WHEQ 18                         18=Overlays
+<--4 C           AUT,18    IFEQ 'Y'                                    REDSFL
+|    C                     EXSR SRO18
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+| -3wC           #OPT      WHEQ 8                          8=Indices
+|    C                     MOVELRUDAT     RUDAT6  6
+<--4 C           RUDAT6    IFEQ '*RDARS'                   R/dars
+|    C           RUDAT     OREQ '*IMGVIEW'                 Imageview
+|    C                     MOVE 'ERR155B' MSGID            Only spyview
+--E4 C                     ELSE
+<--5 C           AUT,8     IFEQ 'Y'                                       REDSFL
+|    C                     EXSR SRO08
+--E5 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__5 C                     END
+|__4 C                     END
+| -3wC           #OPT      WHEQ 10                         10=SpyLink
+<--4 C           AUT,10    IFEQ 'Y'                           viewing
+|    C                     EXSR SRO10
+--E4 C                     ELSE                                        REDSFL
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+| -3wC           #OPT      WHEQ 13                         13=Config
+<--4 C           AUT,13    IFEQ 'Y'
+|    C                     EXSR SRO13
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+| -3wC           #OPT      WHEQ 15                         15=W/w Dist
+|    C                     MOVELRUDAT     RUDAT6  6
+<--4 C           RUDAT6    IFEQ '*RDARS'                   R/dars
+|    C           RUDAT     OREQ '*IMGVIEW'                 Imageview
+|    C                     MOVE 'ERR155B' MSGID            Only spyview
+--E4 C                     ELSE
+<--5 C           AUT,15    IFEQ 'Y'
+|    C                     EXSR SRO15
+--E5 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__5 C                     END
+|__4 C                     END                                         REDSFL
+| -3wC           #OPT      WHEQ 16                         16=segments    REDSFL
+|    C                     MOVELRUDAT     RUDAT6  6
+<--4 C           RUDAT6    IFEQ '*RDARS'                   R/dars
+|    C           RUDAT     OREQ '*IMGVIEW'                 Imageview
+|    C                     MOVE 'ERR155B' MSGID            Only spyview
+--E4 C                     ELSE
+<--5 C           AUT,16    IFEQ 'Y'
+|    C                     EXSR SRO16
+--E5 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__5 C                     END
+|__4 C                     END                                         REDSFL
+| -3wC           #OPT      WHEQ 20                         20=Calendar
+<--4 C           AUT,20    IFEQ 'Y'
+|    C                     EXSR SRO20
+--E4 C                     ELSE
+|    C                     MOVE 'ACT0139' MSGID
+|__4 C                     END
+|     *
+| -3wC                     OTHER                           xx=Invalid
+<--4 C           #OPT      IFNE 0
+|    C                     MOVE 'ACT0003' MSGID
+|__4 C                     END
+|__3sC                     ENDSL
+|     *
+<--3 C           MSGID     IFNE *BLANKS
+|    C                     EXSR ERRSFL
+|__3 C                     ENDIF
+|     *
+|__2dC                     ENDDO
+|    C                     EXSR CLRW                                      REDSFL
+|__1 C                     END                                         REDSFL
+      *---------------
+      * Confirm Delete
+      *---------------
+<--1 C           TRCD2     IFNE *ZEROS
+|    C           ERRDLT    ANDEQ' '                        No error
+|    C                     Z-ADD1         SFLRC2
+|    C                     WRITEFMTKEY2
+|    C                     WRITEMSGSFC
+|     *                 |-------------| Confirm deletes
+|    C                     EXFMTSFC2
+|     *                 |-------------|
+<--2 C           *IN01     IFEQ *OFF                       Enter key
+|    C                     OPEN RLNKDEF
+|    C                     OPEN RMAINT4
+|    C                     OPEN RWINDOW
+|    C*****                OPEN RSPLCFG1
+|    C                     OPEN RFORMS
+|    C                     OPEN RSECUR
+|    C                     OPEN RINDEX
+|    C                     OPEN MIDXRUL
+~    C                     OPEN RDBKEY
+|     * Do delete                                                      REDSFL
+<--3dC                     DO   TRCD2     F40     40
+|   IC           F40       CHAINSFL2                 50
+|    C                     Z-ADDRCD1      RECORD
+|    C                     EXSR CHNSFL
+<--4 C           *IN50     IFEQ *OFF
+|    C                     EXSR DELET
+|__4 C                     ENDIF
+|__3dC                     ENDDO
+|     *                                                                   REDSFL
+|    C                     CLOSERLNKDEF
+|    C                     CLOSERMAINT4
+|    C                     CLOSERWINDOW
+|    C*****                CLOSERSPLCFG1
+|    C                     CLOSERFORMS
+|    C                     CLOSERSECUR
+|    C                     CLOSERINDEX
+|    C                     CLOSEMIDXRUL
+~    C                     CLOSERDBKEY
+|    C                     MOVE *ON       CHANGE
+|     *
+--E2 C                     ELSE
+<--3dC                     DO   TRCD2     F40     40                   REDSFL
+|   IC           F40       CHAINSFL2                 50
+|    C                     Z-ADDRCD1      RECORD
+|    C                     EXSR CHNSFL
+|    C                     MOVE *ON       *IN11
+|    C                     Z-ADD4         OPTION
+|    C                     EXSR UPDSFL
+|__3dC                     ENDDO
+|__2 C                     ENDIF
+|    C                     CLEAROPTION
+|__1 C                     ENDIF
+      *
+     C                     WRITEFMTKEY
+      *
+<--1 C           CHANGE    IFEQ *ON                        Refresh if
+|    C                     EXSR SRF5                        deleted.
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ UPDSFL $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           UPDSFL    BEGSR
+<--1sC                     SELEC
+| -1wC           VIEW      WHEQ 0
+|    C                     UPDATSFL11
+| -1wC           VIEW      WHEQ 1
+|    C                     UPDATSFL12
+| -1wC           VIEW      WHEQ 2
+|    C                     UPDATSFL13
+|__1sC                     ENDSL
+     C                     ENDSR
+      *
+      *@$$$$$$$$ RUNCL  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           RUNCL     BEGSR
+      *
+     C                     CALL 'QCMDEXC'              50
+     C                     PARM           CMD   250
+     C                     PARM 250       F155   155
+     C   50                EXSR CLRMSG
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRF21  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF21     BEGSR
+      *          F21=Cmd line
+     C                     CALL 'MSYSCMDC'             50
+     C   50                EXSR CLRMSG
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRF4   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF4      BEGSR
+      *          F4=Prompt
+     C                     CLEARCTLTYP
+     C                     CLEARCTLKEY
+     C                     EXSR SRCURS
+      *
+<--1sC                     SELEC
+| -1wC           FLD       WHEQ 'SHOW'                     Select code
+|    C                     MOVEL'SHOW'    CTLNAM 10 P       (' ',p,r)
+|    C                     CALL 'SPYCTL'               50
+|    C                     PARM           CTLNAM 10
+|    C                     PARM           CTLTYP  2
+|    C                     PARM           CTLKEY 10
+<--2 C           CTLKEY    IFNE *BLANKS
+|    C           1         SUBSTCTLKEY:2  SHOW
+|    C                     MOVE *ON       *IN03            Change
+|__2 C                     ENDIF
+| -1wC                     OTHER
+|__1sC                     ENDSL
+     C                     ENDSR
+      *
+      *@$$$$$$$$ ROLUP  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           ROLUP     BEGSR
+      *          Next page
+      *
+<--1 C           TRCD1     IFGE TOTSFL
+|    C                     Z-ADDTRCD1     RECORD  50
+|    C                     EXSR CHNSFL
+|    C           OPTION    COMP 0                    1111   Ne
+|    C                     EXSR UPDSFL
+--E1 C                     ELSE
+|    C                     SETOF                     96
+|    C                     CLEARREPTYP
+|__1 C                     ENDIF
+      *
+<--1 C           TRCD1     IFGE TOTSFL
+|    C           TRCD1     OREQ 0
+|    C                     MOVELREPTYP    SETTYP
+|    C                     MOVEL'READGT'  OPCODE
+|    C                     Z-ADDTRCD1     TRCDSV  50
+|    C                     CLEARPOSTN
+|    C                     Z-ADDTOTREQ    RTNREC            # recrd    ROLUP
+|     *
+|    C                     EXSR SRRPT                      Load DTS
+|    C                     EXSR FILSFL                     DTS->Subfile
+|     *
+|    C           TRCDSV    ADD  1         SFLRC1
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ CHNSFL $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           CHNSFL    BEGSR
+<--1sC                     SELEC
+| -1wC           VIEW      WHEQ 0
+|   IC           RECORD    CHAINSFL11                50
+| -1wC           VIEW      WHEQ 1
+|   IC           RECORD    CHAINSFL12                50                FILSFL
+| -1wC           VIEW      WHEQ 2
+|   IC           RECORD    CHAINSFL13                50
+|__1sC                     ENDSL
+     C                     ENDSR
+      *
+      *@$$$$$$$$ FILSFL $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           FILSFL    BEGSR
+      *          Transfer RTNREC records from DTS to SobF
+      *
+<--1 C           RTNREC    IFEQ TOTREQ
+|    C                     Z-ADDTOTSFL    RTNREC
+|    C                     SETON                     98      rolup
+--E1 C                     ELSE
+|    C                     SETOF                     98
+|__1 C                     ENDIF
+      *
+     C                     CLEAROPTION
+      *
+<--1dC                     DO   RTNREC    IX      50
+|    C                     MOVELDTS,IX    FYLDTA
+|    C                     EXSR FMTSFL
+|    C                     EXSR WRTSFL
+|     *
+|     * Cursor position after change
+|     *
+<--2 C           CHGTYP    IFNE *BLANKS
+|    C           CHGTYP    ANDEQREPTYP                                 FILSFL
+|    C                     Z-ADDRCD1      SFLRC1
+|__2 C                     ENDIF
+|__1dC                     ENDDO
+      *
+     C                     MOVE *BLANKS   CHGTYP 10
+     C                     ENDSR
+      *
+      *@$$$$$$$$ WRTSFL $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           WRTSFL    BEGSR
+     C                     ADD  1         TRCD1
+     C                     Z-ADDTRCD1     RCD1
+<--1sC                     SELEC
+| -1wC           VIEW      WHEQ 0
+|    C                     WRITESFL11
+| -1wC           VIEW      WHEQ 1
+|    C                     WRITESFL12
+| -1wC           VIEW      WHEQ 2
+|    C                     WRITESFL13
+|__1sC                     ENDSL
+     C                     ENDSR
+      *
+      *@$$$$$$$$ FMTSFL $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           FMTSFL    BEGSR
+      *          Fill fields depending on sort
+      *
+     C                     MOVE REPTYP    SDR,1
+     C                     MOVE RRNAM     SDR,2
+     C                     MOVE RUNAM     SDR,3
+     C                     MOVE RJNAM     SDR,4
+      *
+<--1dC                     DO   4         I1
+|    C                     Z-ADDSP,I1     I2
+|    C                     MOVE SDR,I2    SD,I1
+|__1dC                     ENDDO
+      * Format date & time
+     C                     CLEARLSTDAT
+<--1 C           LDATN     IFNE 0
+|    C                     Z-ADDLDD       DAY80A
+|    C                     Z-ADDLMM       MON80A
+|    C                     Z-ADDLYY       YEA80A
+|    C                     EXSR FMTDAT
+|    C                     MOVE DATE      LSTDAT
+--E1 C                     ELSE
+<--2 C           LTIMN     IFEQ 0                          empty       FMTSFL
+|    C                     MOVE '*NONE'   LSTDAT
+|__2 C                     ENDIF
+|__1 C                     ENDIF
+      *
+     C                     CLEARLSTTIM
+<--1 C           LTIMN     IFNE 0
+|    C                     Z-ADDLTIMN     F60     60
+|    C                     MOVELF60       TIME      P
+|    C                     EXSR FMTTIM                                    FMTSFL
+|    C                     MOVELTIME      LSTTIM
+|__1 C                     ENDIF
+      * Spy link yes/no
+<--1 C           SPLNK     IFEQ 'Y'
+|    C                     MOVEL'Yes'     SPYLNK    P
+--E1 C                     ELSE
+|    C                     MOVEL'No '     SPYLNK    P
+|__1 C                     ENDIF
+      * Type
+<--1sC                     SELEC                                       FMTSFL
+| -1wC           TYPE      WHEQ 'A'
+|    C                     MOVEL'all'     TYPTXT    P
+| -1wC           TYPE      WHEQ 'I'
+|    C                     MOVEL'Pc'      TYPTXT    P
+| -1wC                     OTHER
+|    C                     MOVEL'Rpt'     TYPTXT    P
+|__1sC                     ENDSL
+     C                     ENDSR
+      *
+      *@$$$$$$$$ ROLDWN $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           ROLDWN    BEGSR
+      *          Prev page
+      *
+<--1 C           TRCD1     IFNE 0
+|    C                     Z-ADD1         RECORD
+|    C                     EXSR CHNSFL
+|    C           OPTION    COMP 0                    1111   Ne
+|    C                     EXSR UPDSFL
+|    C                     MOVEL'READLT'  OPCODE    P
+--E1 C                     ELSE
+|    C                     MOVEL'READP'   OPCODE    P
+|    C                     CLEARREPTYP
+|__1 C                     ENDIF
+      *
+     C                     MOVELREPTYP    SETTYP
+     C                     CLEARPOSTN
+     C                     Z-ADDTOTREQ    RTNREC            # recrd
+     C                     EXSR SRRPT                      Load DTS
+     C                     EXSR CLRSFL
+      *                                                                ROLDWN
+<--1sC                     SELEC
+| -1wC           RTNREC    WHEQ TOTSFL
+|    C                     SETOF                     96    roldwn
+| -1wC           RTNREC    WHGT TOTSFL
+|    C                     SETON                     96    roldwn
+| -1wC                     OTHER
+|    C                     EXSR ROLUP
+|   GC                     GOTO ENDDWN
+|__1sC                     ENDSL
+      *
+     C                     CLEAROPTION                                    ROLDWN
+      *
+     C                     Z-ADDTOTSFL    IX
+<--1dC                     DO   TOTSFL
+|    C                     MOVELDTS,IX    FYLDTA
+|    C                     EXSR FMTSFL
+|    C                     EXSR WRTSFL
+|    C                     SUB  1         IX
+|__1dC                     ENDDO
+      *                                                                ROLDWN
+     C                     SETON                     98    rollup
+     C           ENDDWN    ENDSR
+      *
+      *@$$$$$$$$ SRF5   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF5      BEGSR
+      *
+<--1 C           TRCD1     IFGT 0
+|    C                     Z-ADDCURRC1    RECORD
+<--2 C           CURRC1    IFGT 1
+|    C                     SETON                     96    rolldwn
+|__2 C                     ENDIF
+|    C                     EXSR CHNSFL
+|    C                     MOVE REPTYP    SETTYP
+|    C                     MOVEL'READ  '  OPCODE    P
+|    C                     CLEARPOSTN
+|    C                     Z-ADDTOTREQ    RTNREC            # recrd
+|    C                     EXSR SRRPT                      Load DTS
+|__1 C                     ENDIF
+     C                     SETON                     96
+      *
+     C                     EXSR CLRSFL
+     C                     Z-ADD1         SFLRC1
+     C                     EXSR FILSFL                     DTS->Subfile
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRSET  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRSET     BEGSR
+      *
+     C                     MOVELPOSVAL    SETTYP
+     C                     MOVELPOSVAL    POSTN
+     C                     CLEARPOSVAL
+      *
+     C                     MOVEL'READ'    OPCODE    P
+     C                     Z-ADDTOTREQ    RTNREC           # recrd
+     C                     EXSR SRRPT                      Load DTS
+      *
+<--1 C           RTNREC    IFEQ 0
+|    C                     EXSR SRF18                      Bottom
+--E1 C                     ELSE
+|    C                     EXSR CLRSFL
+|    C                     EXSR FILSFL                     DTS->Subfile
+|    C                     SETON                     96
+|    C                     Z-ADD1         SFLRC1
+|__1 C                     ENDIF
+      *
+     C           ENDPOS    ENDSR
+      *
+      *@$$$$$$$$ SRF11  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF11     BEGSR
+      *          F11=Change view
+     C                     EXSR SRCURS
+     C                     MOVEA'11'      *IN,70
+<--1sC                     SELEC
+| -1wC           VIEW      WHEQ 0
+|    C                     WRITESFC12
+| -1wC           VIEW      WHEQ 1
+|    C                     WRITESFC13
+| -1wC           VIEW      WHEQ 2
+|    C                     WRITESFC11
+|__1sC                     ENDSL
+      *
+     C                     MOVEA'00'      *IN,70
+      * Copy option across subfls
+<--1dC                     DO   TRCD1     F50     50
+|    C                     Z-ADDF50       RECORD
+|    C                     EXSR CHNSFL
+|    C           OPTION    COMP 0                    1111   Ne
+|     *                                                     SflNxtChg
+<--2sC                     SELEC                                       SRF11
+| -2wC           VIEW      WHEQ 0
+|    C                     WRITESFL12
+| -2wC           VIEW      WHEQ 1
+|    C                     WRITESFL13
+| -2wC           VIEW      WHEQ 2
+|    C                     WRITESFL11
+|__2sC                     ENDSL
+|__1dC                     ENDDO
+      *
+     C                     ADD  1         VIEW    30                      SRF11
+<--1 C           VIEW      IFGT 2
+|    C                     CLEARVIEW
+|__1 C                     ENDIF
+      * Rtn cursor to same position
+     C                     MOVE *ON       *INKD            F4
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRF17  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF17     BEGSR
+      *          F17=Goto top
+      *
+<--1 C           *IN96     IFEQ *ON
+|    C                     EXSR CLRSFL
+|    C                     MOVE *BLANKS   SETTYP
+|    C                     SETOF                     96    rolldown
+|    C                     EXSR ROLUP                      Next page
+|__1 C                     ENDIF
+     C                     Z-ADD1         SFLRC1
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRF16  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF16     BEGSR
+      *          F16=select sort
+      *
+<--1 C           PRMVW     IFNE 'FOLDER'
+|    C                     MOVE ' '       NEWSRT  1
+|     *
+|    C                     MOVELRCD       F4A     4
+<--2sC                     SELEC
+| -2wC           F4A       WHEQ 'SFL1'
+|    C           FLD       ANDEQ'REPTYP'
+|    C                     MOVEL'*RPTTYP' SORT      P
+|    C                     MOVE '1'       NEWSRT
+| -2wC           F4A       WHEQ 'SFL1'
+|    C           FLD       ANDEQ'RRNAM'
+|    C                     MOVEL'*REPORT' SORT      P
+|    C                     MOVE '1'       NEWSRT
+| -2wC           F4A       WHEQ 'SFL1'
+|    C           FLD       ANDEQ'RJNAM'
+|    C                     MOVEL'*JOB'    SORT      P                  SRF16
+|    C                     MOVE '1'       NEWSRT
+| -2wC           F4A       WHEQ 'SFL1'
+|    C           FLD       ANDEQ'RUNAM'
+|    C                     MOVEL'*USER'   SORT      P
+|    C                     MOVE '1'       NEWSRT
+| -2wC                     OTHER
+|     *
+|    C                     CLEARCHOICE
+|     *
+|     *>>>>>>>>>>INF16
+|    C           INF16     TAG
+|     *                                                                   SRF16
+|    C                     EXFMTFMTSORT
+|     *
+<--3 C           *IN01     IFEQ *OFF
+<--4sC                     SELEC
+| -4wC           CHOICE    WHEQ 1
+|    C                     MOVEL'*RPTTYP' SORT   10 P
+|    C                     MOVE 'P050730' MSGID            Report Type
+| -4wC           CHOICE    WHEQ 2                                      SRF16
+|    C                     MOVEL'*REPORT' SORT   10 P
+|    C                     MOVE 'P040309' MSGID            Report Name
+| -4wC           CHOICE    WHEQ 3
+|    C                     MOVEL'*USER'   SORT   10 P
+|    C                     MOVE 'P001660' MSGID            User Name
+| -4wC           CHOICE    WHEQ 4
+|    C                     MOVEL'*JOB'    SORT   10 P
+|    C                     MOVE 'P000841' MSGID            Job Name
+| -4wC                     OTHER
+|   GC                     GOTO INF16
+|__4sC                     ENDSL
+|    C                     MOVE '1'       NEWSRT  1
+|     *
+|__3 C                     ENDIF
+|__2sC                     ENDSL
+|     *
+<--2 C           NEWSRT    IFEQ '1'
+|    C                     EXSR SRPTXT                     Pos to txt
+|    C                     EXSR SRF5
+|__2 C                     ENDIF                                       SRF16
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRPTXT $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRPTXT    BEGSR
+      *          Get the position to text
+     C                     Z-ADD1         SP,1
+     C                     Z-ADD2         SP,2
+     C                     Z-ADD3         SP,3
+     C                     Z-ADD4         SP,4
+      *
+<--1sC                     SELEC
+| -1wC           SORT      WHEQ '*REPORT'
+|    C                     MOVE 'P040309' MSGID            Report Name
+|    C                     Z-ADD2         SP,1
+|    C                     Z-ADD1         SP,2
+| -1wC           SORT      WHEQ '*JOB'
+|    C                     MOVE 'P000841' MSGID            Job Name
+|    C                     Z-ADD4         SP,1
+|    C                     Z-ADD1         SP,4
+| -1wC           SORT      WHEQ '*USER'
+|    C                     MOVE 'P001660' MSGID            User Name
+|    C                     Z-ADD3         SP,1
+|    C                     Z-ADD1         SP,3                         SRPTXT
+| -1wC                     OTHER
+|    C                     MOVE 'P050730' MSGID            Report Type
+|__1sC                     ENDSL
+      *
+     C                     EXSR RTVMSG
+     C           POSITN    CAT  MSGTXT:1  POSTXT    P
+     C                     EXSR BLDHDR
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRF18  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF18     BEGSR
+      *          F18=Goto bottom
+      *
+<--1 C           *IN98     IFEQ *ON
+|    C                     MOVEL'READP'   OPCODE    P
+|    C                     MOVE *BLANKS   SETTYP
+|    C                     CLEARPOSTN
+|    C                     Z-ADD6         RTNREC
+|    C                     EXSR SRRPT                      Load DTS
+|    C                     EXSR CLRSFL
+|    C           RTNREC    COMP 5                    96    roldwn
+|     *
+|    C                     CLEAROPTION
+|     *
+|    C                     Z-ADD5         IX
+T5999C                     RESETFYLDTA
+<--2dC                     DO   5
+|    C                     MOVELDTS,IX    FYLDTA
+|    C                     EXSR FMTSFL
+|    C                     EXSR WRTSFL
+|    C                     SUB  1         IX                           SRF18
+|__2dC                     ENDDO
+|__1 C                     ENDIF
+      *
+     C                     SETOF                     98    rollup
+     C                     Z-ADDTRCD1     SFLRC1
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRRPT  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRRPT     BEGSR
+      *
+     C                     CALL 'SPYCSRTY'PLLST
+     C           PLLST     PLIST
+     C                     PARM           PRMVW  10        View
+     C                     PARM           PRMFLD 10        Folder
+     C                     PARM           PRMFLB 10        Library
+     C                     PARM           OPCODE  6        Opcode
+     C                     PARM SORT      PRMSRT 10        Sort
+     C                     PARM           SHOW    1        SHOW code
+     C                     PARM           SETTYP 10        Spy00 start
+     C                     PARM           POSTN  10        Post to
+     C                     PARM           SDT              Return data
+     C                     PARM           RTNREC  90       Rtn # of rec
+     C                     PARM           RTNC    2        Return code
+     C                     ENDSR
+      *
+      *$$$$$$$$$ REFSFL $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           REFSFL    BEGSR
+      *          Refresh SubF
+      *
+     C                     MOVELREPTYP    SETTYP
+     C                     MOVEL'READ'    OPCODE    P
+     C                     CLEARPOSTN
+     C                     Z-ADD1         RTNREC            # recrd
+     C                     EXSR SRRPT                      Load DTS
+     C                     Z-ADDRCD1      RECORD
+     C                     EXSR CHNSFL
+     C                     MOVELDTS,1     FYLDTA
+     C                     EXSR FMTSFL
+     C                     EXSR UPDSFL
+     C                     ENDSR
+      *
+      *$$$$$$$$$ DELET  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           DELET     BEGSR
+      *
+     C                     CLEARMSGID
+     C                     EXSR DLTIND                     Dlt RIndex
+    GC           MSGID     CABNE*BLANKS   SKPDLT
+      *
+     C           BIG5      DELETLNKDEF               50    Dlt RLnkDef
+      *
+<--1dC           *IN50     DOUEQ*ON                        Dlt Security
+|    C           BIG5      DELETRSECUR               50
+|__1dC                     ENDDO
+      *
+<--1dC           *IN50     DOUEQ*ON                        Dlt Ovrlay
+|    C           BIG5      DELETRFORRC               50
+|__1dC                     ENDDO
+      *
+<--1dC           *IN50     DOUEQ*ON                        Dlt Window
+|    C           BIG5      DELETWINRC                50
+|__1dC                     ENDDO
+      *
+<--1dC           *IN50     DOUEQ*ON                        Dlt Window
+|    C           REPTYP    DELETIDXRUL               50
+|__1dC                     ENDDO
+      *                                                                DELET
+    dC*******    *IN50     DOUEQ*ON                        Dlt Window
+     C*******    BIG5      DELETSPLCFG               50    Dlt RsplCfg
+    dC*******              ENDDO
+      *
+     C           REPTYP    DELETRMNTRC               50    Dlt RMaint
+      *
+~    C           *IN50     DOUEQ*ON
+/    C           BIG5      DELETDBKEYRC              50
+/    C                     ENDDO
+      *
+<--1 C           RTYPID    IFNE *BLANKS
+|    C                     CALL 'MAG901'                   Trans logger
+|    C                     PARM           LOGRTN  1        Return code
+|    C                     PARM *BLANK    DLSUB  10        Subscriber
+|    C                     PARM RTYPID    DLREPT 10        Report type    DELET
+|    C                     PARM           DLSEG  10        Segment
+|    C                     PARM *BLANKS   DLREP  10        Report
+|    C                     PARM *BLANK    DLBNDL 10        Bundle
+|    C                     PARM 'M'       DLTYPE  1        (M)od Rmnt
+|    C                     PARM 0         DLTPGS  90       pages
+|    C                     PARM 'WRKRPT'  DLPROG 10
+|__1 C                     END
+      *
+     C                     MOVE 'ERR1721' MSGID            Rpt deleted DELET
+     C                     MOVELREPTYP    MSGDTA    P
+     C                     EXSR SNDMSG
+     C                     CLEARMSGDTA
+     C                     CLEARMSGID
+      *>>>>>>>>>>SKPDLT
+     C           SKPDLT    TAG
+     C                     EXSR ERRSFL
+     C                     ENDSR
+      *
+      *@$$$$$$$$ DLTIND $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           DLTIND    BEGSR
+      *          Delete RIndex records and their physical files
+      *
+     C           BIG5      SETLLRINDEX
+      *
+<--1dC                     DO   *HIVAL                     Read RIndexs
+|   IC           BIG5      READERINDEX                   50 for Big5
+-¬1  C   50                LEAVE
+|     *
+<--2 C           IDBFIL    IFEQ *BLANKS
+|    C                     DELETINDEXRC
+^^1  C                     ITER
+|__2 C                     END
+|     *
+|     * Remove physical file
+|     *
+|    C                     EXSR DLTF                       Delete file
+<--2 C           RTNCDE    IFEQ *BLANKS
+|    C                     DELETINDEXRC
+--E2 C                     ELSE                                        DLTIND
+|     * Stop looping, we have a problem with this one
+|    C                     UNLCKRINDEX
+-¬1  C                     LEAVE
+|__2 C                     ENDIF
+|__1dC                     ENDDO
+     C                     ENDSR
+      *
+      *@$$$$$$$$ DLTF   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           DLTF      BEGSR
+      *          Delete file
+      *
+     C                     CALL 'DLTFLD'               50  Call subpgm
+     C                     PARM           IDBFIL           Folder Name
+     C                     PARM           DTALIB           Library
+     C                     PARM *BLANKS   RTNCDE
+      *
+<--1sC                     SELEC
+| -1wC           RTNCDE    WHEQ '1     '                   No lib
+|    C                     MOVEL'ERR1266' MSGID            in use
+| -1wC           RTNCDE    WHEQ '3     '
+|    C                     MOVEL'ERR1211' MSGID
+| -1wC           RTNCDE    WHEQ '2     '
+|    C           RTNCDE    OREQ '4     '
+|    C                     MOVE *BLANKS   RTNCDE
+|__1sC                     ENDSL
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRO01  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO01     BEGSR
+      *          1=Display
+      *
+<--1 C           PRMOPC    IFEQ '*SELECT'
+|    C           PRMOPC    OREQ '*SELBIG5'
+|     *   Clear rtnfields for *select opcode
+|    C                     MOVE REPTYP    RTNRTY           Rtn rpttype
+|    C                     MOVE RRNAM     RTNRNA           Rtn big5
+|    C                     MOVE RJNAM     RTNJNA
+|    C                     MOVE RPNAM     RTNPNA
+|    C                     MOVE RUNAM     RTNUNA
+|    C                     MOVE RUDAT     RTNUDT
+|    C                     EXSR QUIT
+|     *
+--E1 C                     ELSE
+|     *
+<--2 C           TYPE      IFEQ 'R'
+|    C                     CALL 'WRKRDR'               50
+|    C                     PARM           PRMFLD            Folder
+|    C                     PARM           PRMFLB            Library    SRO01
+|    C                     PARM REPTYP    PRMTYP 10         Rep type
+|    C                     PARM 0         PRMFRM  80        Date from
+|    C                     PARM 0         PRMTO   80        Date to
+|    C                     PARM *BLANKS   PRMPTH 10         Acc path
+|    C                     PARM *BLANKS   SETVAL 10         Pos to
+|    C                     PARM *BLANKS   PRMCAL 10         Caller
+|    C                     PARM           RTNCDE            Retrn code
+--E2 C                     ELSE
+|    C                     CALL 'WRKIMG'               50
+|    C                     PARM           PRMFLD            Folder
+|    C                     PARM           PRMFLB            Library       SRO01
+|    C                     PARM REPTYP    PRMTYP 10         Rep type
+|    C                     PARM 0         PRMFRM  80        Date from
+|    C                     PARM 0         PRMTO   80        Date to
+|    C                     PARM *BLANKS   PRMPTH 10         Acc path
+|    C                     PARM *BLANKS   SETVAL 10         Position
+|    C                     PARM *BLANKS   PRMCAL 10         Caller
+|    C                     PARM           RTNCDE            Retrn code
+|__2 C                     ENDIF
+|     *                                                                SRO01
+|    C                     MOVE RTNCDE    KEY              Return FKey
+<--2 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__2 C                     END
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRO02  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO02     BEGSR
+      *          2=Change
+     C                     MOVE *ON       SRO02W  1
+     C                     MOVE '2'       CHGACT
+     C                     CALL 'CHGRPT'  PLIST1       50
+     C                     MOVE RTNCDE    KEY              Return FKey
+<--1 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__1 C                     END
+     C                     EXSR REFSFL                     Refresh
+     C                     ENDSR
+      *
+      *$$$$$$$$$ PLIST1 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           PLIST1    PLIST
+     C                     PARM           RRNAM            Big5
+     C                     PARM           RJNAM
+     C                     PARM           RPNAM
+     C                     PARM           RUNAM
+     C                     PARM           RUDAT
+     C                     PARM           RRDESC           Description
+     C                     PARM           CHGACT           Action
+     C                     PARM           RTNCDE           Pgm end sw
+     C           PLIST2    PLIST
+     C                     PARM RRNAM     XRNAM            Big5
+     C                     PARM RJNAM     XJNAM
+     C                     PARM RPNAM     XPNAM
+     C                     PARM RUNAM     XUNAM
+     C                     PARM RUDAT     XUDAT
+     C                     PARM RRDESC    XRDESC           Description
+     C                     PARM           CHGACT           Action
+     C                     PARM           RTNCDE
+     C           *LIKE     DEFN RRNAM     XRNAM
+     C           *LIKE     DEFN RJNAM     XJNAM
+     C           *LIKE     DEFN RPNAM     XPNAM
+     C           *LIKE     DEFN RUNAM     XUNAM
+     C           *LIKE     DEFN RUDAT     XUDAT
+     C           *LIKE     DEFN RRDESC    XRDESC
+      *
+      *$$$$$$$$$ CLRW  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           CLRW      BEGSR
+      *          Close down called programs
+      *
+     C           *LIKE     DEFN RTNCDE    RTNSAV
+     C                     MOVE RTNCDE    RTNSAV
+     C                     MOVEL'CLOSEW'  RTNCDE    P
+      *
+<--1 C           SRF6W     IFEQ *ON
+|    C                     EXSR SRF6
+|    C                     MOVE *OFF      SRF6W
+|__1 C                     ENDIF
+<--1 C           SRO02W    IFEQ *ON
+|    C                     EXSR SRO02
+|    C                     MOVE *OFF      SRO02W
+|__1 C                     ENDIF
+<--1 C           SRO03W    IFEQ *ON
+|    C                     EXSR SRO03
+|    C                     MOVE *OFF      SRO03W
+|__1 C                     ENDIF
+<--1 C           SRO05W    IFEQ *ON
+|    C                     EXSR SRO05                                  CLRW
+|    C                     MOVE *OFF      SRO05W
+|__1 C                     ENDIF
+<--1 C           SRO06W    IFEQ *ON
+|    C                     EXSR SRO06
+|    C                     MOVE *OFF      SRO06W
+|__1 C                     ENDIF
+<--1 C           SRO07W    IFEQ *ON
+|    C                     EXSR SRO07
+|    C                     MOVE *OFF      SRO07W
+|__1 C                     ENDIF                                          CLRW
+<--1 C           SRO18W    IFEQ *ON
+|    C                     EXSR SRO18
+|    C                     MOVE *OFF      SRO18W
+|__1 C                     ENDIF                                          CLRW
+<--1 C           SRO08W    IFEQ *ON
+|    C                     EXSR SRO08
+|    C                     MOVE *OFF      SRO08W
+|__1 C                     ENDIF
+<--1 C           SRO13W    IFEQ *ON
+|    C                     EXSR SRO13
+|    C                     MOVE *OFF      SRO13W
+|__1 C                     ENDIF
+<--1 C           SRO20W    IFEQ *ON
+|    C                     EXSR SRO20                                  CLRW
+|    C                     MOVE *OFF      SRO20W
+|__1 C                     ENDIF
+      *
+     C                     MOVELRTNSAV    RTNCDE
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRO05  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO05     BEGSR
+      *          5=View RMaint info
+      *
+     C                     MOVE '1'       CHGACT  1
+     C                     CALL 'DSPRPT'  PLIST2       50
+     C                     MOVE *ON       SRO05W  1
+     C                     MOVE RTNCDE    KEY              Return FKey
+<--1 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__1 C                     END
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRO06  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO06     BEGSR
+      *          6=Work with Security
+     C                     CALL 'WRKSEC'               50
+     C                     PARM           RRNAM            Report
+     C                     PARM           RJNAM            Job
+     C                     PARM           RPNAM            Program
+     C                     PARM           RUNAM            User
+     C                     PARM           RUDAT            User data
+     C                     PARM           RTNCDE           Pgm end sw
+     C                     MOVE *ON       SRO06W  1
+     C                     MOVE RTNCDE    KEY              Return FKey
+<--1 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__1 C                     END
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRO08  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO08     BEGSR
+      *          8=Work with Indices
+     C                     MOVE *BLANKS   WIDBF  10
+     C                     MOVE *BLANKS   WDESC  30
+     C                     MOVE *BLANKS   WFLDR  10
+     C                     MOVE *BLANKS   WLIBR  10
+     C                     MOVE *BLANKS   WJOB#   6
+     C                     MOVE '2'       WLIST   1        List vs Work
+     C                     MOVE *BLANKS   WINAM  10        Idx Name/Fil
+     C                     MOVE *BLANKS   WIMEM  10        Member
+     C                     Z-ADD0         WKEYL   30       Key Length
+     C                     Z-ADD0         WFIL#   90
+     C                     CALL 'WRKIND'               50
+     C                     PARM           WFLDR            Folder
+     C                     PARM           WLIBR            Library
+     C                     PARM           RRNAM            Report
+     C                     PARM           RJNAM            Job
+     C                     PARM           RUNAM            User
+     C                     PARM           WJOB#            Job Number
+     C                     PARM           WFIL#            File #
+     C                     PARM           RUDAT            User Data   SRO08
+     C                     PARM           RPNAM            Program
+     C                     PARM           WLIST            List vs Work
+     C                     PARM           WINAM            Index Name/F
+     C                     PARM           WIDBF            Db file
+     C                     PARM           WIMEM            Member
+     C                     PARM           WKEYL            Key Length
+     C                     PARM           WDESC            Desc
+     C                     PARM           RTNCDE           Pgm end sw
+     C                     MOVE *ON       SRO08W  1
+     C                     MOVE RTNCDE    KEY              Return FKey    SRO08
+<--1 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__1 C                     END
+     C                     EXSR REFSFL                     Refresh
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRO03  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO03     BEGSR
+      *          3=Copy
+     C                     MOVE '3'       CHGACT  1
+     C                     CALL 'ADDRPT'  PLIST2       50
+     C                     MOVE *ON       SRO03W  1
+     C                     MOVE RTNCDE    KEY              Return FKey
+<--1 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__1 C                     END
+     C                     EXSR REFSFL                     Refresh
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRO07  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO07     BEGSR
+      *          7=Rename
+     C                     MOVE '7'       CHGACT  1
+     C                     CALL 'RNMRPT'  PLIST1       50
+     C                     MOVE *ON       SRO07W  1
+     C                     MOVE RTNCDE    KEY              Return FKey
+<--1 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__1 C                     END
+      *
+     C                     OPEN RMAINT
+    IC           BIG5      CHAINRMAINT               50
+     C                     CLOSERMAINT
+     C                     MOVELRTYPID    REPTYP
+     C                     EXSR REFSFL                     Refresh
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRO18  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO18     BEGSR
+      *         18=overlays
+      *
+     C                     MOVE *BLANKS   OPC508
+     C           RTNCDE    IFEQ 'CLOSEW'
+     C                     MOVEL'CLOSE'   OPC508
+     C                     ENDIF
+     C                     CALL 'MAG508'  PL508        50
+     C                     MOVE *ON       SRO18W  1
+      *
+     C           PL508     PLIST
+     C                     PARM REPTYP    TYP508 10
+     C                     PARM           OPC508 10
+     C                     PARM           KEY508  1
+     C                     PARM           MSG508  1
+     C                     PARM           DTA508128
+      *   SEND MSG
+     C           MSG508    IFNE *BLANKS
+     C                     MOVELMSG508    MSGID
+     C                     MOVELDTA508    MSGDTA
+     C                     EXSR SNDMSG
+     C                     ENDIF
+      *
+     C                     MOVE KEY508    KEY              Return FKey
+<--1 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__1 C                     END
+     C                     ENDSR
+      *$$$$$$$$$ SRF6   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF6      BEGSR
+      *
+     C                     MOVE '6'       CHGACT  1
+     C                     CALL 'ADDRPT'  PLIST1       50
+      *
+     C                     MOVE *ON       SRF6W   1
+     C                     MOVE RTNCDE    KEY
+<--1 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__1 C                     END
+      *
+     C                     OPEN RMAINT
+    IC           BIG5      CHAINRMAINT               50
+     C                     CLOSERMAINT
+      *
+<--1 C           *IN50     IFEQ *OFF                       Refresh
+|    C                     MOVELRTYPID    POSVAL
+|    C                     EXSR SRSET
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRF14  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF14     BEGSR
+     C                     CALL 'WKSPLCFG'
+     C                     ENDSR
+      *
+      *$$$$$$$$$ SRF24  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF24     BEGSR
+     C                     ADD  1         KEY#    10
+<--1 C           KEY#      IFGT MAXF24
+|    C                     Z-ADD1         KEY#
+|__1 C                     ENDIF
+     C                     MOVELTXT,KEY#  FKEY      P
+     C                     WRITEFMTKEY
+     C                     EXSR SRCURS
+     C                     MOVE '1'       *INKD
+     C                     ENDSR
+      *
+      *@$$$$$$$$ GETVW  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           GETVW     BEGSR
+      *          Get current view
+     C                     MOVEL'*ALL'    DSPFLD    P
+     C                     MOVEL'*ALL'    DSPFLB    P
+<--1 C           PRMFLD    IFNE *BLANKS
+|    C           PRMFLB    ANDNE*BLANKS
+|    C                     MOVEL'FOLDER'  PRMVW
+|    C                     MOVELPRMFLD    DSPFLD    P
+|    C                     MOVELPRMFLB    DSPFLB    P
+--E1 C                     ELSE
+|    C                     MOVEL'*ALL'    PRMVW     P
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRO10  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO10     BEGSR
+      *          10=Display SpyLink indices
+      *
+     C                     CLEARMSGID
+      *
+<--1 C           SPYLNK    IFEQ 'Yes'
+|    C                     OPEN RLNKDEF
+|   IC           BIG5      CHAINRLNKDEF             N50
+|    C                     CLOSERLNKDEF
+|    C           BIG5      KLIST
+|    C                     KFLD           RRNAM
+|    C                     KFLD           RJNAM
+|    C                     KFLD           RPNAM
+|    C                     KFLD           RUNAM
+|    C                     KFLD           RUDAT
+<--2 C           *IN50     IFEQ *ON
+|    C                     MOVEL'ERR1341' MSGID            No spylinks
+--E2 C                     ELSE
+|     *
+<--3 C           LNKFIL    IFEQ *BLANKS
+|    C                     MOVEL'ERR1545' MSGID            File not fndSRO10
+--E3 C                     ELSE
+|     * Call WrkSpi
+|    C                     Z-ADD1         UNLOAD  10
+|    C                     CALL 'WRKSPI'               50
+|    C                     PARM           LNKFIL           Phy file
+|    C                     PARM           LNKFIL           Phy mbr
+|    C                     PARM           DTALIB           Spylibr
+|    C                     PARM           LRNAM            Report
+|    C                     PARM           LJNAM            Job         @CSEL
+|    C                     PARM           LPNAM            Program
+|    C                     PARM           LUNAM            User           SRO10
+|    C                     PARM           LUDAT            User data
+|    C                     PARM           RTNCDE
+|    C                     MOVE RTNCDE    KEY
+<--4 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__4 C                     END
+|__3 C                     ENDIF
+|__2 C                     ENDIF
+|     *                                                                SRO10
+--E1 C                     ELSE
+|    C                     MOVEL'ERR1341' MSGID            No spylinks
+|__1 C                     ENDIF
+<--1 C           MSGID     IFNE *BLANKS
+|    C                     EXSR ERRSFL
+|__1 C                     ENDIF
+     C                     WRITEFMTKEY
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRO13  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO13     BEGSR
+      *          13=Config
+     C                     CLEARMSGID
+      *
+<--1 C           RTNCDE    IFEQ 'CLOSEW'
+|    C                     CALL 'CSTCFG'  PLCFG        50
+|     *
+--E1 C                     ELSE
+<--2 C           SPYLNK    IFEQ 'Yes'
+|    C                     OPEN RLNKDEF
+|   IC           BIG5      CHAINRLNKDEF             N50
+|    C                     CLOSERLNKDEF
+<--3 C           *IN50     IFEQ *ON
+|    C                     MOVEL'ERR1341' MSGID            no spylinks
+--E3 C                     ELSE
+|     *---------------------------
+|     * Call spylink index display
+|     *---------------------------
+|    C                     MOVE *ON       SRO13W  1
+|    C                     MOVE *BLANKS   RTNCDE
+|    C                     CALL 'CSTCFG'  PLCFG        50              SRO13
+|     *
+|    C           PLCFG     PLIST
+|    C                     PARM           LRNAM            Report Name
+|    C                     PARM           LJNAM            Job Name
+|    C                     PARM           LPNAM            Job Number
+|    C                     PARM           LUNAM            User Name
+|    C                     PARM           LUDAT            File Number
+|    C                     PARM           RTNCDE
+|    C                     MOVE RTNCDE    KEY
+<--4 C           KEY       IFEQ F3                                        SRO13
+|    C                     EXSR QUIT
+|__4 C                     END
+|     *
+|__3 C                     ENDIF
+|     *
+--E2 C                     ELSE
+|    C                     MOVEL'ERR1341' MSGID            no spylinks
+|__2 C                     ENDIF
+<--2 C           MSGID     IFNE *BLANKS
+|    C                     EXSR ERRSFL                                 SRO13
+|__2 C                     ENDIF
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRO15  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO15     BEGSR
+      *          15=Distribute report
+      *
+<--1 C           TYPTXT    IFEQ 'Rpt'
+|    C                     CALL 'WRKDST'
+|    C                     PARM REPTYP    WDREPT 10        Report
+|    C                     PARM *BLANKS   WDSEG  10        Segment
+|    C                     PARM *BLANKS   WDSUBR 10        Subscriber
+|    C                     PARM ' '       WLIST            List
+|    C                     PARM '1'       SUBSET  1        Subset
+|    C                     PARM ' '       SCRZ    1        Screen size
+|    C                     PARM *BLANKS   RTNCDE           Return code
+|     *
+|    C                     MOVE RTNCDE    KEY
+<--2 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__2 C                     END
+<--2 C           RTNCDE    IFNE *BLANKS
+|    C                     MOVELRTNCDE    MSGID
+|    C                     EXSR SNDMSG
+|__2 C                     ENDIF                                       SRO15
+--E1 C                     ELSE                            No report
+|    C                     MOVEL'ERR1722' MSGID
+|    C                     EXSR ERRSFL
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRO16  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO16     BEGSR
+      *          16=Segments
+      *
+<--1 C           TYPTXT    IFEQ 'Rpt'
+|    C                     CALL 'WRKSHD'
+|    C                     PARM REPTYP    WDREPT 10        Report
+|    C                     PARM *BLANKS   WHSEG  10        Report
+|    C                     PARM ' '       WLIST   1        LIST
+|    C                     PARM '1'       SUBSET  1        SUBSET
+|    C                     PARM ' '       SCRZ    1        SUBFILE #
+|    C                     PARM *BLANKS   RTNCDE  8        Return Code
+|     *
+|    C                     MOVE RTNCDE    KEY
+<--2 C           KEY       IFEQ F3
+|    C                     EXSR QUIT
+|__2 C                     END
+<--2 C           RTNCDE    IFNE *BLANKS
+|    C                     MOVELRTNCDE    MSGID
+|    C                     EXSR SNDMSG
+|__2 C                     ENDIF                                       SRO15
+--E1 C                     ELSE                            No report
+|    C                     MOVEL'ERR1722' MSGID
+|    C                     EXSR ERRSFL
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRO20  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO20     BEGSR
+      *          20=Calendar
+<--1 C           PRMFLD    IFNE *BLANKS
+|    C                     MOVEL'FLDTYP'  CALVW            Original
+--E1 C                     ELSE                            caller.
+|    C                     MOVEL'REPTYP'  CALVW
+|__1 C                     ENDIF
+      *
+     C                     CALL 'SPYCAL'
+     C                     PARM           PRMFLD 10
+     C                     PARM           PRMFLB 10
+     C                     PARM REPTYP    CALTYP 10
+     C                     PARM           CALVW  10
+     C                     PARM LMM       CALMM   20
+     C                     PARM LYY       CALYY   40
+     C                     PARM           RTNCDE
+      *
+     C                     MOVEL*ON       SRO20W  1
+     C                     MOVE RTNCDE    KEY
+<--1 C           KEY       IFEQ F3
+|    C                     EXSR QUIT                                   SRO20
+|__1 C                     END
+<--1 C           RTNCDE    IFNE *BLANKS
+|    C                     MOVELRTNCDE    MSGID
+|    C                     EXSR SNDMSG
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRO04  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRO04     BEGSR
+      *          4=Delete Rpt Type if no dependent records exist
+      *
+     C                     Z-ADDRCD1      RECORD           Write to
+     C                     EXSR CHNSFL                      confirm sfl
+     C                     SETON                     11
+     C                     Z-ADD4         OPTION
+     C                     EXSR UPDSFL
+     C                     CLEARMSGID
+      *
+     C                     OPEN MRPTDI13
+     C           REPTYP    SETLLMRPTDI13                 50 Rpt exists
+     C                     CLOSEMRPTDI13
+<--1 C           *IN50     IFEQ *ON
+|    C                     MOVEL'ERR1265' MSGID             Error
+--E1 C                     ELSE
+|    C                     OPEN MIMGDI10
+|    C           REPTYP    SETLLMIMGDI10                 50 Img exists
+|    C                     CLOSEMIMGDI10
+<--2 C           *IN50     IFEQ *ON
+|    C                     MOVEL'ERR1400' MSGID             Error      SRO04
+--E2 C                     ELSE
+|    C                     OPEN RDSTDEF1
+|    C           REPTYP    SETLLRDSTDEF1                 50 Dist exists
+|    C                     CLOSERDSTDEF1
+<--3 C           *IN50     IFEQ *ON
+|    C                     MOVEL'ERR1723' MSGID             Error
+|__3 C                     ENDIF
+|__2 C                     ENDIF
+|__1 C                     ENDIF
+      *                                                                   SRO04
+<--1 C           MSGID     IFNE *BLANKS
+|    C                     MOVE '1'       ERRDLT  1        Error on Dlt
+|    C                     EXSR ERRSFL
+--E1 C                     ELSE
+|    C                     Z-ADD4         OPTION
+|    C                     ADD  1         TRCD2
+|    C                     Z-ADDTRCD2     RCD2
+|    C                     WRITESFL2
+|__1 C                     ENDIF
+     C                     ENDSR
+      *
+      *@$$$$$$$$ SRF23  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     C           SRF23     BEGSR
+      *          F23= MORE OPTIONS
+      *
+     C                     EXSR SRCURS
+      *
+     C                     ADD  1         OT#     30
+<--1 C           OT#       IFGT MAXF23
+|    C                     Z-ADD1         OT#
+|__1 C                     ENDIF
+      *
+     C           OT#       MULT 2         F30     30
+     C                     SUB  1         F30
+     C                     MOVELOT,F30    TITLE1
+     C                     ADD  1         F30
+     C                     MOVELOT,F30    TITLE2
+     C                     WRITEFMTSEL
+     C                     MOVE '1'       *INKD
+     C                     ENDSR
+      *
+      *
+** SM   SUBFILE HEADINGS
+T000105   REPORT TYPE
+T000106   REPORT
+T000109   USER NAME
+T000107   JOB NAME
+** OPT   Options Message Text
+OPT0102      01 = Select
+OPT0201      02 = Change
+OPT0301      03 = Copy
+OPT0401      04 = Delete
+OPT0501      05 = Display
+OPT0601      06 = Security
+OPT0702      07 = Rename
+OPT0802      08 = Indices
+             09   unsused
+OPT1002      10 = SpyLink
+             11   unsused
+             12   unsused
+OPT1303      13 = Custom Config
+             16   unused
+OPT1503      15 = Distribution
+OPT1602      16 = Segments
+             17   unused
+OPT1802      18 = OVERLAYS
+             19   unused
+OPT2001      20 = Calender

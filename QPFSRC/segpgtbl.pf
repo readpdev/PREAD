@@ -1,0 +1,18 @@
+      *%METADATA                                                       *
+      * %TEXT Segment Page Table Work File Template                    *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... SEGPGTBL- Temporary Segment PG Tbl file   *
+     A* Date created...... 04/29/94                                  *
+     A*                                                              *
+     A*                    Maintenance                               *
+     A* Req#      Date     Programmer     Modification reason        *
+     A*                                                              *
+     A****************************************************************
+     A          R WSEGPG
+     A            WHSFIL        10          TEXT('Segment File Name')
+     A                                      COLHDG('Segment' 'File' 'Name')
+     A            WSPG           7P         TEXT('Page')
+     A                                      COLHDG('Page')

@@ -1,0 +1,1 @@
+update pr880dta/rindex set iinda = 'Y'

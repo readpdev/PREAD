@@ -1,0 +1,25 @@
+      /*%METADATA                                                     */
+      /* %TEXT Simulate User License Tracking                         */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&PRODNUM &MAXJOBS &JOBQ &JOBQLIB &MODULO)
+
+             DCL        VAR(&PRODNUM) TYPE(*DEC) LEN(3)
+             DCL        VAR(&MAXJOBS) TYPE(*DEC) LEN(6)
+             DCL        VAR(&JOBQ) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBQLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MODULO) TYPE(*DEC) LEN(3)
+
+             DCL        VAR(&JOBTYPE) TYPE(*CHAR) LEN(1)
+
+             RTVJOBA    TYPE(&JOBTYPE)
+             IF         COND(&JOBTYPE = '1') THEN(SBMJOB CMD(SIMULT +
+                          PRODNUM(&PRODNUM) NUMJOBS(&MAXJOBS) +
+                          JOBQ(&JOBQ) JOBQLIB(&JOBQLIB) +
+                          MODULO(&MODULO)) JOBQ(&JOBQLIB/&JOBQ))
+             IF         COND(&JOBTYPE = '0') THEN(DO)
+             CRTDTAARA  DTAARA(QTEMP/SIMULTDTA) TYPE(*CHAR) LEN(10)
+             CALL       PGM(SIMULT1) PARM(&PRODNUM &MAXJOBS &JOBQ +
+                          &JOBQLIB &MODULO)
+             ENDDO
+
+ ENDPGM:     ENDPGM

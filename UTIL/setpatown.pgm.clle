@@ -1,0 +1,51 @@
+      /*%METADATA                                                     */
+      /* %TEXT Set patch ownership to QSECOFR.                        */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&PATCHID)
+
+             DCL        VAR(&PATCHID) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PATCHIDEXT) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PATCHPATH) TYPE(*CHAR) LEN(40)
+             DCL        VAR(&COMMAND) TYPE(*CHAR) LEN(256)
+             DCL        VAR(&SHAREPATH) TYPE(*CHAR) LEN(256) +
+                          VALUE('/qntc/otirv-software/products/GaussV+
+                          IP/CE_Patches/880/DMS_AS400/VIP')
+
+             CHGVAR     VAR(&PATCHIDEXT) VALUE('T' |< &PATCHID |< 'J')
+
+             RSTPATCH   PATCHID(&PATCHID) VERSION(880) +
+                          SAVF(&PATCHIDEXT) SAVFLIB(PREAD)
+
+             RSTLIB     SAVLIB(&PATCHIDEXT) DEV(*SAVF) +
+                          SAVF(PREAD/&PATCHIDEXT)
+
+             CHGVAR     VAR(&PATCHPATH) VALUE('/qsys.lib/' |< +
+                          &PATCHIDEXT |< '.lib')
+             CHGOWN     OBJ(&PATCHPATH) NEWOWN(QSECOFR) SUBTREE(*ALL)
+             MONMSG     MSGID(CPF223A)
+
+             SAVLIB     LIB(&PATCHIDEXT) DEV(*SAVF) +
+                          SAVF(PREAD/&PATCHIDEXT) TGTRLS(V5R3M0) +
+                          UPDHST(*NO) CLEAR(*REPLACE) DTACPR(*HIGH)
+
+             DSPSAVF    FILE(PREAD/&PATCHIDEXT)
+
+             DLTLIB     LIB(&PATCHIDEXT)
+
+/* Backup by renaming current save file on share. */
+             CHGVAR     VAR(&COMMAND) VALUE('mv' |> &SHAREPATH |< +
+                          &PATCHID |< '/' |< &PATCHIDEXT |> +
+                          &SHAREPATH |< &PATCHID |< '/' |< +
+                          &PATCHIDEXT |< '_BU')
+             QSH        CMD(&COMMAND)
+
+/* Copy the new version to the share */
+             CHGVAR     VAR(&COMMAND) VALUE('cp +
+                          /qsys.lib/pread.lib/' |< &PATCHIDEXT |< +
+                          '.file' |> &SHAREPATH |< &PATCHID |< '/' +
+                          |< &PATCHIDEXT)
+             QSH        CMD(&COMMAND)
+
+             DLTF       FILE(PREAD/&PATCHIDEXT)
+
+             ENDPGM

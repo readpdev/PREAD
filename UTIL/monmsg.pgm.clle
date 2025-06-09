@@ -1,0 +1,14 @@
+             PGM        PARM(&MSGQ &MSGQLIB &MSGKEY)
+
+             DCL        VAR(&MSGQ) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGQLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGKEY) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(132)
+
+             RCVMSG     MSGQ(&MSGQLIB/&MSGQ) MSGKEY(&MSGKEY) +
+                          RMV(*NO) MSG(&MSGDTA)
+
+             SNDPGMMSG  MSGID(CPF9897) MSGF(QCPFMSG) MSGDTA(&MSGDTA) +
+                          TOPGMQ(*EXT) MSGTYPE(*STATUS)
+
+             ENDPGM

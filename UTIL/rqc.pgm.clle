@@ -1,0 +1,25 @@
+      /*%METADATA                                                     */
+      /* %TEXT Runqry *n rcdslt(*Yes)                                 */
+      /*%EMETADATA                                                    */
+PGM (&FILENAME &MBR)
+
+             DCL        VAR(&FILENAME) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&LIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&FILE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MBR) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(80)
+
+             MONMSG     MSGID(QRY0000) EXEC(GOTO CMDLBL(ERRTAG))
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ERRTAG))
+
+             CHGVAR     VAR(&FILE) VALUE(%SST(&FILENAME 1 10))
+             CHGVAR     VAR(&LIB) VALUE(%SST(&FILENAME 11 10))
+
+             RUNQRY     QRY(*NONE) QRYFILE((&LIB/&FILE &MBR)) +
+                          RCDSLT(*YES)
+             GOTO       CMDLBL(ENDTAG)
+
+ ERRTAG:     RCVMSG     MSGQ(*PGMQ) MSGTYPE(*FIRST) MSG(&MSGDTA)
+             SNDPGMMSG  MSG(&MSGDTA)
+
+ ENDTAG:     ENDPGM

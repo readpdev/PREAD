@@ -1,0 +1,16 @@
+      *
+      * KEY CODE NOTES
+      *
+J6568 * 07-27-16 PLR CREATED.
+      *
+                R SKNREC
+                  SKNSID        12          COLHDG('SYSTEM ID')
+                  SKNPFM         5          COLHDG('PLATFORM')
+                  SKNIS#         4  0       COLHDG('INSTALLATION' 'SEQUENCE #')
+                  SKNDLC          Z         COLHDG('DATE/TIME ADDED')
+                  SKNULC        10          COLHDG('ADDED BY ' 'USER')
+                  SKNCMT       256          COLHDG('COMMENT')
+                K SKNSID
+                K SKNPFM
+                K SKNIS#
+                K SKNDLC                    DESCEND

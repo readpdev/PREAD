@@ -1,0 +1,38 @@
+      /*%METADATA                                                     */
+      /* %TEXT DocManager - Optimize Beta Installs                    */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&PGMLIB)
+
+             DCL        VAR(&PGMLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGTXT) TYPE(*CHAR) LEN(80)
+
+             RTVOBJD    OBJ(&PGMLIB) OBJTYPE(*LIB)
+             MONMSG     MSGID(CPF9810) EXEC(do)
+             CHGVAR     VAR(&MSGTXT) VALUE('Library ' || &PGMLIB |< +
+                          ' not found.')
+             GOTO       CMDLBL(MESSAGE)
+             ENDDO
+
+             RTVOBJD    OBJ(&PGMLIB/STRDOCMGR) OBJTYPE(*CMD)
+             MONMSG     MSGID(CPF9801) EXEC(do)
+             CHGVAR     VAR(&MSGTXT) VALUE('Library ' || &PGMLIB |< +
+                          ' does not appear to be the Gauss program +
+                          library.')
+             GOTO       CMDLBL(MESSAGE)
+             ENDDO
+
+             CHGPGM     PGM(&PGMLIB/*ALL) RMVOBS(*DBGDTA *BLKORD +
+                          *PRCORD)
+             MONMSG     MSGID(CPF0546)
+             RCVMSG
+
+             CHGSRVPGM  SRVPGM(&PGMLIB/*ALL) RMVOBS(*DBGDTA *BLKORD +
+                          *PRCORD)
+             RCVMSG
+
+             CHGVAR     VAR(&MSGTXT) VALUE('DocManager 8.7.3 Beta +
+                          optimization complete.')
+
+ MESSAGE:    SNDPGMMSG  MSG(&MSGTXT)
+
+             ENDPGM

@@ -1,0 +1,14 @@
+      *%METADATA                                                       *
+      * %TEXT Prototypes for Security Bit Manipulation                 *
+      *%EMETADATA                                                      *
+     d chkBit          pr                  extproc('chkBit')
+     d  ordinalBit                   10i 0 value
+     d  byteField                      *   value
+
+     d onBit           pr                  extproc('onBit')
+     d  ordinalBit                   10i 0 value
+     d  byteField                      *   value
+
+     d offBit          pr                  extproc('offBit')
+     d  ordinalBit                   10i 0 value
+     d  byteField                      *   value

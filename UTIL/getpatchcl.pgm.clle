@@ -1,0 +1,83 @@
+      /*%METADATA                                                     */
+      /* %TEXT Get Patch via FTP                                      */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&USERID &PASSWORD &PATCHVER &PATCHNBR &TGTPGMLIB +
+                          &FTPSERVER &DOMAIN)
+
+             DCL        VAR(&USERID) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PASSWORD) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PATCHVER) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&PATCHNBR) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&TGTPGMLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&FTPSERVER) TYPE(*CHAR) LEN(40)
+             DCL        VAR(&DOMAIN) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&QUALUSER) TYPE(*CHAR) LEN(21)
+             DCL        VAR(&PATCHID) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&CD1) TYPE(*CHAR) LEN(40) VALUE('cd +
+                          \GaussVIP\CE_Patches\')
+             DCL        VAR(&CD2) TYPE(*CHAR) LEN(40)
+             DCL        VAR(&LCD) TYPE(*CHAR) LEN(40)
+             DCL        VAR(&GET) TYPE(*CHAR) LEN(40)
+
+             DCL        VAR(&EMSGDTA) TYPE(*CHAR) LEN(500)
+             DCL        VAR(&EMSGDTALEN) TYPE(*DEC) LEN(5 0)
+             DCL        VAR(&EMSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&EMSGF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&EMSGFLIB) TYPE(*CHAR) LEN(10)
+
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(DSPLYMSG))
+
+             CHGVAR     VAR(&QUALUSER) VALUE(&USERID)
+             IF         COND(&DOMAIN *NE ' ') THEN(CHGVAR +
+                          VAR(&QUALUSER) VALUE(&DOMAIN |< '\' |< +
+                          &USERID))
+
+             /* *CURRENT (-1) specified...fetch the latest patch nbr from PTFCFG file. */
+             IF         COND(&PATCHNBR *EQ '-1') THEN(DO)
+             CALL       PGM(GETPATCUR) PARM(&PATCHVER &PATCHNBR)
+             ENDDO
+
+             CHGVAR     VAR(&PATCHID) VALUE('P' || &PATCHVER || +
+                          &PATCHNBR)
+
+             CRTSAVF    FILE(&TGTPGMLIB/&PATCHID)
+
+             IF         COND(%SST(&PATCHVER 1 1) *EQ '0') +
+                          THEN(CHGVAR VAR(&PATCHVER) +
+                          VALUE(%SST(&PATCHVER 2 3)))
+
+             IF         COND(&PATCHVER < '921') THEN( +
+             CHGVAR     VAR(&CD1) VALUE(&CD1 |< &PATCHVER |< +
+                          '\DMS_400\'))
+             ELSE       CMD(CHGVAR VAR(&CD1) VALUE(&CD1 |< &PATCHVER +
+                          |< '\IBMi\'))
+
+             CHGVAR     VAR(&CD2) VALUE('cd' |> &PATCHID)
+
+             CHGVAR     VAR(&LCD) VALUE('lcd' |> &TGTPGMLIB)
+
+             CHGVAR     VAR(&GET) VALUE('get' |> &PATCHID |> +
+                          '(replace')
+
+             FTPJOB/FTPJOB SERVER(&FTPSERVER) USERID(&QUALUSER) +
+                          PASSWORD(&PASSWORD) +
+                          OUTPUTMBR(QTEMP/FTP/FTP) RPLCLOG(Y) +
+                          JOBQ(*NONE) FTPCMDS(bin &CD1 &CD2 &LCD +
+                          &GET quit)
+
+             SNDPGMMSG  MSG('If transfer failed, display the ftp +
+                          log: dsppfm qtemp/ftp')
+
+             GOTO       CMDLBL(ENDPGM)
+
+ DSPLYMSG:   RCVMSG     MSGTYPE(*LAST) RMV(*NO) MSGDTA(&EMSGDTA) +
+                          MSGDTALEN(&EMSGDTALEN) MSGID(&EMSGID) +
+                          MSGF(&EMSGF) MSGFLIB(&EMSGFLIB)
+
+             SNDPGMMSG  MSGID(&EMSGID) MSGF(&EMSGFLIB/&EMSGF) +
+                          MSGDTA(&EMSGDTA) MSGTYPE(*ESCAPE)
+
+ENDPGM:      RMVLIBLE FTPJOB
+
+             ENDPGM

@@ -1,0 +1,22 @@
+      /*%METADATA                                                     */
+      /* %TEXT How to create help files for commands.                 */
+      /*%EMETADATA                                                    */
+             PGM
+
+/* Create the panel source */
+             GENCMDDOC  CMD(MYLIB/MYCMD) +
+                          TODIR('/QSYS.LIB/MYLIB.LIB/QPNLSRC.FILE') +
+                          TOSTMF(*CMD) GENOPT(*UIM)
+
+/* Edit the source as needed. */
+
+/* Create the panel group */
+             CRTPNLGRP  PNLGRP(MYLIB/MYCMD) SRCFILE(MYLIB/QPNLSRC) +
+                          SRCMBR(MYCMD)
+
+/* Create command and associate the help panel. */
+             CRTCMD     CMD(MYLIB/MYCMD) PGM(MYLIB/MYPGM) +
+                          SRCFILE(MYLIB/QCMDSRC) +
+                          HLPPNLGRP(MYLIB/MYCMD) HLPID(*CMD)
+
+             ENDPGM

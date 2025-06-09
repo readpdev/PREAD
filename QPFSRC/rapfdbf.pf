@@ -1,0 +1,20 @@
+      *%METADATA                                                       *
+      * %TEXT APF/Advanced SCS Data file                               *
+      *%EMETADATA                                                      *
+      *                    Magellan Software
+      *
+      * Physical file... RAPFDBF  - APF Data file
+      *                  One file per SpyFolder  File name = A.........
+      *                  6/95
+      *
+     A                                      UNIQUE
+     A          R APFDBF
+     A            APFREP        10          COLHDG('Report' 'Name')
+      *                                            "SPY......."
+     A            APFSEQ         9B 0       COLHDG('Seq' 'Number')
+     A            APFDTA      4079          COLHDG('APF Data')
+
+     A          K APFREP
+     A          K APFSEQ
+
+      *  COPY TO RAPFDBG TO COMPILE MAG1070

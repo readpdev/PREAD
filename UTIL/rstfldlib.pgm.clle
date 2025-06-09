@@ -1,0 +1,37 @@
+      /*%METADATA                                                     */
+      /* %TEXT Reset folder library to one specified                  */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&dtalib &objlib)
+
+             DCL        VAR(&dtalib) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&objlib) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SQLSTMT) TYPE(*CHAR) LEN(256)
+             DCL        VAR(&LIBQUOTED) TYPE(*CHAR) LEN(12)
+
+             CHGVAR     VAR(&LIBQUOTED) VALUE('''' |< &dtalib |< +
+                          '''')
+
+/* iqtab */
+             CHGVAR     VAR(&SQLSTMT) VALUE('update iqtab set iqflib +
+                          = ' || &LIBQUOTED)
+             SQL        STATEMENT(&SQLSTMT)
+/* mflddir */
+             CHGVAR     VAR(&SQLSTMT) VALUE('update mflddir set +
+                          fldlib = ' || &LIBQUOTED)
+             SQL        STATEMENT(&SQLSTMT)
+/* mimgdir */
+             CHGVAR     VAR(&SQLSTMT) VALUE('update mimgdir set +
+                          idflib = ' || &LIBQUOTED)
+             SQL        STATEMENT(&SQLSTMT)
+/* mrptdir */
+             CHGVAR     VAR(&SQLSTMT) VALUE('update mrptdir set +
+                          fldrlb = ' || &LIBQUOTED)
+             SQL        STATEMENT(&SQLSTMT)
+
+/* sysdft dtaara */
+             CHGDTAARA  DTAARA(SYSDFT (21 10)) VALUE(&dtalib)
+             CHGDTAARA  DTAARA(SYSDFT (43 10)) VALUE(&dtalib)
+             CHGDTAARA  DTAARA(SYSDFT (63 10)) VALUE(&dtalib)
+             CHGDTAARA  DTAARA(SYSDFT (296 10)) VALUE(&objlib)
+             CHGDTAARA  DTAARA(SYSDFT (306 10)) VALUE(&dtalib)
+endpgm

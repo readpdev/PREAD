@@ -1,0 +1,71 @@
+      /*%METADATA                                                     */
+      /* %TEXT Copy Release 8.7.x to a virtual ISO image              */
+      /*%EMETADATA                                                    */
+             PGM
+
+             CHKOBJ     OBJ(OPTVRT01) OBJTYPE(*DEVD)
+             MONMSG     MSGID(CPF9801) EXEC(do)
+             CRTDEVOPT  DEVD(OPTVRT01) RSRCNAME(*VRT)
+             VRYCFG     CFGOBJ(OPTVRT01) CFGTYPE(*DEV) STATUS(*ON)
+             ENDDO
+
+             CHKOBJ     OBJ(DMSRLSISO) OBJTYPE(*IMGCLG)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+
+             CRTIMGCLG  IMGCLG(DMSRLSISO) DIR('/dmsrlsiso') +
+                          TEXT('DMS Virtual ISO Image Catalog')
+
+             ADDIMGCLGE IMGCLG(DMSRLSISO) FROMFILE(*NEW) +
+                          TOFILE(DMSRLS.ISO) IMGCLGIDX(*AVAIL) +
+                          IMGSIZ(*CD650)
+
+             LODIMGCLG  IMGCLG(DMSRLSISO) OPTION(*LOAD) DEV(OPTVRT01)
+
+             INZOPT     NEWVOL(DMS_400) DEV(OPTVRT01) CHECK(*NO)
+
+             ENDDO
+
+             CPYTOSTMF  +
+                          FROMMBR('/QSYS.LIB/DOCRLS870.lib/qtemp.file+
+                          /qtemp.mbr') +
+                          TOSTMF('/qopt/dms_400/QTEMP') +
+                          STMFOPT(*REPLACE) CVTDTA(*NONE) +
+                          ENDLINFMT(*FIXED)
+
+             MKDIR      DIR('/qopt/dms_400/DMS_400')
+
+             CPYTOSTMF  +
+                          FROMMBR('/QSYS.LIB/DOCRLS870.LIB/SDTA870.FI+
+                          LE') TOSTMF('/QOPT/DMS_400/DMS_400/SDTA') +
+                          STMFOPT(*REPLACE) CVTDTA(*NONE) +
+                          ENDLINFMT(*FIXED)
+
+             CPYTOSTMF  +
+                          FROMMBR('/QSYS.LIB/DOCRLS870.LIB/SINSR873.F+
+                          ILE') +
+                          TOSTMF('/QOPT/DMS_400/DMS_400/SINSR') +
+                          STMFOPT(*REPLACE) CVTDTA(*NONE) +
+                          ENDLINFMT(*FIXED)
+
+             CPYTOSTMF  +
+                          FROMMBR('/QSYS.LIB/DOCRLS870.LIB/SPGMR870.F+
+                          ILE') +
+                          TOSTMF('/QOPT/DMS_400/DMS_400/SPGMR') +
+                          STMFOPT(*REPLACE) CVTDTA(*NONE) +
+                          ENDLINFMT(*FIXED)
+
+             CPYTOSTMF  +
+                          FROMMBR('/QSYS.LIB/DOCRLS870.LIB/SPTFR873.F+
+                          ILE') +
+                          TOSTMF('/QOPT/DMS_400/DMS_400/SPTFR') +
+                          STMFOPT(*REPLACE) CVTDTA(*NONE) +
+                          ENDLINFMT(*FIXED)
+
+             CPYTOSTMF  +
+                          FROMMBR('/QSYS.LIB/DOCRLS870.LIB/SUPDF873.F+
+                          ILE') +
+                          TOSTMF('/QOPT/DMS_400/DMS_400/SUPDF') +
+                          STMFOPT(*REPLACE) CVTDTA(*NONE) +
+                          ENDLINFMT(*FIXED)
+
+             ENDPGM

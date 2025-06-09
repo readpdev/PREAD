@@ -1,0 +1,16 @@
+      *%METADATA                                                       *
+      * %TEXT WorkView - Transaction-Description                       *
+      *%EMETADATA                                                      *
+      **************************************************************
+     A                                      UNIQUE
+     A          R WVTADF                    TEXT('Process Transaction Desc')
+      *
+      **************************************************************
+      *
+     A            FFPRO         10          COLHDG('Process')
+     A            FFTRA          3  0       COLHDG('Transaction')
+     A                                      EDTCDE(Z)
+     A            FFDESC        30          COLHDG('Description')
+      *
+     A          K FFPRO
+     A          K FFTRA

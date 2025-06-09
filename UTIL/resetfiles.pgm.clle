@@ -1,0 +1,49 @@
+             PGM
+
+             DCL        VAR(&CREATE) TYPE(*CHAR) LEN(10) VALUE('*NO')
+
+
+/* image file */
+             CHKOBJ     OBJ(PR820DTA/I00000001G) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(CHGVAR VAR(&CREATE) +
+                          VALUE('*YES'))
+             CPYF       FROMFILE(PREAD/IFILE) +
+                          TOFILE(PR820DTA/I00000001G) +
+                          MBROPT(*REPLACE) CRTFILE(&CREATE)
+
+/* link file */
+             CHGVAR     VAR(&CREATE) VALUE('*NO')
+             CHKOBJ     OBJ(PR820DTA/@000001100) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(CHGVAR VAR(&CREATE) +
+                          VALUE('*YES'))
+             CPYF       FROMFILE(@1100) TOFILE(PR820DTA/@000001100) +
+                          TOMBR(@000001100) MBROPT(*REPLACE) +
+                          CRTFILE(&CREATE)
+
+/* display file */
+             CHKOBJ     OBJ(PR820OBJ/DSPJ) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(do)
+             CRTDUPOBJ  OBJ(DSPJ) FROMLIB(PREAD) OBJTYPE(*FILE) +
+                          TOLIB(PR820OBJ)
+             RNMOBJ     OBJ(PR820OBJ/DSPJ) OBJTYPE(*FILE) +
+                          NEWOBJ(DSP000000J)
+             ENDDO
+
+/* image directory records */
+             CLRPFM     FILE(PR820DTA/MIMGDIR)
+             CPYF       FROMFILE(PREAD/IMGDIR) +
+                          TOFILE(PR820DTA/MIMGDIR) MBROPT(*ADD)
+
+/* create index for first field of link file */
+             CHKOBJ     OBJ(PR820DTA/@000001101) OBJTYPE(*FILE)
+             MONMSG     MSGID(CPF9801) EXEC(SQL STATEMENT('CREATE +
+                          INDEX PR820DTA/@000001101 ON +
+                          PR820DTA/@000001100 (LXIV1 ASC) WITH 1 +
+                          DISTINCT VALUES'))
+
+/* add link file and display file names back into link definition record */
+             SQL        STATEMENT('update rlnkdef set lnkfil = +
+                          ''@000001100'', rdspf = ''DSP000000J'' +
+                          where lrnam = ''IMGTEST''')
+
+             ENDPGM

@@ -1,0 +1,26 @@
+      *%METADATA                                                       *
+      * %TEXT User Help Database                                       *
+      *%EMETADATA                                                      *
+     A****************************************************************
+     A*                    Magellan Software                         *
+     A*                                                              *
+     A* Physical file..... FUSRHELP  - User Help                     *
+     A* Date created......  11/26/94                                 *
+     A*                                                              *
+     A****************************************************************
+     A                                      UNIQUE
+     A          R USRHLPF
+     A*
+     A            HUFIL         10          COLHDG('File')
+     A            HURCD         10          COLHDG('Format')
+     A            HUSEQ          5  0       COLHDG('Sequence')
+     A                                      EDTCDE(Z)
+     A            HUTXT         65          COLHDG('Text')
+     A            HUPRV          1          COLHDG('Private' 'Y/N')
+     A            HUUSR         10          COLHDG('User')
+     A            HUDAT          6  0       COLHDG('Date')
+     A*
+     A          K HUFIL
+     A          K HURCD
+     A          K HUUSR
+     A          K HUSEQ

@@ -1,0 +1,50 @@
+      /*%METADATA                                                     */
+      /* %TEXT Set Product Library List for XXX i.e., 850             */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&RQSTVER)
+
+             DCL        VAR(&RQSTVER) TYPE(*CHAR) LEN(3)
+             DCL        VAR(&LASTVER) TYPE(*CHAR) LEN(3)
+             DCL        VAR(&USRNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PREFIX) TYPE(*CHAR) LEN(3) VALUE(DOC)
+             DCL        VAR(&LIBTYP) TYPE(*CHAR) LEN(9) +
+                          VALUE(SRCOBJDTA)
+             DCL        VAR(&LIBRARY) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&ELEM) TYPE(*DEC) LEN(2) VALUE(1)
+             DCL        VAR(&MSG) TYPE(*CHAR) LEN(80)
+
+             RTVUSRPRF  RTNUSRPRF(&USRNAM)
+
+             CHKOBJ     OBJ(QTEMP/SLLDTA) OBJTYPE(*DTAARA)
+             MONMSG     MSGID(CPF9801) EXEC(do)
+             CRTDTAARA  DTAARA(QTEMP/SLLDTA) TYPE(*CHAR) LEN(3)
+             RCVMSG     MSGQ(*PGMQ) MSGTYPE(*ANY) MSG(&MSG)
+             ENDDO
+
+             RTVDTAARA  DTAARA(QTEMP/SLLDTA) RTNVAR(&LASTVER)
+
+ LOOP:       CHGVAR     VAR(&LIBRARY) VALUE(&PREFIX |< &LASTVER |< +
+                          %SST(&LIBTYP &ELEM 3))
+             RMVLIBLE   LIB(&LIBRARY)
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+             RCVMSG     MSGQ(*PGMQ) MSGTYPE(*ANY) MSG(&MSG)
+             IF         COND(&RQSTVER *NE ' ') THEN(SNDPGMMSG +
+                          MSG(&MSG))
+             ENDDO
+             IF         COND(&RQSTVER *NE ' ') THEN(DO)
+             CHGVAR     VAR(&LIBRARY) VALUE(&PREFIX |< &RQSTVER |< +
+                          %SST(&LIBTYP &ELEM 3))
+             ADDLIBLE   LIB(&LIBRARY)
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+             RCVMSG     MSGQ(*PGMQ) MSGTYPE(*ANY) MSG(&MSG)
+             SNDPGMMSG  MSG(&MSG)
+             ENDDO
+             ENDDO
+             CHGVAR     VAR(&ELEM) VALUE(&ELEM + 3)
+             CHGVAR     VAR(&PREFIX) VALUE(%SST(&USRNAM 1 2))
+             IF         COND(&ELEM > 7) THEN(GOTO CMDLBL(QUIT))
+             GOTO       CMDLBL(LOOP)
+
+ QUIT:       CHGDTAARA  DTAARA(QTEMP/SLLDTA (1 3)) VALUE(&RQSTVER)
+
+             ENDPGM

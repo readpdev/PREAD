@@ -1,0 +1,28 @@
+      *%METADATA                                                       *
+      * %TEXT Monitor Multiple Job Queue                               *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      * File..... MQDIR  Monitor Multiple Job Queue File
+      *                  Link Report Folder to the Job Que which is
+      *                  used to archive its reports.
+      *                  Contains the JQ entry number assigned when
+      *                  the JQ was added to the Subsystem description.
+      *****************************************************************
+      ** * * * * * * * * * * * * * note * * * * * * * * * * * * * * * *
+      ** THIS FILE MUST BE OVERRIDDEN WHENEVER USED, DUE TO MULTI-SPYVU
+      ** SUPPORT INTRODUCED MAR '98.   See RPG pgm MAG402M for sample.
+      ** * * * * * * * * * * * * * note * * * * * * * * * * * * * * * *
+      *****************************************************************
+      *  8-02-94 New file
+     A          R QDIR
+K1   A            MFLDR         10A         COLHDG('Folder')
+K2   A            MFLDRL        10A         COLHDG('Folder' 'Library')
+     A            MJOBQ         10A         COLHDG('Job' 'Queue')
+     A            MJOBQL        10A         COLHDG('Job' 'Queue' 'Library')
+     A            MQPTY          2A         COLHDG('Job Run' 'Priority')
+     A            MSUBSQ         2A         COLHDG('Subsystem' 'Seq#')
+
+     A          K MFLDR
+     A          K MFLDRL
+
+      * Logical 1 by MSUBSQ (Subsystem job queue sequence number)

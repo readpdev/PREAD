@@ -1,0 +1,307 @@
+      /*%METADATA                                                     */
+      /* %TEXT Export an object to the IFS                            */
+      /*%EMETADATA                                                    */
+/**********----------------------------                               +
+ EXPOBJSPY  Export an object to the IFS                               +
+ **********----------------------------                               +
+                                                                      +
+ 05-12-14 EPG J5725  PCL to PDF Processing for page                   +
+ 03-18-13 PLR J4764  Missing convert to PDF option on submit. Docs    +
+                     were not being made into PDFs.                   +
+ 09-23-11 EPG /J3596 Implement license check EXPOBJSPY                +
+ 03-22-11 EPG /J3358 Fix the missing parameter MsgDta passed to       +
+                     SNDOBJSPYR. Also fix a missing parameter passed  +
+                     to SNDPGMMSG                                     +
+ 10-18-10 EPG /J3081 EXPOBJSPY fails when jobd is specified.          +
+ 3-17-10 EPG /J2399 Provide for a new parameter for stream file format +
+ 3-16-10 EPG /J2399 Trap the a message logging error when a message   +
+                    is not properly retrieved.                        +
+ 6-23-04 JMO /7455 Changed IFS path length to 128.                    +
+ 2-12-01 DLS /3393 Added IGNBATCH parameter                           +
+ 9-18-00 KAC 2930 Added CODEPAGE parameter                            +
+ 5-24-00 RA/2423 Added Send escape message to EXPOBJSPY               +
+ 4-17-00 FID/2423 Added new parms for *CSV and replace                +
+ 2-02-00 JJF/2423 Send escape messages: 1)blank path  2)no hits       +
+ 9-16-99 JJF New program                                              +
+                                                                     */
+             PGM        PARM(&OBJTYPE &OBJNAME &SEGNAME &FILTER +
+                          &CRITERIA &DATERANGE &PATH &REPLACE +
+                          &IGNBATCH &STMFFMT &CODEPAGE &LIST &LISTFILE +
+                          &SBMJOB &JOBDPRM)
+
+             DCL        VAR(&INTERFACE) TYPE(*CHAR) LEN(1) VALUE('N')
+             /* Used to determine if SpoolMail is used when calling SNDOBJSPYR */
+
+             DCL        VAR(&OBJTYPE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&OBJNAME) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SEGNAME) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&FILTER) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&CRITERIA) TYPE(*CHAR) LEN(900)
+             DCL        VAR(&DATERANGE) TYPE(*CHAR) LEN(16)
+             DCL        VAR(&PATH) TYPE(*CHAR) LEN(128)   /* /7455 */
+             DCL        VAR(&REPLACE) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&IGNBATCH) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&STMFFMT)  TYPE(*CHAR) LEN(1) /* T2399 */
+             DCL        VAR(&CODEPAGE) TYPE(*CHAR) LEN(2)
+             DCL        VAR(&LIST) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&LISTFILE) TYPE(*CHAR) LEN(60)
+             DCL        VAR(&SBMJOB) TYPE(*CHAR) LEN(1)
+             DCL        VAR(&JOBDPRM) TYPE(*CHAR) LEN(20)
+
+             DCL        VAR(&TCODPAG) TYPE(*CHAR) LEN(5)
+             DCL        VAR(&FORMAT) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOIN) TYPE(*CHAR) LEN(1) VALUE('1')
+             DCL        VAR(&SNDR) TYPE(*CHAR) LEN(60)
+             DCL        VAR(&ADRTYP) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&RCVR) TYPE(*CHAR) LEN(60)
+             DCL        VAR(&SUBJECT) TYPE(*CHAR) LEN(60)
+             DCL        VAR(&TEXT) TYPE(*CHAR) LEN(327)
+             DCL        VAR(&N) TYPE(*CHAR) LEN(2)
+
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSGTYP) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(132)
+             DCL        &ERRCOD  *CHAR 4 X'00000000'         /* J3596 */
+             DCL        VAR(&JOBD) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBDLIB) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&EMSGDTA) TYPE(*CHAR) LEN(500)
+             DCL        VAR(&EMSGDTALEN) TYPE(*DEC) LEN(5)
+             DCL        VAR(&EMSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&EMSGF) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&EMSGFLIB) TYPE(*CHAR) LEN(10)
+
+             DCL        VAR(&DATEF) TYPE(*CHAR) LEN(8)
+             DCL        VAR(&DATET) TYPE(*CHAR) LEN(8)
+             DCL        VAR(&ITER) TYPE(*DEC) LEN(3 0)
+             DCL        VAR(&ITERS) TYPE(*DEC) LEN(3 0)
+             DCL        VAR(&X) TYPE(*DEC) LEN(3 0)
+             DCL        VAR(&Y) TYPE(*DEC) LEN(3 0)
+             DCL        VAR(&Z) TYPE(*DEC) LEN(3 0)
+             DCL        VAR(&CRIT) TYPE(*CHAR) LEN(990)
+             DCL        VAR(&CALLSBM) TYPE(*CHAR) LEN(2500)
+
+             DCL        &TYPE     *CHAR 1
+             DCL        &FLTR     *CHAR 4
+             DCL        &RPLY     *CHAR 4
+             DCL        &IGNR     *CHAR 4
+             DCL        &SBMJ     *CHAR 4
+
+
+             DCL        &ar_prod   *dec 3 0 /* 3596  Product ID   */
+             DCL        &ar_ind    *char 1 /* 3596   Indicator    */
+             DCL        &ar_msgid  *char 7 /* 3596   Message ID   */
+             DCL        &ar_msgdta   *char 100 /* 3596 Message Data */
+             DCL        VAR(&AR_TRACK) TYPE(*CHAR) LEN(1) value('0')
+             DCL        &MsgKey    *char 4 /* 3596 Message Key */
+             DCL        &intReturn *int 4
+
+             ChgVar     Var(&ar_prod) value(18) /* J3596 */
+             CHGVAR     VAR(&TCODPAG) VALUE(%BIN(&CODEPAGE))
+             RTVJOBA    TYPE(&TYPE)  /* Returns 1=Interactve 0=Batch*/
+
+/* J3596 Begin Modification -------------------------------------------------------------*/
+
+             CallSubr   Subr(ValidLic)
+
+             If         Cond(&intReturn *eq 1) Then(do)
+                CALL       PGM(QMHSNDPM) PARM(&AR_MSGID 'PSCON     *LIBL     ' &AR_MSGDTA X'00000084' '*COMP    ' +
+                             '*CTLBDY   ' X'0000000001' '    ' &ERRCOD)
+                Return
+             EndDo
+/* J3596 End Modification --------------------------------------------------------------*/
+
+/* *SELECT -                */
+             IF         COND(&OBJNAME *EQ '*SELECT') THEN(DO)
+                CHGVAR     VAR(&OBJNAME) VALUE('          ')
+/* *SELECT - OBJECT SPYLINK */
+                IF         COND(&OBJTYPE *EQ '*SPYLINK') THEN( CALL PGM(MAG8051) PARM(' ' +
+                             &OBJNAME))
+
+/* *SELECT - OBJECT  OMNILINK */
+                IF         COND(&OBJTYPE *EQ '*OMNILINK') THEN( CALL  PGM(MAG8057) +
+                             PARM(&OBJNAME))
+
+                 /* J2399 Provide for proper error reporting */
+                IF         COND(&OBJNAME *EQ '          ') THEN(DO)
+                   CHGVAR     &EMSGID 'EML0066'
+                   CHGVAR     &EMSGDTA ' '
+                   CHGVAR     &EMSGF 'PSCON'
+                   CHGVAR     &EMSGFLIB '*LIBL'
+                   SNDPGMMSG  MSGID(&EMSGID) MSGF(PSCON) MSGDTA(&EMSGDTA) MSGTYPE(*COMP)
+                   RETURN
+                ENDDO
+             ENDDO
+
+/* Abort if batch with non-existent job desc */
+
+             IF         COND((&SBMJOB *EQ '1') *AND (&TYPE *EQ '1')) +
+                          THEN(DO)
+                CHGVAR     VAR(&JOBD) VALUE(%SST(&JOBDPRM 1 10))
+                CHGVAR     VAR(&JOBDLIB) VALUE(%SST(&JOBDPRM 11 10))
+                IF         COND(&JOBD *EQ '*USRPRF') THEN(RTVUSRPRF JOBD(&JOBD) JOBDLIB(&JOBDLIB))
+                IF         COND(&JOBDLIB = '    ') THEN(CHGVAR VAR(&JOBDLIB) VALUE('*LIBL'))
+                CHKOBJ     OBJ(&JOBDLIB/&JOBD) OBJTYPE(*JOBD)
+                MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(ERRPGM))
+             ENDDO
+
+/* Abort if IFS path is blank */
+
+             IF         COND(&PATH *EQ ' ') THEN(DO)
+                CHGVAR     VAR(&MSGID) VALUE('ERR0170')
+                CHGVAR     VAR(&MSGDTA) VALUE(' ')
+                CHGVAR     VAR(&MSGTYP) VALUE('*ESCAPE')
+                SNDPGMMSG  MSGID(&MSGID) MSGF(PSCON) MSGDTA(&MSGDTA) MSGTYPE(&MSGTYP)
+                GOTO       CMDLBL(ERRPGM)
+             ENDDO
+
+             IF         COND(&SBMJOB *EQ '1') THEN(DO)
+             CHGVAR     VAR(&SBMJOB) VALUE('0')
+
+             IF         COND(&TYPE *EQ '1') THEN(DO)
+             IF         COND(&REPLACE *EQ 'Y') THEN(CHGVAR VAR(&RPLY) +
+                          VALUE('*YES'))
+             IF         COND(&REPLACE *EQ 'N') THEN(CHGVAR VAR(&RPLY) +
+                          VALUE('*NO '))
+             IF         COND(&REPLACE *EQ 'S') THEN(CHGVAR VAR(&RPLY) +
+                          VALUE('*SEQ'))
+             IF         COND(&IGNBATCH *EQ 'Y') THEN(CHGVAR VAR(&IGNR) +
+                          VALUE('*YES'))
+             ELSE       CMD(CHGVAR VAR(&IGNR) VALUE('*NO '))
+
+             IF         COND(&FILTER *EQ '1') THEN(DO)
+             CHGVAR     VAR(&FLTR) VALUE('*YES')
+
+             CHGVAR     VAR(&ITERS) VALUE(%BIN(&CRITERIA 1 2))
+             CHGVAR     VAR(&ITER) VALUE(1)
+             CHGVAR     VAR(&Y) VALUE(3)
+             CHGVAR     VAR(&Z) VALUE(0)
+MOREFILTER:
+             IF         COND(&ITERS *GE &ITER) THEN(DO)
+             CHGVAR     VAR(&Z) VALUE(&Z + 1)
+             CHGVAR     VAR(%SST(&CRIT &Z 2)) VALUE('(')
+             CHGVAR     VAR(&Z) VALUE(&Z + 1)
+             CHGVAR     VAR(&X) VALUE(%BIN(&CRITERIA &Y 2))
+             CHGVAR     VAR(&X) VALUE(&X + 3)
+             CHGVAR     VAR(%SST(&CRIT &Z 9))  VALUE(%SST(&CRITERIA &X 9))
+             CHGVAR     VAR(&Z) VALUE(&Z + 10)
+             CHGVAR     VAR(&X) VALUE(&X + 9)
+             CHGVAR     VAR(%SST(&CRIT &Z 4))  VALUE(%SST(&CRITERIA &X 4))
+             CHGVAR     VAR(&Z) VALUE(&Z + 5)
+             CHGVAR     VAR(%SST(&CRIT &Z 1))  VALUE('''')
+             CHGVAR     VAR(&Z) VALUE(&Z + 1)
+             CHGVAR     VAR(&X) VALUE(&X + 4)
+             CHGVAR     VAR(%SST(&CRIT &Z 99))  VALUE(%SST(&CRITERIA &X 99))
+             CHGVAR     VAR(&Z) VALUE(&Z + 99)
+             CHGVAR     VAR(&Y) VALUE(&Y + 2)
+             CHGVAR     VAR(%SST(&CRIT &Z 2))  VALUE(''')')
+             CHGVAR     VAR(&Z) VALUE(&Z + 2)
+             CHGVAR     VAR(&ITER) VALUE(&ITER + 1)
+             GOTO       CMDLBL(MOREFILTER)
+             ENDDO
+
+             CHGVAR     VAR(&DATEF) VALUE(%SST(&DATERANGE 3 7))
+             IF         COND(&DATEF *NE '0000000 ') THEN(+
+             CVTDAT     DATE(&DATEF) TOVAR(&DATEF) FROMFMT(*CYMD) +
+                          TOFMT(*MDYY) TOSEP(*NONE))
+             ELSE       CMD(CHGVAR VAR(&DATEF) VALUE('*BEGIN  '))
+             CHGVAR     VAR(&DATET) VALUE(%SST(&DATERANGE 10 7))
+             IF         COND(&DATET *NE '0000000 ') THEN(+
+             CVTDAT     DATE(&DATET) TOVAR(&DATET) FROMFMT(*CYMD) +
+                          TOFMT(*MDYY) TOSEP(*NONE))
+             ELSE       CMD(CHGVAR VAR(&DATET) VALUE('*END    '))
+
+             ENDDO
+             ELSE       CMD(CHGVAR VAR(&FLTR) VALUE('*NO '))
+             CHGVAR     VAR(&SBMJ) VALUE('*NO ')
+
+
+             CHGVAR     VAR(&CALLSBM) VALUE('EXPOBJSPY OBJTYPE(' +
+                          *TCAT &OBJTYPE *TCAT ') OBJ(' *TCAT +
+                          &OBJNAME *TCAT ') RPTSEG(' *TCAT &SEGNAME +
+                          *TCAT ') FILTER(' || &FLTR || ') +
+                          CRITERIA(' || &CRIT || ') DATERANGE((' +
+                          *TCAT &DATEF *TCAT ') (' *TCAT &DATET +
+                          *TCAT ')) PATH(''' *TCAT &PATH *TCAT ''') +
+                          REPLACE(' *TCAT &RPLY *TCAT ') IGNBATCH(' +
+                          *TCAT &IGNR *TCAT ') STMFCODPAG(' || +
+                          &TCODPAG || ') LIST(' *TCAT &LIST *TCAT +
+                          ') STMFFMT(' |< &STMFFMT |< ') LISTFILE(' +
+                          *TCAT &LISTFILE *TCAT ') SBMJOB(' *TCAT +
+                          &SBMJ *TCAT ') JOBD(' *TCAT &JOBDLIB +
+                          *TCAT '/' *TCAT &JOBD *TCAT ')')
+
+             SBMJOB     JOB(SPYPRINT) JOBD(&JOBDLIB/&JOBD) +
+                          RQSDTA(&CALLSBM)
+             RETURN
+             ENDDO
+             ENDDO
+
+             /* J2399 Overload the address type with a new value to represent PDF */
+             IF         COND(&STMFFMT  *EQ 'P') THEN(CHGVAR VAR(&ADRTYP) VALUE('*IFSPDF'))
+             ELSE       CMD(CHGVAR     VAR(&ADRTYP) VALUE('*IFS'))
+
+             CHGVAR     VAR(&N) VALUE(X'0005')
+             CHGVAR     VAR(&TEXT) VALUE(&N *TCAT &PATH)
+             CHGVAR     VAR(&RCVR) VALUE(&LIST *CAT &REPLACE)
+             CHGVAR     VAR(&SUBJECT) VALUE(&LISTFILE)
+
+             CALL       PGM(SNDOBJSPYR) PARM(&OBJTYPE &OBJNAME &SEGNAME &FILTER &CRITERIA &DATERANGE &SNDR &ADRTYP +
+                          &RCVR &SUBJECT &TEXT &FORMAT &TCODPAG &JOIN &SBMJOB &JOBD &JOBDLIB &MSGID &MSGDTA +
+                          &MSGTYP &IGNBATCH &INTERFACE)
+
+
+ /*            MONMSG     MSGID(STG0000 IMG0000 CPF0000 ERR0000) +   */
+ /*            EXEC(GOTO  CMDLBL(ERRPGM))                            */
+
+             IF         COND(&MSGID *NE '       ') THEN(DO)
+
+                IF         COND(&MSGTYP *EQ '  ') THEN(DO)
+                   CHGVAR     &MSGTYP VALUE('*COMP')
+                ENDDO
+
+                SNDPGMMSG  MSGID(&MSGID) MSGF(PSCON) MSGDTA(&MSGDTA) MSGTYPE(&MSGTYP)
+                RETURN
+             ENDDO
+
+             RCVMSG     MSGTYPE(*DIAG) RMV(*NO) MSGDTA(&EMSGDTA) +
+                          MSGDTALEN(&EMSGDTALEN) MSGID(&EMSGID) +
+                          MSGF(&EMSGF) MSGFLIB(&EMSGFLIB)
+
+             IF         COND(&EMSGID *NE ' ') THEN(SNDPGMMSG +
+                          MSGID(&EMSGID) MSGF(&EMSGFLIB/&EMSGF) +
+                          MSGDTA(&EMSGDTA) MSGTYPE(*ESCAPE))
+
+             RETURN
+
+ ERRPGM:     RCVMSG     MSGTYPE(*LAST) RMV(*NO) MSGDTA(&emsgdta) +
+                          MSGDTALEN(&emsgdtalen) MSGID(&EMSGID) +
+                          MSGF(&emsgf) MSGFLIB(&emsgflib)
+
+             /* J2399 */
+             IF         COND(&MsgID *NE '      ') THEN(DO)
+                SNDPGMMSG  MSGID(&emsgid) MSGF(&emsgflib/&emsgf) MSGDTA(&emsgdta) MSGTYPE(*ESCAPE)
+             ENDDO
+
+/* Begin J3596 --------------------------------------------------------------------------*/
+
+             SubR       SubR(ValidLic) /* J3596 */
+                CallPrc    Prc(MFSPYAUTR) Parm((&ar_prod *byval)  (&ar_ind *byref) (&ar_msgid *byref) (&ar_MsgDta +
+                             *byref) (&ar_track *byref))
+                If         Cond( (&ar_ind *eq '0') *or ( (&ar_ind *eq '1') *and ( &ar_msgid *ne ' ') ) ) then(do)
+                   Select
+                      When       (&ar_ind *eq '0') Then(do)
+                         ChgVar     &intReturn  value(1)
+                      EndDo
+                      When       ( (&ar_ind *eq '1') *and ( &ar_msgdta *eq ' ') ) Then(do)
+                         ChgVar     &intReturn  value(0)
+                      EndDo
+                      When       ( (&ar_ind *eq '1') *and ( &ar_msgdta *ne ' ') ) Then(do)
+                         ChgVar     &intReturn  value(0)
+                      EndDo
+                   EndSelect
+                EndDo
+             EndSubR
+
+/* End J3596 -----------------------------------------------------------------------------*/
+             ENDPGM

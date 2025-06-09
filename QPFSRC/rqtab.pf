@@ -1,0 +1,80 @@
+      *%METADATA                                                       *
+      * %TEXT Report Queue Table                                       *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * Physical file..... RQTAB  - Report Queue Table
+      *
+      *          2/13/93   Ed Malley
+      *
+      * 6-21-93 ADDED FIELDS  OPT   &   OPVOL
+/3321 * 2-02-01 KAC REMOVE OPT DRIVE (OBSOLETE AS OF 6.0.6)
+      ****************************************************************
+     A                                      UNIQUE
+     A                                      REF(MAGFLDR)
+     A          R QUERC
+K1   A            QOUTQ     R               REFFLD(OUTQ)
+K2   A            QLIBR     R               REFFLD(LIBR)
+     A            QDESC     R               REFFLD(ODESC)
+     A            QWAITP    R               REFFLD(WAITPD)
+     A            QDISF     R               REFFLD(DISF)
+     A            QFOLD     R               REFFLD(FOLD)
+     A            QFLIB     R               REFFLD(FLIB)
+     A            QDAFT     R               REFFLD(DAFT)
+     A            QDAFTP    R               REFFLD(DAFTP)
+     A            QHOLD     R               REFFLD(HOLD)
+     A            QPHOLD    R               REFFLD(PHOLD)
+     A            QMQ       R               REFFLD(MQ)
+     A            QMQLIB    R               REFFLD(MQLIB)
+     A            QUPRG     R               REFFLD(UPRG)
+     A            QULIB     R               REFFLD(ULIB)
+     A            QAIND     R               REFFLD(AIND)
+     A            QINDX     R               REFFLD(INDX)
+     A            QEXPF     R               REFFLD(EXPF)
+     A            QEXPM     R               REFFLD(EXPM)
+     A            QFSIZ     R               REFFLD(FSIZ)
+     A            QSPLNO    R               REFFLD(SPLNO)
+     A            QRMSV     R               REFFLD(RMSV)
+     A            QRELF     R               REFFLD(RELF)
+     A            QLCKDT    R               REFFLD(LSCKDT)
+     A            QLCKTM    R               REFFLD(LSCKTM)
+     A            QOPT      R               REFFLD(OPT)
+     A            QOPVOL    R               REFFLD(OPVOL)
+     A            QPACK     R               REFFLD(QPACK)
+     A          K QOUTQ
+     A          K QLIBR
+      *
+      *
+      *           QOUTQ     Name of Que being monitored
+      *           QLIBR     Libr     "    "       "
+      *           QDESC     Desc     "    "       "
+      *
+      *           QWAITP    Wait time
+      *           QDISF     Disabled  (Y/N/S)
+      *                      Y = Disabled
+      *                      N = EN abled
+      *                      S = Selected reports enabled (RQOVER)
+      *           QFOLD     Folder
+      *           QFLIB     Folder library
+      *           QDAFT     Delete after always     (Y/N)
+      *           QDAFTP     n/u (Delete after if printed)
+      *           QHOLD     Place on Hold status    (H/R)
+      *           QPHOLD    Purge if on hold        (Y/N)
+      *           QMQ       Move to Que name
+      *           QMQLIB    Move to Que library
+      *           QUPRG     User exit program
+      *           QULIB      "    "     "     library
+      *           QAIND     Auto-index              (Y/N)
+      *           QINDX     Index name
+      *           QEXPF      n/u
+      *           QEXPM      n/u
+      *           QFSIZ      n/u
+      *           QSPLNO     n/u (# of spoolfiles)
+      *           QRMSV     Remove if saved         (Y/N)
+      *           QRELF      n/u
+      *           QLCKDT    Date last checked by monitor
+      *           QLCKTM    Time  "      "         "
+      *           QOPT      Archive to optical      (Y/N)
+      *           QOPVOL    Optical volume
+      *           QPACK     Compress                (Y/N)

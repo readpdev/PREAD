@@ -1,0 +1,20 @@
+      *%METADATA                                                       *
+      * %TEXT Conversion Document Name Table                           *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software                         *
+      *                                                              *
+      * Physical file..... MCNVNAM   - Conversion Doc Name Table     *
+      * Date created......  1/28/99                                  *
+      *                                                              *
+      ****************************************************************
+     A                                      CCSID(65535)
+     A          R CNVNAM
+     A            CDFCDE         9P 0       COLHDG('Doc' 'File' 'Code')
+     A            CDFNAM        12A         COLHDG('Doc' 'File' 'Name')
+     A            CDFOFS         9P 0       COLHDG('Doc' 'File' 'Offset')
+     A            CDFTYP         1A         COLHDG('Doc' 'File' 'Type')
+     A            CDFBCH        10A         COLHDG('Doc' 'File' 'Batch')
+     A            CDFLOC         1A         COLHDG('Doc' 'File' 'Location')
+     A            CDPCDE         9P 0       COLHDG('Doc' 'Path' 'Code')
+     A          K CDFCDE

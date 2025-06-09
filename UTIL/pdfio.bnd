@@ -1,0 +1,242 @@
+      /*%METADATA                                                     */
+      /* %TEXT PDF Input/Output Service Program                       */
+      /*%EMETADATA                                                    */
+/*                                                                  */
+/* 09-17-09 EPG Upated Page Format as the signature changed.        */
+/*              T2006J                                              */
+/* 10-18-06 PLR Added pdfArchStat and cvt2iso to PDFSTAT. T5794     */
+/*                                                                  */
+STRPGMEXP PGMLVL(*CURRENT)
+/********************************************************************/
+/*   *MODULE      PDFERR       DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDFFMTTETERR")
+  EXPORT SYMBOL("PDFGETLASTERROR")
+  EXPORT SYMBOL("PDFSETLASTERROR")
+/********************************************************************/
+/*   *MODULE      PDFIO        DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("READPROC")
+  EXPORT SYMBOL("SEEKPROC")
+  EXPORT SYMBOL("GETUNIQUEFILENAME")
+/********************************************************************/
+/*   *MODULE      PDFLIC       DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("VALIDATEPDFLICENSE")
+/********************************************************************/
+/*   *MODULE      PDFMRG       DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDFEXTRACTADD")
+  EXPORT SYMBOL("PDFEXTRACTCLOSE")
+  EXPORT SYMBOL("PDFEXTRACTFINIS")
+  EXPORT SYMBOL("PDFMERGEADD")
+  EXPORT SYMBOL("PDFMERGECLOSE")
+  EXPORT SYMBOL("PDFMERGEFINIS")
+/********************************************************************/
+/*   *MODULE      PDFSTAT      DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDFSTAT")
+  EXPORT SYMBOL("PDFARCHSTAT")
+  EXPORT SYMBOL("CVT2ISO")
+/********************************************************************/
+/*   *MODULE      PDF2TXT      DOC860SRC    04/20/06  21:06:55      */
+/********************************************************************/
+  EXPORT SYMBOL("PDF2TXTCLOSE")
+  EXPORT SYMBOL("PDF2TXTGETFCFC")
+  EXPORT SYMBOL("PDF2TXTGETLINE")
+  EXPORT SYMBOL("PDF2TXTOPEN")
+/********************************************************************/
+/*   *MODULE      INTERFACE    DOC872SRC    09/17/09  15:54:11      */
+/********************************************************************/
+  EXPORT SYMBOL("__sinit80000000__home_egarske_DOC872SRC_QCPPSRC_INTERFACE__42 +
+56015360__Fv")
+  EXPORT SYMBOL("InitOT")
+  EXPORT SYMBOL("ProcessInputOT")
+  EXPORT SYMBOL("ProcessInput__FPc")
+  EXPORT SYMBOL("FinishOT")
+  EXPORT SYMBOL("Finish__Fv")
+/********************************************************************/
+/*   *MODULE      PAGEFORMAT   DOC872SRC    09/17/09  14:16:39      */
+/********************************************************************/
+  EXPORT SYMBOL("__ct__13PageFormatterFv")
+  EXPORT SYMBOL("__dt__13PageFormatterFv")
+  EXPORT SYMBOL("Init__13PageFormatterFdT1UiT3PCcT3")
+  EXPORT SYMBOL("AllocItems__13PageFormatterFUl")
+  EXPORT SYMBOL("Finish__13PageFormatterFv")
+  EXPORT SYMBOL("SortItems__13PageFormatterFv")
+  EXPORT SYMBOL("OutputItems__13PageFormatterFv")
+  EXPORT SYMBOL("ProcessInput__13PageFormatterFPc")
+  EXPORT SYMBOL("ScanLine__13PageFormatterFP4ItemPc")
+  EXPORT SYMBOL("ScanEscapedText__13PageFormatterFPc")
+  EXPORT SYMBOL("FormLines__13PageFormatterFv")
+  EXPORT SYMBOL("ClearLine__13PageFormatterFPci")
+  EXPORT SYMBOL("PrintLine__13PageFormatterFP4FILEPci")
+  EXPORT SYMBOL("OutputBlankLines__13PageFormatterFP4FILEi")
+  EXPORT SYMBOL("_Sort_end__3stdHQ2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemT +
+R4Item_8ItemComp4Item_Q2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemTR4Item_T18I +
+temCompP4Item_v")
+  EXPORT SYMBOL("_Sort_end__3stdHQ2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemT +
+R4Item_4Item_Q2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemTR4Item_T1P4Item_v")
+  EXPORT SYMBOL("_GetRawPtr__3stdH4ItemiP4ItemR4ItemP4ItemR4Item_RCQ2_3std6_Pt +
+ritXT4ItemTiTP4ItemTR4ItemTP4ItemTR4Item__P4Item")
+  EXPORT SYMBOL("_GetRawPtr__3stdH5coordiP5coordR5coordP5coordR5coord_RCQ2_3st +
+d6_PtritXT5coordTiTP5coordTR5coordTP5coordTR5coord__P5coord")
+  EXPORT SYMBOL("__vft13PageFormatter")
+/********************************************************************/
+/*   *MODULE      PDFDST       DOC870SRC    10/04/06  14:30:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDF_DST_ADD_PAGE")
+  EXPORT SYMBOL("PDF_DST_CLOSE")
+  EXPORT SYMBOL("PDF_DST_GET_FILENAME")
+  EXPORT SYMBOL("PDF_DST_INIT")
+  EXPORT SYMBOL("PDF_DST_QUIT")
+ENDPGMEXP
+STRPGMEXP PGMLVL(*PRV)
+/********************************************************************/
+/*   *MODULE      PDFERR       DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDFFMTTETERR")
+  EXPORT SYMBOL("PDFGETLASTERROR")
+  EXPORT SYMBOL("PDFSETLASTERROR")
+/********************************************************************/
+/*   *MODULE      PDFIO        DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("READPROC")
+  EXPORT SYMBOL("SEEKPROC")
+  EXPORT SYMBOL("GETUNIQUEFILENAME")
+/********************************************************************/
+/*   *MODULE      PDFLIC       DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("VALIDATEPDFLICENSE")
+/********************************************************************/
+/*   *MODULE      PDFMRG       DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDFEXTRACTADD")
+  EXPORT SYMBOL("PDFEXTRACTCLOSE")
+  EXPORT SYMBOL("PDFEXTRACTFINIS")
+  EXPORT SYMBOL("PDFMERGEADD")
+  EXPORT SYMBOL("PDFMERGECLOSE")
+  EXPORT SYMBOL("PDFMERGEFINIS")
+/********************************************************************/
+/*   *MODULE      PDFSTAT      DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDFSTAT")
+  EXPORT SYMBOL("PDFARCHSTAT")
+  EXPORT SYMBOL("CVT2ISO")
+/********************************************************************/
+/*   *MODULE      PDF2TXT      DOC860SRC    04/20/06  21:06:55      */
+/********************************************************************/
+  EXPORT SYMBOL("PDF2TXTCLOSE")
+  EXPORT SYMBOL("PDF2TXTGETFCFC")
+  EXPORT SYMBOL("PDF2TXTGETLINE")
+  EXPORT SYMBOL("PDF2TXTOPEN")
+/********************************************************************/
+/*   *MODULE      INTERFACE    DOC860SRC    04/20/06  21:06:55      */
+/********************************************************************/
+  EXPORT SYMBOL("__sinit80000000__OpenText_cpp_Interface_cpp_975314944__Fv")
+  EXPORT SYMBOL("InitOT")
+  EXPORT SYMBOL("ProcessInputOT")
+  EXPORT SYMBOL("ProcessInput__FPc")
+  EXPORT SYMBOL("FinishOT")
+  EXPORT SYMBOL("Finish__Fv")
+/********************************************************************/
+/*   *MODULE      PAGEFORMAT   DOC860SRC    04/20/06  21:06:55      */
+/********************************************************************/
+  EXPORT SYMBOL("__ct__13PageFormatterFv")
+  EXPORT SYMBOL("__dt__13PageFormatterFv")
+  EXPORT SYMBOL("Init__13PageFormatterFdT1UiT3PCc")
+  EXPORT SYMBOL("AllocItems__13PageFormatterFUl")
+  EXPORT SYMBOL("Finish__13PageFormatterFv")
+  EXPORT SYMBOL("SortItems__13PageFormatterFv")
+  EXPORT SYMBOL("OutputItems__13PageFormatterFv")
+  EXPORT SYMBOL("ProcessInput__13PageFormatterFPc")
+  EXPORT SYMBOL("ScanLine__13PageFormatterFP4ItemPc")
+  EXPORT SYMBOL("ScanEscapedText__13PageFormatterFPc")
+  EXPORT SYMBOL("FormLines__13PageFormatterFv")
+  EXPORT SYMBOL("ClearLine__13PageFormatterFPci")
+  EXPORT SYMBOL("PrintLine__13PageFormatterFP4FILEPci")
+  EXPORT SYMBOL("OutputBlankLines__13PageFormatterFP4FILEi")
+  EXPORT SYMBOL("_Sort_end__3stdHQ2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemT +
+R4Item_8ItemComp4Item_Q2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemTR4Item_T18I +
+temCompP4Item_v")
+  EXPORT SYMBOL("_Sort_end__3stdHQ2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemT +
+R4Item_4Item_Q2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemTR4Item_T1P4Item_v")
+  EXPORT SYMBOL("__vft13PageFormatter")
+/********************************************************************/
+/*   *MODULE      PDFDST       DOC870SRC    10/04/06  14:30:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDF_DST_ADD_PAGE")
+  EXPORT SYMBOL("PDF_DST_CLOSE")
+  EXPORT SYMBOL("PDF_DST_GET_FILENAME")
+  EXPORT SYMBOL("PDF_DST_INIT")
+  EXPORT SYMBOL("PDF_DST_QUIT")
+ENDPGMEXP
+STRPGMEXP PGMLVL(*PRV)
+/********************************************************************/
+/*   *MODULE      PDFERR       DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDFFMTTETERR")
+  EXPORT SYMBOL("PDFGETLASTERROR")
+  EXPORT SYMBOL("PDFSETLASTERROR")
+/********************************************************************/
+/*   *MODULE      PDFIO        DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("READPROC")
+  EXPORT SYMBOL("SEEKPROC")
+/********************************************************************/
+/*   *MODULE      PDFLIC       DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("VALIDATEPDFLICENSE")
+/********************************************************************/
+/*   *MODULE      PDFMRG       DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDFEXTRACTADD")
+  EXPORT SYMBOL("PDFEXTRACTCLOSE")
+  EXPORT SYMBOL("PDFEXTRACTFINIS")
+  EXPORT SYMBOL("PDFMERGEADD")
+  EXPORT SYMBOL("PDFMERGECLOSE")
+  EXPORT SYMBOL("PDFMERGEFINIS")
+/********************************************************************/
+/*   *MODULE      PDFSTAT      DOC860SRC    04/20/06  21:06:54      */
+/********************************************************************/
+  EXPORT SYMBOL("PDFSTAT")
+/********************************************************************/
+/*   *MODULE      PDF2TXT      DOC860SRC    04/20/06  21:06:55      */
+/********************************************************************/
+  EXPORT SYMBOL("PDF2TXTCLOSE")
+  EXPORT SYMBOL("PDF2TXTGETFCFC")
+  EXPORT SYMBOL("PDF2TXTGETLINE")
+  EXPORT SYMBOL("PDF2TXTOPEN")
+/********************************************************************/
+/*   *MODULE      INTERFACE    DOC860SRC    04/20/06  21:06:55      */
+/********************************************************************/
+  EXPORT SYMBOL("__sinit80000000__OpenText_cpp_Interface_cpp_975314944__Fv")
+  EXPORT SYMBOL("InitOT")
+  EXPORT SYMBOL("ProcessInputOT")
+  EXPORT SYMBOL("ProcessInput__FPc")
+  EXPORT SYMBOL("FinishOT")
+  EXPORT SYMBOL("Finish__Fv")
+/********************************************************************/
+/*   *MODULE      PAGEFORMAT   DOC860SRC    04/20/06  21:06:55      */
+/********************************************************************/
+  EXPORT SYMBOL("__ct__13PageFormatterFv")
+  EXPORT SYMBOL("__dt__13PageFormatterFv")
+  EXPORT SYMBOL("Init__13PageFormatterFdT1UiT3PCc")
+  EXPORT SYMBOL("AllocItems__13PageFormatterFUl")
+  EXPORT SYMBOL("Finish__13PageFormatterFv")
+  EXPORT SYMBOL("SortItems__13PageFormatterFv")
+  EXPORT SYMBOL("OutputItems__13PageFormatterFv")
+  EXPORT SYMBOL("ProcessInput__13PageFormatterFPc")
+  EXPORT SYMBOL("ScanLine__13PageFormatterFP4ItemPc")
+  EXPORT SYMBOL("ScanEscapedText__13PageFormatterFPc")
+  EXPORT SYMBOL("FormLines__13PageFormatterFv")
+  EXPORT SYMBOL("ClearLine__13PageFormatterFPci")
+  EXPORT SYMBOL("PrintLine__13PageFormatterFP4FILEPci")
+  EXPORT SYMBOL("OutputBlankLines__13PageFormatterFP4FILEi")
+  EXPORT SYMBOL("_Sort_end__3stdHQ2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemT +
+R4Item_8ItemComp4Item_Q2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemTR4Item_T18I +
+temCompP4Item_v")
+  EXPORT SYMBOL("_Sort_end__3stdHQ2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemT +
+R4Item_4Item_Q2_3std6_PtritXT4ItemTiTP4ItemTR4ItemTP4ItemTR4Item_T1P4Item_v")
+  EXPORT SYMBOL("__vft13PageFormatter")
+ENDPGMEXP

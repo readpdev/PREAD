@@ -1,0 +1,78 @@
+      /*%METADATA                                                     */
+      /* %TEXT Convert old key code formats to new                    */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&LABELNAME &CONTINUE)
+
+             DCL        VAR(&LABELNAME) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&CONTINUE) TYPE(*CHAR) LEN(1)
+
+             IF         COND(&LABELNAME = 'MASTER') THEN(GOTO +
+                          CMDLBL(MASTER))
+             IF         COND(&LABELNAME = 'LICENSE') THEN(GOTO +
+                          CMDLBL(LICENSE))
+             IF         COND(&LABELNAME = 'HISTORY') THEN(GOTO +
+                          CMDLBL(HISTORY))
+             IF         COND(&LABELNAME = 'TIFVIEWER') THEN(GOTO +
+                          CMDLBL(TIFVIEWER))
+
+/* Master File */
+ MASTER:     CPYF       FROMFILE(SPYKEYLIB/SPYKEYMST) +
+                          TOFILE(QTEMP/SPYKEYMST) CRTFILE(*YES)
+             CLRPFM     FILE(DOCKEYLIB/MFKYMST)
+             SQL        STATEMENT('insert into dockeylib/mfkymst +
+                          select skmnam, skmsid, skmis#, skmpfm, +
+                          skmver, skmmdl, skmftr, skmdmo, skmkcd, +
+                          skmcst from qtemp/spykeymst')
+             DLTF       FILE(QTEMP/SPYKEYMST)
+             IF         COND(&CONTINUE *NE 'Y') THEN(GOTO +
+                          CMDLBL(ENDOFPGM))
+
+/* License File */
+ LICENSE:    CPYF       FROMFILE(SPYKEYLIB/SPYKEYLIC) +
+                          TOFILE(QTEMP/SPYKEYLIC) CRTFILE(*YES)
+             CLRPFM     FILE(DOCKEYLIB/MFKYLIC)
+             SQL        STATEMENT('insert into dockeylib/mfkylic +
+                          select sklsid, sklis#, sklprd, skl#us, +
+                          skldmo from qtemp/spykeylic')
+             DLTF       FILE(QTEMP/SPYKEYLIC)
+             IF         COND(&CONTINUE *NE 'Y') THEN(GOTO +
+                          CMDLBL(ENDOFPGM))
+
+/* History File */
+HISTORY:     CPYF       FROMFILE(SPYKEYLIB/SPYKEYHIS) +
+                          TOFILE(QTEMP/SPYKEYHIS) CRTFILE(*YES)
+             CLRPFM     FILE(DOCKEYLIB/MFKYHIS)
+             SQL        STATEMENT('insert into dockeylib/mfkyhis +
+                          select skhsid, skhis#, skhdlc, skhtlc, +
+                          skhulc, case left(skhdky,6) when +
+                          ''Users:'' then ''SKLUSR'' when +
+                          ''Versio'' then ''SKMVER'' when ''Model +
+                          '' then ''SKMMDL'' when   ''Proces'' then +
+                          ''SKMFTR'' when ''Pre 7.'' then +
+                          ''SKMDMO'' else case substr(skhcto,5,1) +
+                          when ''/'' then ''SKLDMO'' else '' '' end +
+                          end , case x.skhcto when ''*ADDED'' then +
+                          ''1'' when ''*DELETED'' then ''3'' else +
+                          ''2'' end, case left(skhdky,6) when +
+                          ''Users:'' then ''NUMBER USERS'' when +
+                          ''Versio'' then ''VERSION'' else case +
+                          substr(skhcto,5,1) when ''/'' then ''DEMO +
+                          DATE'' else upper(skhdky) end end, +
+                          skhcfr, case when left(x.skhcto,1) = +
+                          ''*'' then '' '' else x.skhcto end, +
+                          skhver, skhprd FROM qtemp/spykeyhis x')
+             DLTF       FILE(QTEMP/SPYKEYHIS)
+             IF         COND(&CONTINUE *NE 'Y') THEN(GOTO +
+                          CMDLBL(ENDOFPGM))
+
+ TIFVIEWER:  CPYF       FROMFILE(SPYKEYLIB/SPYKEYTIF) +
+                          TOFILE(QTEMP/SPYKEYTIF) CRTFILE(*YES)
+             CLRPFM     FILE(DOCKEYLIB/MFKYTIF)
+             SQL        STATEMENT('insert into dockeylib/mfkytif +
+                          select sktsid, sktseq, sktsvr, sktkcd +
+                          from qtemp/spykeytif')
+             DLTF       FILE(QTEMP/SPYKEYTIF)
+             IF         COND(&CONTINUE *NE 'Y') THEN(GOTO +
+                          CMDLBL(ENDOFPGM))
+
+ ENDOFPGM:   ENDPGM

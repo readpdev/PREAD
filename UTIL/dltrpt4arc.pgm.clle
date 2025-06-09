@@ -1,0 +1,14 @@
+             PGM
+             /* RMAINT */
+             SQL        STATEMENT('delete from rmaint where rrnam +
+                          like ''RPT%''')
+             /* MRPTDIR */
+             SQL        STATEMENT('delete from mrptdir where filnam +
+                          like ''RPT%''')
+             /* RLNKDEF */
+             SQL        STATEMENT('delete from rlnkdef where lrnam +
+                          like ''RPT%''')
+             /* RINDEX */
+             SQL        STATEMENT('delete from rindex where irnam +
+                          like ''RPT%''')
+             ENDPGM

@@ -1,0 +1,33 @@
+      *%METADATA                                                       *
+      * %TEXT Template file to compile CPYOPT2TAP & Mag751             *
+      *%EMETADATA                                                      *
+      * LSTOPT  Template file to compile LSTOPT
+      *
+      * Vol fmt
+     A          R LSTOPTR
+     A            OVDCEN         1
+     A            OVDDAT         6
+     A            OVDTIM         6
+     A            OVNAME        32
+     A            OVLIBR        10
+     A            OVIVID        32
+     A            OVSERN        11P 0
+     A            OVTYPE         3P 0
+     A            OVVFTH         5P 0
+     A            OVCRDT         7
+     A            OVCRTM         6
+     A            OVTEXT        50
+     A            OVLRDT         7
+     A            OVOPVN        32
+     A            OVSPCA        11P 0
+     A            OVVLOC         1
+     A            OVVACC         1
+     A            OVDBLV         1
+     A            OVDBLS         1
+     A            OVCSTA         1
+      * File fmt
+     A*         R QMODFA
+     A            OFFILE       256
+     A            OFVID         32
+     A            OFSIZE         9P 0
+     A            OFCRDT         7

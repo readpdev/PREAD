@@ -1,0 +1,56 @@
+      *%METADATA                                                       *
+      * %TEXT Spoolfile Internal Report configuration                  *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Magellan Software
+      *
+      * Physical file..... RSPLCFG  - Spoolfile Internal Rpt Config
+      *
+      *  5-08-97 JJF Add field SPLIBR (library to archive folder)
+      *  7-25-96 PAF New rpt cfg fields for 2 new (AND) reports
+      *  8-10-94 DM  Created
+      *
+      ********-------------------------------------------------------*
+      * NOTE:  IF A FIELD IS ADDED OR SUBTRACTED RSPLCFG NEEDS TO BE *
+      *        COPIED TO RSPLCFGD                                    *
+      ********-------------------------------------------------------*
+     A                                      UNIQUE
+     A          R SPLCFG
+   K1             SPRNAM        10A         COLHDG('Report' 'Name')
+   K2             SPJNAM        10A         COLHDG('Job' 'Name')
+   K3             SPPNAM        10A         COLHDG('Prog' 'Name')
+   K4             SPUNAM        10A         COLHDG('User' 'Name')
+   K5             SPUDAT        10A         COLHDG('User' 'Data')
+   K6             SPLFLD        10A         COLHDG('Config' 'Field')
+
+     A            SPPAG#         3B 0       COLHDG('Page' 'of' 'Data')
+     A            SPLIN#         3B 0       COLHDG('Line' 'of' 'Data 1')
+     A            SPCOL#         3B 0       COLHDG('Column' 'of' 'Data 1')
+     A            SP#BYT         3B 0       COLHDG('Number' 'of' 'Bytes 1')
+     A            SPCRIT        75A         COLHDG('Line' 'Contains 1')
+   K7             SPRPDT        10A         COLHDG('Replace' 'Data')
+     A            SPLIBR        10A         COLHDG('Folder' 'Library')
+
+     A            SPCRI2        75A         COLHDG('Line' 'Contains 2')
+     A            SPLIN2         3B 0       COLHDG('Line' 'of' 'Data 2')
+     A            SPCOL2         3B 0       COLHDG('Column' 'of' 'Data 2')
+     A            SP#BY2         3B 0       COLHDG('Number' 'of' 'Bytes 2')
+
+     A            SPCRI3        75A         COLHDG('Line' 'Contains 3')
+     A            SPLIN3         3B 0       COLHDG('Line' 'of' 'Data 3')
+     A            SPCOL3         3B 0       COLHDG('Column' 'of' 'Data 3')
+     A            SP#BY3         3B 0       COLHDG('Number' 'of' 'Bytes 3')
+
+      ****        SPNRNM        10A         COLHDG('Converted' 'Report' 'Name')
+      ****        SPNJNM        10A         COLHDG('Converted' 'Job' 'Name')
+      ****        SPNPNM        10A         COLHDG('Converted' 'Prog' 'Name')
+      ****        SPNUNM        10A         COLHDG('Converted' 'User' 'Name')
+      ****        SPNUDT        10A         COLHDG('Converted' 'User' 'Data')
+
+     A          K SPRNAM
+     A          K SPJNAM
+     A          K SPPNAM
+     A          K SPUNAM
+     A          K SPUDAT
+     A          K SPLFLD
+     A          K SPRPDT

@@ -1,0 +1,39 @@
+      *%METADATA                                                       *
+      * %TEXT Folder Directory File                                    *
+      *%EMETADATA                                                      *
+      * Physical file..... MFLDDIR - Folder Directory
+      *****************************************************************
+      * NOTE:  IF A FIELD IS ADDED OR SUBTRACTED MFLDDIR NEEDS TO BE
+      *        COPIED TO MAG5022F, MFLDCHK, TFLDDIR
+      *****************************************************************
+ DLS  *  5/05/00 Validate that prior reorg did not terminate abnormal
+ JJF  * 10/11/95 Add fields for image batchs (FDIDSD,FDIOPT,FDIDLT)
+      *
+     A                                      UNIQUE
+     A                                      CCSID(65535)
+     A                                      REF(MVARDEFS)
+     A          R FLDDIR
+   K A            FLDCOD        10A         COLHDG('Folder' 'Code')
+   K A            FLDLIB        10A         COLHDG('Folder' 'Library')
+     A            NUMFIL         9B 0       COLHDG('#Reports' 'on Dasd')
+     A            NUMOFF         9B 0       COLHDG('#Reports' 'Offline')
+     A            DLTRPT         9B 0       COLHDG('#Reports' 'Deleted')
+     A            FDIDSD         9B 0       COLHDG('#Image' 'Batches' 'on Dasd')
+     A            FDIOPT         9B 0       COLHDG('#Image' 'Batches' 'on Tape')
+     A            FDIDLT         9B 0       COLHDG('#Image' 'Batches' 'Deleted')
+     A            INTEOF         9B 0       COLHDG('Internal' 'EOF')
+     A            FLDLOC         1A         COLHDG('Folder' 'Location')
+     A            OFFVOL        10A         COLHDG('Offline' 'Volume')
+     A            OFFDAT         9B 0       COLHDG('Offline' 'Date')
+     A            APFNAM        10A         COLHDG('Adv.Prt.' 'Filenm')
+     A            OFFSYS         1A         COLHDG('Tape' 'Bkup' 'Sys')
+     A            FDESC         30A         COLHDG('Archive' 'Description')
+     A            FLDSTS         1A         COLHDG('Folder' 'Status')
+     A            SUBSYS         1A         COLHDG('Sub' 'System')
+     A            NUMOPT         9B 0       COLHDG('#Reports' 'on Optical')
+     A            FDIOPC         9B 0       COLHDG('#Image' 'Batches' 'on Opti')
+     A          K FLDCOD
+     A          K FLDLIB
+      ****************************************************************
+      * NOTE:  IF A FIELD IS ADDED OR SUBTRACTED, ALSO CHANGE
+      *        >>>>>>> MAG5022F, MFLDCHK, AND TFLDDIR <<<<<<<

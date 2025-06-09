@@ -1,0 +1,46 @@
+      /*%METADATA                                                     */
+      /* %TEXT Start debug                                            */
+      /*%EMETADATA                                                    */
+             PGM        PARM(&QUALPGM &QUALJOB)
+
+             DCL        VAR(&QUALPGM) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&PGMNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PGMLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&QUALJOB) TYPE(*CHAR) LEN(26)
+             DCL        VAR(&JOBNAM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBUSR) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&JOBNBR) TYPE(*CHAR) LEN(6)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(80)
+
+             MONMSG     MSGID(CPD0000) EXEC(GOTO CMDLBL(MESSAGE))
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(MESSAGE))
+
+             CHGVAR     VAR(&JOBNAM) VALUE(%SST(&QUALJOB 1 10))
+             CHGVAR     VAR(&JOBUSR) VALUE(%SST(&QUALJOB 11 10))
+             CHGVAR     VAR(&JOBNBR) VALUE(%SST(&QUALJOB 21 6))
+
+             IF         COND(&JOBNAM *NE '*CURRENT') THEN(DO)
+             IF         COND(&JOBUSR *EQ ' ') THEN(CHGVAR +
+                          VAR(&JOBUSR) VALUE('*N'))
+             IF         COND(&JOBNBR *NE ' ') THEN(STRSRVJOB +
+                          JOB(&JOBNBR/&JOBUSR/&JOBNAM))
+             ELSE       CMD(STRSRVJOB JOB(&JOBUSR/&JOBNAM))
+             ENDDO
+
+             CHGVAR     VAR(&PGMNAM) VALUE(%SST(&QUALPGM 1 10))
+             CHGVAR     VAR(&PGMLIB) VALUE(%SST(&QUALPGM 11 10))
+
+             CHKOBJ     OBJ(&PGMLIB/&PGMNAM) OBJTYPE(*PGM)
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(TRYSRVPGM))
+             STRDBG     PGM(&PGMLIB/&PGMNAM) UPDPROD(*YES) OPMSRC(*YES)
+
+ TRYSRVPGM:  CHKOBJ     OBJ(&PGMLIB/&PGMNAM) OBJTYPE(*SRVPGM)
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(MESSAGE))
+             STRDBG     SRVPGM(&PGMLIB/&PGMNAM) UPDPROD(*YES)
+             MONMSG     MSGID(CPF0000) EXEC(GOTO CMDLBL(MESSAGE))
+             GOTO       CMDLBL(ENDOFPGM)
+
+ MESSAGE:    RCVMSG     MSGQ(*PGMQ) MSGTYPE(*FIRST) MSG(&MSGDTA)
+             SNDPGMMSG  MSG(&MSGDTA)
+
+ ENDOFPGM:   ENDPGM

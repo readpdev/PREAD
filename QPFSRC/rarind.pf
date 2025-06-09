@@ -1,0 +1,19 @@
+      *%METADATA                                                       *
+      * %TEXT Archive Processing File                                  *
+      *%EMETADATA                                                      *
+      *********----------------------------
+      * RARIND  File of active archive jobs
+      *********----------------------------
+
+      *  9-06-95 GK  New file
+
+     A          R ARCREC
+     A            ALNKNM        10A         COLHDG('Link' 'File Nm')
+     A            AREPID        10A         COLHDG('Report' 'Ver. Id')
+     A            ANDXNM        10A         COLHDG('Index' 'Name')
+     A            AJOBNM        26A         COLHDG('Qualified' 'Job' 'Name')
+
+     A          K AREPID
+
+      * Logical:  RARIND1  by AREPID, ANDXNM
+

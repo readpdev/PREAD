@@ -1,0 +1,130 @@
+      *%METADATA                                                       *
+      * %TEXT Work with DocManager Patches                             *
+      *%EMETADATA                                                      *
+     A*%%TS  SD  20180123  172504  PREAD       REL-V7R1M0  5770-WDS
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A                                      CF03(03 'Exit')
+     A          R STSSFL                    SFL
+     A*%%TS  SD  20090911  095856  PREAD       REL-V6R1M0  5761-WDS
+     A            STSSYS        10A  H
+     A            STSCOD         4S 0H
+     A            STSOPT         1A  B  7 25VALUES(' ' '1' '2' '3' '5' '6')
+     A            STSPID        10A  O  7 29
+     A            STSDSC        15A  O  7 42
+     A          R STSCTL                    SFLCTL(STSSFL)
+     A*%%TS  SD  20090911  095856  PREAD       REL-V6R1M0  5761-WDS
+     A                                      CF05(05 'Refresh')
+     A                                      CF21(21 'Command line')
+     A                                      CF06(06 'Print')
+     A                                      OVERLAY
+     A                                      SFLCSRRRN(&CSRRRN1)
+     A  25                                  SFLDSP
+     A                                      SFLDSPCTL
+     A  26                                  SFLDLT
+     A N99                                  SFLEND(*MORE)
+     A                                      SFLSIZ(0015)
+     A                                      SFLPAG(0014)
+     A            RRN1           4S 0H      SFLRCDNBR(CURSOR)
+     A            CSRRRN1        5S 0H
+     A                                  1 27'Work with DocManager Patches'
+     A                                  1  2DATE
+     A                                      EDTCDE(Y)
+     A                                  4  4'1=Install'
+     A                                      COLOR(BLU)
+     A            FND0104        3A  O  6 24DSPATR(HI)
+     A                                      MSGID(FND 0104 PSCON)
+     A            ACT0086       15A  O  6 42DSPATR(HI)
+     A                                      MSGID(ACT 0086 PSCON)
+     A            FLD001        44A  O  3  2COLOR(BLU)
+     A                                  4 14'2=Revert'
+     A                                      COLOR(BLU)
+     A            VER            8A  O  1 15
+     A            OSVER          8A  O  1 59
+     A                                  6 29'Patch ID  '
+     A                                      DSPATR(HI)
+     A            SRLNBR        10A  O  1 70
+     A                                  4 23'3=Log'
+     A                                      COLOR(BLU)
+     A                                  4 29'5=View'
+     A                                      COLOR(BLU)
+     A                                  4 36'6=Reset'
+     A                                      COLOR(BLU)
+     A          R STSFKY
+     A*%%TS  SD  20080725  104736  PREAD       REL-V5R4M0  5722-WDS
+     A                                      OVERLAY
+     A                                 23  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 23 10'F5=Refresh'
+     A                                      COLOR(BLU)
+     A                                 23 21'F6=Print'
+     A                                      COLOR(BLU)
+     A          R LOGSFL                    SFL
+     A*%%TS  SD  20080725  083531  PREAD       REL-V5R4M0  5722-WDS
+     A            LOGUID        10A  O  8 18
+     A            LOGDT         16A  O  8 30
+     A            LOGACT        15A  O  8 48
+     A          R LOGCTL                    SFLCTL(LOGSFL)
+     A*%%TS  SD  20080730  105654  PREAD       REL-V5R4M0  5722-WDS
+     A                                      SFLSIZ(0014)
+     A                                      SFLPAG(0013)
+     A                                      CF12(12 'Cancel')
+     A                                      OVERLAY
+     A  25                                  SFLDSP
+     A                                      SFLDSPCTL
+     A  26                                  SFLDLT
+     A N99                                  SFLEND(*MORE)
+     A            RRN2           4S 0H      SFLRCDNBR(*TOP)
+     A                                  1 27'Work with DocManager Patches'
+     A                                  1  2DATE
+     A                                      EDTCDE(Y)
+     A                                  5 18'Patch ID:'
+     A            LOGPID        10A  O  5 28
+     A            DSP1061       10A  O  7 18TEXT('User ID')
+     A                                      DSPATR(HI)
+     A                                      MSGID(DSP 1061 PSCON)
+     A            P004056       16A  O  7 30TEXT('Date/Time')
+     A                                      DSPATR(HI)
+     A                                      MSGID(P00 4056 PSCON)
+     A            P050679       15A  O  7 48TEXT('Action')
+     A                                      DSPATR(HI)
+     A                                      MSGID(P05 0679 PSCON)
+     A                                  3 35'Activity Log'
+     A                                      DSPATR(HI)
+     A            VER            8A  O  1 14
+     A            OSVER          8A  O  1 59
+     A            SRLNBR        10A  O  1 70
+     A          R LOGFKY
+     A*%%TS  SD  20080716  065022  PREAD       REL-V5R4M0  5722-WDS
+     A                                      OVERLAY
+     A                                 23  2'F3=Exit F12=Cancel'
+     A                                      COLOR(BLU)
+     A          R MSGSFL                    SFL
+     A                                      SFLMSGRCD(24)
+     A            MSGKEY                    SFLMSGKEY
+     A            PGMQ                      SFLPGMQ(10)
+     A          R MSGCTL                    SFLCTL(MSGSFL)
+     A*%%TS  SD  20140430  121027  PREAD       REL-V7R1M0  5770-WDS
+     A                                      OVERLAY
+     A                                      SFLDSP
+     A                                      SFLDSPCTL
+     A                                      SFLINZ
+     A N97                                  SFLEND
+     A                                      SFLSIZ(0002)
+     A                                      SFLPAG(0001)
+     A            PGMQ                      SFLPGMQ(10)
+     A          R TARGETASP
+     A*%%TS  SD  20180123  172504  PREAD       REL-V7R1M0  5770-WDS
+     A                                      CF12(12 'Cancel')
+     A                                      OVERLAY
+     A                                      WINDOW(2 2 8 40)
+     A                                      USRRSTDSP
+     A                                  1  9MSGCON(025 M203098 *LIBL/PSCON)
+     A                                      DSPATR(HI)
+     A                                  5  1MSGCON(025 M203099 *LIBL/PSCON)
+     A                                  7  1MSGCON(010 CDB0006 *LIBL/PSCON)
+     A                                      COLOR(BLU)
+     A            ASPNBRIN       7   B  5 28
+     A                                  3  1MSGCON(026 M20310A *LIBL/PSCON)
+     A            ASPDEVIN      10   B  3 28

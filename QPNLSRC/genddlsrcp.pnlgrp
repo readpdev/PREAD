@@ -1,0 +1,43 @@
+.********************************************************************
+.* Panel Name: GENDDLSRCP                                          *
+.* Description : Generate DDL source for tables/indexes/views      *
+.* Written by  : David J. Andruchuk                                *
+.********************************************************************
+.*
+:PNLGRP.
+.*
+.* Main command help
+:HELP name='GENDDLSRC'.
+Command GENDDLSRC - Help
+:P.
+The GENDDLSRC processor is a utility to generate DDL (Data Definition
+Language) source for any table/index/view found in the schema specified.
+:P.
+This utility is helpful if you are converting your DDS based files to
+DDL (SQL) based files as it will create the source for you in the specified
+source file in the specified scheama.
+:EHELP.
+.*
+.* Command parameter(s) help
+:HELP NAME='GENDDLSRC/SCHEMA'.
+SCHEMA Schema name - Help
+:xh3.SCHEMA (Schema name)
+:P.
+Specify the name of the schema that contains the tables/indexes/views
+to have DDL source members created for.
+:P.
+This schema parameter is required and the value specified must exist
+prior to executing this command.
+:EHELP.
+.*
+:HELP NAME='GENDDLSRC/GENSRCFILE'.
+GENSRCFILE Generated Source file - Help
+:xh3.GENSRCFILE (Generated Source file)
+:P.
+Specify the name of the source file and schema that will contain the
+generated DDL source members for the tables/indexes/views.
+:P.
+This source file  & schema is required and the values specified must
+exist prior to executing this command.
+:EHELP.
+:EPNLGRP.

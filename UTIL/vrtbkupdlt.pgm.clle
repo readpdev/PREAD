@@ -1,0 +1,16 @@
+      /*%METADATA                                                     */
+      /* %TEXT Delete virtual backup configuration                    */
+      /*%EMETADATA                                                    */
+/* NO COMMAND JUST CALL IT */
+
+             PGM
+
+             MONMSG CPF0000
+
+             VRYCFG     CFGOBJ(TAPVRT01) CFGTYPE(*DEV) STATUS(*OFF)
+             LODIMGCLG  IMGCLG(BACKUP) DEV(TAPVRT01) OPTION(*UNLOAD)
+             DLTDEVD    DEVD(TAPVRT01)
+             DLTIMGCLG  IMGCLG(BACKUP) KEEP(*NO) DEPIMGCLG(*DELETE)
+             QSH        CMD('rm -r /backup')
+
+             ENDPGM

@@ -1,0 +1,42 @@
+      *%METADATA                                                       *
+      * %TEXT Optical Table                                            *
+      *%EMETADATA                                                      *
+      * File..... MOPTTBL  - Optical Table
+      * Used to locate files moved to optical.
+      *   One record per file on optical
+      *   Keyed by Report/Image Document name + Seq# for uniqueness.
+      *******-------------------------------------------------------
+      * NOTE:  IF A FIELD IS ADDED OR SUBTRACTED MOPTTBL NEEDS TO BE
+      *        COPIED TO MOPTTBLUPD AS WELL AS THE LOGICAL MOPTUPD1
+      *******-------------------------------------------------------
+/3321 * 12-28-00 KAC REMOVE OPT ID (OBSOLETE AS OF 6.0.6)
+ JJF  * 10-11-95 Add fields for image batchs: Begin/End:OPBBGN,OPBEND
+ DM   *  9-30-93 NEW FILE
+     A                                      UNIQUE
+     A          R OPTRC
+K1   A            OPTRNM        10          COLHDG('Report/Doc' 'Name')
+      *                                For images,  Bnnnnnnnnn
+      *                                For reports, Snnnnnnn00
+      *
+K2   A            OPTSEQ         5  0       COLHDG('Seq' 'Nbr')
+      *
+     A            OPTVOL        12          COLHDG('Opt' 'Vol')
+     A            OPTLIB        10          COLHDG('Library')
+     A            OPTFDR        10          COLHDG('Folder')
+     A            OPTFIL        10          COLHDG('Optical' 'File')
+      *              File name on opt: for images,  Innnnnnnnn
+      *                                for reports, Snnnnnnn00,01...
+      *
+     A            OPTTVL         6A         COLHDG('Tape' 'Volume')
+     A            OPTTSQ         4A         COLHDG('Tape' 'Seq#')
+     A            OPTTDT         9B 0       COLHDG('Tape' 'Date')
+
+     A            OPBBGN         9B 0       COLHDG('Image' 'Beg RRN')
+     A            OPBEND         9B 0       COLHDG('Image' 'End RRN')
+     A            OPMXSZ         5B 0       COLHDG('Max.' 'File Size' 'MB')
+     A                                      EDTCDE(Z)
+      *
+     A          K OPTRNM
+     A          K OPTSEQ
+      *
+      * Logical MOPTTBL1 with unique key: OPTFIL

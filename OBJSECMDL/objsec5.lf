@@ -1,0 +1,6 @@
+      *%METADATA                                                       *
+      * %TEXT Object Security by Type                                  *
+      *%EMETADATA                                                      *
+                R OBJSECREC                 PFILE(OBJSEC)
+                  OSR_OBJTYP
+                K OSR_OBJTYP

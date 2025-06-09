@@ -1,0 +1,20 @@
+      *%METADATA                                                       *
+      * %TEXT Archived Report attributes                               *
+      *%EMETADATA                                                      *
+      ****************************************************************
+      *                    Gauss Interprise                          *
+      *                                                              *
+      * Physical file..... MRPTATR - Archived Report attributes      *
+      * Date created...... 6/04/2003                                 *
+      *                                                              *
+      *  6/04/2003 JMO - Created file                                *
+      ********-------------------------------------------------------*
+     A                                      UNIQUE
+     A          R RPTATR                    TEXT('Archived Report Attr.')
+      *
+     A            RASPY#        10A         COLHDG('Spy number        ')
+     A            RASEQ          3P 0       COLHDG('Sequence#         ')
+     A            RAATTR      1024A         COLHDG('Attribute data    ')
+      *
+     A          K RASPY#
+     A          K RASEQ

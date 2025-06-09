@@ -1,0 +1,48 @@
+      *%METADATA                                                       *
+      * %TEXT Spyglass menu display file                               *
+      *%EMETADATA                                                      *
+     A*%%TS  SD  20130627  152850  PREAD       REL-V6R1M0  5761-WDS
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3                  -
+     A                                             27 132 *DS4)
+     A                                      WDWBORDER((*CHAR '        '))
+     A                                      WDWBORDER((*DSPATR RI))
+     A                                      HELP
+     A                                      ALTHELP
+     A                                      CA03
+     A                                      CA12
+     A          R INPUT
+     A*%%TS  SD  20130627  145339  PREAD       REL-V6R1M0  5761-WDS
+     A  *DS3                                WINDOW(9 29 5 20)
+     A  *DS4                                WINDOW(9 29 5 20)
+     A                                      CF07(07 'Alternate Key')
+     A                                      WDWTITLE((*TEXT &TITLE) *LEFT *BOTT-
+     A                                      OM)
+     A            TITLE         10A  P
+     A*                                 2  2'Data1..'
+     A            P040001        7A  O  2  2MSGID(P04 0001 PSCON)
+     A            USER          10A  B  2 10DSPATR(ND)
+     A*                                 4  2'Data2..'
+     A            P040002        7A  O  4  2MSGID(P04 0002 PSCON)
+     A            PASS          10A  B  4 10DSPATR(ND)
+     A          R INPUT2
+     A*%%TS  SD  20130627  152850  PREAD       REL-V6R1M0  5761-WDS
+     A  *DS3                                WINDOW(5 14 11 44)
+     A  *DS4                                WINDOW(9 29 5 20)
+     A*                                 4  2'Data2..'
+     A            KEY            3A  O  6  6MSGID(KY0 0040 PSCON)
+     A            OPTKEY         8A  B  6 28
+     A                                  1 11'Open Text Support Utility'
+     A                                      DSPATR(HI)
+     A                                  3  6'Verification Code'
+     A            VERICODE       6Y 0O  3 28EDTCDE(Z)
+     A                                  4  6'(Provide this code to support.)'
+     A                                      COLOR(BLU)
+     A            OPTKEYMSG     32A  O 10  6
+     A                                  9  6'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                  7  6'(Provided by support.)'
+     A                                      COLOR(BLU)
+     A          R DUMMY
+     A                                      ASSUME
+     A                                  1  3' '

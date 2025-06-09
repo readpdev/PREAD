@@ -1,0 +1,14 @@
+      *%METADATA                                                       *
+      * %TEXT Audit Log Control                                        *
+      *%EMETADATA                                                      *
+      *
+/5635 * 01-29-04 PLR AUDIT LOGGING CONTROL FILE.
+      *
+                                            CCSID(65535)
+                R MLAUDCTLF
+                  ACOPCODE       5P 0       COLHDG('OpCode')
+                                            TEXT('OpCode')
+                  ACLOGSTS       1          COLHDG('Log Level 0=Off' +
+                                            '1=Basic 2=Detail')
+                                            TEXT('Log Level 0=Off 1=Basic 2=Det+
+                                            ail')

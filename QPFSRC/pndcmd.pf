@@ -1,0 +1,31 @@
+      *%METADATA                                                       *
+      * %TEXT Pending Commands                                         *
+      *%EMETADATA                                                      *
+     A          R PNDCMDF
+     A            PTYP           1          COLHDG('Command' 'Type')
+     A            PUSR          10          COLHDG('User' 'Name')
+     A            PPGM          10          COLHDG('Program' 'Name')
+     A            PCYY           4  0       COLHDG('Created' 'Year')
+     A                                      EDTCDE(Z)
+     A            PCMM           2  0       COLHDG('Created' 'Month')
+     A                                      EDTCDE(Z)
+     A            PCDD           2  0       COLHDG('Created' 'Day')
+     A                                      EDTCDE(Z)
+     A            PCTT           6  0       COLHDG('Created' 'Time')
+     A                                      EDTWRD('  :  :  ')
+     A            PLYY           4  0       COLHDG('Last' 'Year')
+     A                                      EDTCDE(Z)
+     A            PLMM           2  0       COLHDG('Last' 'Month')
+     A                                      EDTCDE(Z)
+     A            PLDD           2  0       COLHDG('Last' 'Day')
+     A                                      EDTCDE(Z)
+     A            PLTT           6  0       COLHDG('Last' 'Time')
+     A                                      EDTWRD('  :  :  ')
+     A            PCNT           7  0       COLHDG('Counter')
+     A                                      EDTCDE(Z)
+     A            PCMD         250          COLHDG('Command')
+     A          K PTYP
+     A          K PCYY
+     A          K PCMM
+     A          K PCDD
+     A          K PCTT

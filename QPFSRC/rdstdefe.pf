@@ -1,0 +1,35 @@
+      *%METADATA                                                       *
+      * %TEXT Report Distribution Extended Definitions                 *
+      *%EMETADATA                                                      *
+      *****************************************************************
+      *                   GAUSS SOFTWARE                              *
+      *                                                               *
+      * File... RDSTDEFE  Report Distribution Extended  Definition    *
+      *                                                               *
+      * For each Subsrriber-Report type-Segment name, provide the     *
+      * bundle ID and "how to process" parameters.                    *
+      *                                                               *
+      * 06-14-02 PLR EXTENDED REPORT DISTRIBUTION. /5943              *
+      ****************************************************************
+     A                                      UNIQUE
+     A          R DSTDEFE
+K1   A            RDSUBR        10          COLHDG('Subscriber' 'ID')
+K2   A            RDREPT        10          COLHDG('Report' 'Type')
+K3   A            RDSEG         10          COLHDG('Segment' 'ID')
+     A            RDBNDL        10          COLHDG('Bundle' 'ID')
+/5943A            RDDOW1         1A         COLHDG('DOW' 'Sun')
+ "   A            RDDOW2         1A         COLHDG('DOW' 'Mon')
+ "   A            RDDOW3         1A         COLHDG('DOW' 'Tue')
+ "   A            RDDOW4         1A         COLHDG('DOW' 'Wed')
+ "   A            RDDOW5         1A         COLHDG('DOW' 'Thu')
+ "   A            RDDOW6         1A         COLHDG('DOW' 'Fri')
+ "   A            RDDOW7         1A         COLHDG('DOW' 'Sat')
+ "   A            RDUSF1         1A         COLHDG('User 1' 'Flag')
+ "   A            RDUSF2         1A         COLHDG('User 2' 'Flag')
+ "   A            RDUSF3         1A         COLHDG('User 3' 'Flag')
+ "   A            RDUSF4         1A         COLHDG('User 4' 'Flag')
+ "   A            RDUSF5         1A         COLHDG('User 5' 'Flag')
+
+     A          K RDSUBR
+     A          K RDREPT
+     A          K RDSEG

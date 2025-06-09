@@ -1,0 +1,21 @@
+      *%METADATA                                                       *
+      * %TEXT OmniLink Descriptions                                    *
+      *%EMETADATA                                                      *
+      **************----------------------
+      * A Hyp Lnk D   OmniLink Description
+      **************----------------------
+      *   Associate user's OmniLink name to @HL... physical file.
+      *
+     A                                      UNIQUE
+     A          R AHYPLNK                   TEXT('OmniLink Descr.')
+      *
+     A            AHNAM         10          COLHDG('OmniLink Name')
+     A            ADESC         30          COLHDG('Description')
+     A            AFILE         10          COLHDG('Physical file')
+     A                                      TEXT('@HL...')
+     A            ADSPF         10          COLHDG('Display file')
+     A                                      TEXT('@BD...')
+     A            ACRTF          1          COLHDG('DspF' 'Created')
+     A                                      TEXT('Y/N')
+      *
+     C          K AHNAM

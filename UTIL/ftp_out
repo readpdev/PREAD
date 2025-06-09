@@ -1,0 +1,23 @@
+Output redirected to a file.
+Input read from specified override file.
+Connecting to host FTP.OPENTEXT.COM at address 10.2.170.10 using port 21.
+220 (vsFTPd 2.2.2)
+Enter login ID (pread):
+331 Please specify the password.
+Please login with USER and PASS.
+Enter an FTP subcommand.
+> user eu0013754 **********
+331 Please specify the password.
+530 Login incorrect.
+Enter an FTP subcommand.
+> bin
+530 Please login with USER and PASS.
+Enter an FTP subcommand.
+> cd files
+You must first issue the USER subcommand.
+Enter an FTP subcommand.
+> get spytemp pread/prsavf (replace
+You must first issue the USER subcommand.
+Enter an FTP subcommand.
+> quit
+221 Goodbye.

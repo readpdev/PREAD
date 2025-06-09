@@ -1,0 +1,165 @@
+      /*%METADATA                                                     */
+      /* %TEXT SpyView - Start IFS   Monitor                          */
+      /*%EMETADATA                                                    */
+/**********--------------------                                       +
+ MAG8702CL - Start IFS Monitor                                        +
+***********--------------------                                       +
+11-26-08 EPG Use the Environment Variable to determine the run        +
+             attributes for the IFS Monitor.                          +
+             Should the environment variables be blank, then the      +
+             values themselves will be set.                     /7264 +
+12-05-02 GT  Use &CTLLIB for multi-SpyLib sites.                /7485 +
+   2872HQ 11/03/00 JAM Added security                                 +
+                                                                     */
+             PGM
+             DCL        VAR(&STATUS) TYPE(*CHAR) LEN(1) VALUE('C')
+             DCL        VAR(&SPYLIB) TYPE(*CHAR) LEN(10)     /* 2872 */
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(7)      /* 2872 */
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)       /* 2872 */
+             DCL        VAR(&ITXT) TYPE(*CHAR) LEN(50)       /* 2872 */
+             DCL        VAR(&CHANGE) TYPE(*CHAR) LEN(1)      /* 2872 */
+             DCL        VAR(&RETN) TYPE(*CHAR) LEN(1)        /* 2872 */
+             DCL        VAR(&CTLLIB) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&ENVDFT) TYPE(*CHAR) LEN(1024) /* 7264 */
+             DCL        VAR(&IFSJOB) TYPE(*CHAR) LEN(10) /* 7264 */
+             DCL        VAR(&IFSDSC) TYPE(*CHAR) LEN(10) /* 7264 */
+             DCL        VAR(&IFSLIB) TYPE(*CHAR) LEN(10) /* 7264 */
+             DCL        VAR(&IFSPTY) TYPE(*CHAR) LEN(2) /* 7264 */
+             DCL        VAR(&IFSEXP) TYPE(*CHAR) LEN(1) /* 7264 */
+             DCL        VAR(&SYSDFT) TYPE(*CHAR) LEN(1024) /* 7264 */
+             DCL        VAR(&DTALIB) TYPE(*CHAR) LEN(10) /* 7264 */
+             DCL        VAR(&BLNSETENV) TYPE(*CHAR) LEN(1) VALUE('1')
+             DCL        VAR(&TRUE) TYPE(*CHAR) LEN(1) VALUE('1')
+             DCL        VAR(&FALSE) TYPE(*CHAR) LEN(1) VALUE('0')
+
+
+                                                          /* 2872 */
+/* Global error monitor */                                   /* 2872 */
+             MONMSG     MSGID(CPF0000)                               +
+                        EXEC(GOTO CMDLBL(ERROR))             /* 2872 */
+/* Set library list */                                       /* 2872 */
+             RTVOBJD    OBJ(STRDOCMGR)                   +
+                        OBJTYPE(*CMD)                                +
+                        TEXT(&ITXT)                          /* 2872 */
+                        MONMSG     MSGID(CPF0000 MCH0000)    /* 2872 */
+                                                             /* 2872 */
+             RCVMSG     MSGTYPE(*LAST)                       /* 2872 */
+                                                             /* 2872 */
+             CHGVAR     VAR(&SPYLIB)                                 +
+                        VALUE(%SST(&ITXT 41 10))             /* 2872 */
+                                                             /* 2872 */
+             IF         COND(&SPYLIB *NE ' ') THEN(DO)       /* 2872 */
+                        ADDLIBLE   LIB(&SPYLIB)              /* 2872 */
+                                   MONMSG     MSGID(CPF2118)         +
+                                   EXEC(GOTO CMDLBL(ERROR))  /* 2872 */
+                                   MONMSG     MSGID(CPF0000 MCH0000) +
+                                   EXEC(GOTO CMDLBL(NOCHANGE)) /* 2872 */
+                                   CHGVAR     VAR(&CHANGE)           +
+                                              VALUE('Y')     /* 2872 */
+ NOCHANGE:              RCVMSG     MSGTYPE(*LAST)            /* 2872 */
+                        ENDDO                                /* 2872 */
+                                                             /* 2872 */
+             CALL       PGM(MAG1031) PARM(STRIFSMON ' ')     /* 2872 */
+                                                             /* 2872 */
+             CALL       PGM(MAG103A)                         /* 2872 */
+                        MONMSG     MSGID(CPF0000 MCH0000)            +
+                        EXEC(DO)                             /* 2872 */
+                        CALL       PGM(MAG1031)                      +
+                                   PARM(STRIFSMON Q)         /* 2872 */
+                        ENDDO                                /* 2872 */
+                                                             /* 2872 */
+/* Check if user has security to run command */              /* 2872 */
+             CALL       PGM(SPYAUT) PARM('STRIFSMON ' &RETN) /* 2872 */
+                                                             /* 2872 */
+             IF         COND(&RETN *NE 'Y') THEN(DO)         /* 2872 */
+                        SNDPGMMSG MSGID(SPY0013) MSGF(PSCON) /* 2872 */
+                        GOTO      CMDLBL(END)                /* 2872 */
+                        ENDDO                                /* 2872 */
+
+             CALL       PGM(MAG8701) PARM(&STATUS)
+             IF         COND(&STATUS *EQ '1') THEN(DO)
+             SNDPGMMSG  MSGID(ERR4101) MSGF(PSCON)
+/* 2872 */   GOTO       CMDLBL(END)
+             ENDDO
+
+             GOTO       GETENVVAR
+ RTNGETENV:
+             IF         COND(&BLNSETENV *EQ &FALSE) THEN(DO)
+                GOTO       SETENVVAR
+                CHGVAR     &BLNSETENV VALUE(&TRUE)
+             ENDDO
+ RTNSETENV:  GOTO       GETENVVAR
+
+
+             RTVDTAARA  DTAARA(SYSDFT (683 10)) RTNVAR(&CTLLIB)
+             IF         COND(&CTLLIB *EQ ' ') THEN(CHGVAR +
+                          VAR(&CTLLIB) VALUE('*LIBL'))
+
+             STRSBS     SBSD(&CTLLIB/SPYGLASS)
+             MONMSG     MSGID(CPF0000)
+             /* 7264 */
+             SBMJOB     CMD(CALL PGM(MAG8704)) JOB(&IFSJOB) JOBD(&IFSLIB/&IFSDSC) +
+                          INLLIBL(*CURRENT) /* 7264 */
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+             SNDPGMMSG  MSGID(ERR4103) MSGF(PSCON)
+/* 2872 */   GOTO       CMDLBL(END)
+             ENDDO
+             SNDPGMMSG  MSGID(ERR4102) MSGF(PSCON)
+
+             GOTO       CMDLBL(END)                          /* 2872 */
+                                                             /* 2872 */
+ ERROR:                                                      /* 2872 */
+             RCVMSG     RMV(*NO)                                     +
+                        MSGDTA(&MSGDTA)                              +
+                        MSGID(&MSGID)                        /* 2872 */
+             SNDPGMMSG  MSGID(&MSGID)                                +
+                        MSGF(QCPFMSG)                                +
+                        MSGDTA(&MSGDTA)                      /* 2872 */
+ END:                                                        /* 2872 */
+             CALL       PGM(MAG1031) PARM(STRIFSMON Q)       /* 2872 */
+                                                             /* 2872 */
+             IF         COND(&CHANGE *EQ 'Y')                        +
+                        THEN(RMVLIBLE LIB(&SPYLIB))          /* 2872 */
+             GOTO       ENDOFPGM
+ /*----------------------------------------------------------------------*/
+ GETENVVAR:
+ /*----------------------------------------------------------------------*/
+ /* 7264  Retrieve the environment variable ENVDFT                       */
+ /*----------------------------------------------------------------------*/
+                RTVDTAARA  DTAARA(ENVDFT (1 1024)) RTNVAR(&ENVDFT)
+                CHGVAR     &IFSJOB %SST(&ENVDFT 150 10)
+                CHGVAR     &IFSDSC %SST(&ENVDFT 160 10)
+                CHGVAR     &IFSLIB %SST(&ENVDFT 170 10)
+                CHGVAR     &IFSPTY %SST(&ENVDFT 180 2)
+                CHGVAR     &IFSEXP %SST(&ENVDFT 182 1)
+                GOTO       RTNGETENV
+ /*----------------------------------------------------------------------*/
+ SETENVVAR:
+ /*----------------------------------------------------------------------*/
+ /* 7264  Set the environment variable ENVDFT by validating the values   */
+ /*----------------------------------------------------------------------*/
+                IF         COND(&IFSJOB *EQ '         ') THEN(CHGVAR &IFSJOB 'SPYIFSMON')
+                IF         COND(&IFSDSC *EQ '         ') THEN(CHGVAR &IFSDSC 'SPYGLSIFS')
+
+                IF         COND(&IFSLIB *EQ '         ') THEN(DO)
+                   RTVDTAARA  DTAARA(SYSDFT (1 1024)) RTNVAR(&SYSDFT)
+                   CHGVAR     VAR(&DTALIB)  VALUE(%SST(&SYSDFT 306 10))
+                   CHGVAR     VAR(&IFSLIB) VALUE(&DTALIB)
+                ENDDO
+
+                IF         COND(&IFSPTY *EQ '  ') THEN(DO)
+                   CHGVAR     VAR(&IFSPTY) VALUE('50')
+                ENDDO
+
+                IF         COND(&IFSEXP *NE 'Y' *AND &IFSEXP *NE 'N') THEN(DO)
+                   CHGVAR     VAR(&IFSEXP) VALUE('Y')
+                ENDDO
+
+                CHGDTAARA  DTAARA(&ENVDFT (150 10)) VALUE(&IFSJOB)
+                CHGDTAARA  DTAARA(&ENVDFT (160 10)) VALUE(&IFSDSC)
+                CHGDTAARA  DTAARA(&ENVDFT (170 10)) VALUE(&IFSLIB)
+                CHGDTAARA  DTAARA(&ENVDFT (180 2)) VALUE(&IFSPTY)
+                CHGDTAARA  DTAARA(&ENVDFT (182 1)) VALUE(&IFSEXP)
+
+                GOTO       RTNGETENV
+ ENDOFPGM:      ENDPGM

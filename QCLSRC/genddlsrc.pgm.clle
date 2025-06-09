@@ -1,0 +1,71 @@
+      /*%METADATA                                                     */
+      /* %TEXT Generate DDL Source                                    */
+      /*%EMETADATA                                                    */
+/*******************************************************************/
+/* Program Name: GENDDLSRC                                         */
+/* Description : Generate DDL source for tables/indexes/views      */
+/* Written by  : David J. Andruchuk                                */
+/*                                                                 */
+/* Create Instructions:                                            */
+/*   CRTBNDCL PGM(GENDDLSRC) SRCFILE(QCLSRC)                       */
+/*******************************************************************/
+
+             PGM        PARM(&SCHEMA &GENSRCFILE)
+
+/*   Define Variables                                                   */
+             DCL        VAR(&GENSRCFILE) TYPE(*CHAR) LEN(20)
+             DCL        VAR(&SCHEMA) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SRCFILE) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&SRCLIB ) TYPE(*CHAR) LEN(10)
+
+             DCLF       FILE(QADBXREF) ALWVARLEN(*YES) ALWNULL(*YES) +
+                          ALWGRAPHIC(*YES)
+
+/*   Set soure file name & schema parameters                            */
+             CHGVAR     VAR(&srcfile) VALUE(%SST(&gensrcfile 1 10))
+             CHGVAR     VAR(&srclib) VALUE(%SST(&gensrcfile 11 10))
+
+/*   Add DDL generate utility library                                   */
+             ADDLIBLE   LIB(GENDDL)
+             MONMSG     CPF0000
+
+/*   Override the system table QADBXREF for the specified schema &      */
+/*   open a data path for retrieval                                     */
+             OVRDBF     FILE(QADBXREF) TOFILE(QADBXREF) MBR(*FIRST) +
+                          OVRSCOPE(*JOB) SHARE(*YES)
+
+             OPNQRYF    FILE((QADBXREF *FIRST *ONLY)) QRYSLT('(DBXTYP="D") +
+                          *and (DBXLIB= "' || &SCHEMA || '")') +
+                          OPTIMIZE(*MINWAIT)
+
+/*   Read all tables/indexes/views contained in the schema               */
+ NEXTTBL:    RCVF
+             MONMSG     MSGID(CPF0864) EXEC(GOTO CMDLBL(ENDPGM))
+             MONMSG     MSGID(CPF5035 CPF5029)
+
+/*   Check the object type and perform                                  */
+ B_PF:       IF         COND(&DBXATR *EQ 'PF' *OR &DBXATR *EQ 'TB') +
+                          THEN(DO)
+                GENDDL/GENDDL OBJ(&DBXFIL) LIB(&DBXLIB) OBJTYP(TABLE) +
+                             SRCFILE(&SRCLIB/&SRCFILE) SRCMBR(&DBXFIL) +
+                             TEXT(&DBXTXT)
+ E_PF:       ENDDO
+
+ B_IX:       IF         COND(&DBXATR *EQ 'IX') THEN(DO)
+                GENDDL/GENDDL OBJ(&DBXFIL) LIB(&DBXLIB) OBJTYP(INDEX) +
+                             SRCFILE(&SRCLIB/&SRCFILE) SRCMBR(&DBXFIL) +
+                             TEXT(&DBXTXT)
+ E_IX:       ENDDO
+
+ B_VW:       IF         COND(&DBXATR *EQ 'VW') THEN(DO)
+                GENDDL/GENDDL OBJ(&DBXFIL) LIB(&DBXLIB) OBJTYP(VIEW) +
+                             SRCFILE(&SRCLIB/&SRCFILE) SRCMBR(&DBXFIL) +
+                             TEXT(&DBXTXT)
+ E_VW:       ENDDO
+
+             GOTO       CMDLBL(NEXTTBL)
+
+ ENDPGM:
+             CLOF       OPNID(QADBXREF)
+             DLTOVR     (*ALL)
+             ENDPGM

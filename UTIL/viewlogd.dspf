@@ -1,0 +1,50 @@
+      *%METADATA                                                       *
+      * %TEXT View Audit Log Display File                              *
+      *%EMETADATA                                                      *
+     A*%%TS  SD  20050901  170747  PREAD       REL-V5R1M0  5722-WDS
+     A*%%EC
+     A                                      DSPSIZ(27 132 *DS4)
+     A                                      INDARA
+     A                                      CF03(03 'Exit')
+     A                                      CF05(05 'Refresh/Clear')
+     A          R SFL01                     SFL
+     A*%%TS  SD  20050901  170444  PREAD       REL-V5R1M0  5722-WDS
+     A            DATETIME      20A  O  6  2
+     A            OPERATION     20A  O  6 45
+     A            DETAILLINE    50A  O  6 77
+     A            USERID        10A  O  6 66
+     A            IMGSEQ        10Y 0O  6 23EDTCDE(Z)
+     A            LNKSEQ        10Y 0O  6 34EDTCDE(Z)
+     A          R CTL01                     SFLCTL(SFL01)
+     A*%%TS  SD  20050901  170747  PREAD       REL-V5R1M0  5722-WDS
+     A                                      SFLSIZ(0015)
+     A                                      SFLPAG(0014)
+     A                                      OVERLAY
+     A  25                                  SFLDSP
+     A                                      SFLDSPCTL
+     A  26                                  SFLDLT
+     A N99                                  SFLEND
+     A            RRN1           4S 0H      SFLRCDNBR(CURSOR *TOP)
+     A                                  1 60'View Audit Log'
+     A                                  3  2'DocID'
+     A            DOCID         10A  B  3  8DSPATR(HI)
+     A                                  5  2'Date/Time           '
+     A                                      DSPATR(UL)
+     A                                  5 45'Operation           '
+     A                                      DSPATR(UL)
+     A                                  5 77'Detail                            -
+     A                                                      '
+     A                                      DSPATR(UL)
+     A                                  5 66'User      '
+     A                                      DSPATR(UL)
+     A                                  5 23'ImgSeq    '
+     A                                      DSPATR(UL)
+     A                                  5 34'LnkSeq    '
+     A                                      DSPATR(UL)
+     A          R FKY01
+     A*%%TS  SD  20041116  110809  PREAD       REL-V5R1M0  5722-WDS
+     A  25                                  OVERLAY
+     A                                 26  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 26 11'F5=Refresh'
+     A                                      COLOR(BLU)
